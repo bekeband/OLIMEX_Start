@@ -1,0 +1,367 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"write.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._write,"ax",%progbits
+  20              		.align	2
+  21              		.weak	_write
+  22              		.thumb
+  23              		.thumb_func
+  25              	_write:
+  26              	.LFB73:
+  27              		.file 1 "../src/common/utils/stdio/write.c"
+   1:../src/common/utils/stdio/write.c **** /**
+   2:../src/common/utils/stdio/write.c ****  * \file
+   3:../src/common/utils/stdio/write.c ****  *
+   4:../src/common/utils/stdio/write.c ****  * \brief System-specific implementation of the \ref _write function used by
+   5:../src/common/utils/stdio/write.c ****  *         the standard library.
+   6:../src/common/utils/stdio/write.c ****  *
+   7:../src/common/utils/stdio/write.c ****  * Copyright (c) 2009-2015 Atmel Corporation. All rights reserved.
+   8:../src/common/utils/stdio/write.c ****  *
+   9:../src/common/utils/stdio/write.c ****  * \asf_license_start
+  10:../src/common/utils/stdio/write.c ****  *
+  11:../src/common/utils/stdio/write.c ****  * \page License
+  12:../src/common/utils/stdio/write.c ****  *
+  13:../src/common/utils/stdio/write.c ****  * Redistribution and use in source and binary forms, with or without
+  14:../src/common/utils/stdio/write.c ****  * modification, are permitted provided that the following conditions are met:
+  15:../src/common/utils/stdio/write.c ****  *
+  16:../src/common/utils/stdio/write.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  17:../src/common/utils/stdio/write.c ****  *    this list of conditions and the following disclaimer.
+  18:../src/common/utils/stdio/write.c ****  *
+  19:../src/common/utils/stdio/write.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  20:../src/common/utils/stdio/write.c ****  *    this list of conditions and the following disclaimer in the documentation
+  21:../src/common/utils/stdio/write.c ****  *    and/or other materials provided with the distribution.
+  22:../src/common/utils/stdio/write.c ****  *
+  23:../src/common/utils/stdio/write.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  24:../src/common/utils/stdio/write.c ****  *    from this software without specific prior written permission.
+  25:../src/common/utils/stdio/write.c ****  *
+  26:../src/common/utils/stdio/write.c ****  * 4. This software may only be redistributed and used in connection with an
+  27:../src/common/utils/stdio/write.c ****  *    Atmel microcontroller product.
+  28:../src/common/utils/stdio/write.c ****  *
+  29:../src/common/utils/stdio/write.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  30:../src/common/utils/stdio/write.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  31:../src/common/utils/stdio/write.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  32:../src/common/utils/stdio/write.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  33:../src/common/utils/stdio/write.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  34:../src/common/utils/stdio/write.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  35:../src/common/utils/stdio/write.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  36:../src/common/utils/stdio/write.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  37:../src/common/utils/stdio/write.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  38:../src/common/utils/stdio/write.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  39:../src/common/utils/stdio/write.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  40:../src/common/utils/stdio/write.c ****  *
+  41:../src/common/utils/stdio/write.c ****  * \asf_license_stop
+  42:../src/common/utils/stdio/write.c ****  *
+  43:../src/common/utils/stdio/write.c ****  */
+  44:../src/common/utils/stdio/write.c **** /*
+  45:../src/common/utils/stdio/write.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  46:../src/common/utils/stdio/write.c ****  */
+  47:../src/common/utils/stdio/write.c **** 
+  48:../src/common/utils/stdio/write.c **** #include "compiler.h"
+  49:../src/common/utils/stdio/write.c **** 
+  50:../src/common/utils/stdio/write.c **** /**
+  51:../src/common/utils/stdio/write.c ****  * \addtogroup group_common_utils_stdio
+  52:../src/common/utils/stdio/write.c ****  *
+  53:../src/common/utils/stdio/write.c ****  * \{
+  54:../src/common/utils/stdio/write.c ****  */
+  55:../src/common/utils/stdio/write.c **** 
+  56:../src/common/utils/stdio/write.c **** volatile void *volatile stdio_base;
+  57:../src/common/utils/stdio/write.c **** int (*ptr_put)(void volatile*, char);
+  58:../src/common/utils/stdio/write.c **** 
+  59:../src/common/utils/stdio/write.c **** 
+  60:../src/common/utils/stdio/write.c **** #if ( defined(__ICCAVR32__) || defined(__ICCAVR__) || defined(__ICCARM__))
+  61:../src/common/utils/stdio/write.c **** 
+  62:../src/common/utils/stdio/write.c **** #include <yfuns.h>
+  63:../src/common/utils/stdio/write.c **** 
+  64:../src/common/utils/stdio/write.c **** _STD_BEGIN
+  65:../src/common/utils/stdio/write.c **** 
+  66:../src/common/utils/stdio/write.c **** #pragma module_name = "?__write"
+  67:../src/common/utils/stdio/write.c **** 
+  68:../src/common/utils/stdio/write.c **** /*! \brief Writes a number of bytes, at most \a size, from the memory area
+  69:../src/common/utils/stdio/write.c ****  *         pointed to by \a buffer.
+  70:../src/common/utils/stdio/write.c ****  *
+  71:../src/common/utils/stdio/write.c ****  * If \a buffer is zero then \ref __write performs flushing of internal buffers,
+  72:../src/common/utils/stdio/write.c ****  * if any. In this case, \a handle can be \c -1 to indicate that all handles
+  73:../src/common/utils/stdio/write.c ****  * should be flushed.
+  74:../src/common/utils/stdio/write.c ****  *
+  75:../src/common/utils/stdio/write.c ****  * \param handle File handle to write to.
+  76:../src/common/utils/stdio/write.c ****  * \param buffer Pointer to buffer to read bytes to write from.
+  77:../src/common/utils/stdio/write.c ****  * \param size Number of bytes to write.
+  78:../src/common/utils/stdio/write.c ****  *
+  79:../src/common/utils/stdio/write.c ****  * \return The number of bytes written, or \c _LLIO_ERROR on failure.
+  80:../src/common/utils/stdio/write.c ****  */
+  81:../src/common/utils/stdio/write.c **** size_t __write(int handle, const unsigned char *buffer, size_t size)
+  82:../src/common/utils/stdio/write.c **** {
+  83:../src/common/utils/stdio/write.c **** 	size_t nChars = 0;
+  84:../src/common/utils/stdio/write.c **** 
+  85:../src/common/utils/stdio/write.c **** 	if (buffer == 0) {
+  86:../src/common/utils/stdio/write.c **** 		// This means that we should flush internal buffers.
+  87:../src/common/utils/stdio/write.c **** 		return 0;
+  88:../src/common/utils/stdio/write.c **** 	}
+  89:../src/common/utils/stdio/write.c **** 
+  90:../src/common/utils/stdio/write.c **** 	// This implementation only writes to stdout and stderr.
+  91:../src/common/utils/stdio/write.c **** 	// For all other file handles, it returns failure.
+  92:../src/common/utils/stdio/write.c **** 	if (handle != _LLIO_STDOUT && handle != _LLIO_STDERR) {
+  93:../src/common/utils/stdio/write.c **** 		return _LLIO_ERROR;
+  94:../src/common/utils/stdio/write.c **** 	}
+  95:../src/common/utils/stdio/write.c **** 
+  96:../src/common/utils/stdio/write.c **** 	for (; size != 0; --size) {
+  97:../src/common/utils/stdio/write.c **** 		if (ptr_put(stdio_base, *buffer++) < 0) {
+  98:../src/common/utils/stdio/write.c **** 			return _LLIO_ERROR;
+  99:../src/common/utils/stdio/write.c **** 		}
+ 100:../src/common/utils/stdio/write.c **** 		++nChars;
+ 101:../src/common/utils/stdio/write.c **** 	}
+ 102:../src/common/utils/stdio/write.c **** 	return nChars;
+ 103:../src/common/utils/stdio/write.c **** }
+ 104:../src/common/utils/stdio/write.c **** 
+ 105:../src/common/utils/stdio/write.c **** _STD_END
+ 106:../src/common/utils/stdio/write.c **** 
+ 107:../src/common/utils/stdio/write.c **** 
+ 108:../src/common/utils/stdio/write.c **** #elif (defined(__GNUC__) && !XMEGA && !MEGA)
+ 109:../src/common/utils/stdio/write.c **** 
+ 110:../src/common/utils/stdio/write.c **** int __attribute__((weak))
+ 111:../src/common/utils/stdio/write.c **** _write (int file, const char *ptr, int len);
+ 112:../src/common/utils/stdio/write.c **** 
+ 113:../src/common/utils/stdio/write.c **** int __attribute__((weak))
+ 114:../src/common/utils/stdio/write.c **** _write (int file, const char *ptr, int len)
+ 115:../src/common/utils/stdio/write.c **** {
+  28              		.loc 1 115 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+ 116:../src/common/utils/stdio/write.c **** 	int nChars = 0;
+ 117:../src/common/utils/stdio/write.c **** 
+ 118:../src/common/utils/stdio/write.c **** 	if ((file != 1) && (file != 2) && (file!=3)) {
+  33              		.loc 1 118 0
+  34 0000 0138     		subs	r0, r0, #1
+  35              	.LVL1:
+  36 0002 0228     		cmp	r0, #2
+  37 0004 14D8     		bhi	.L5
+ 115:../src/common/utils/stdio/write.c **** 	int nChars = 0;
+  38              		.loc 1 115 0
+  39 0006 70B5     		push	{r4, r5, r6, lr}
+  40              		.cfi_def_cfa_offset 16
+  41              		.cfi_offset 4, -16
+  42              		.cfi_offset 5, -12
+  43              		.cfi_offset 6, -8
+  44              		.cfi_offset 14, -4
+  45 0008 1446     		mov	r4, r2
+  46 000a 0025     		movs	r5, #0
+  47 000c 0CE0     		b	.L3
+  48              	.LVL2:
+  49              	.L4:
+ 119:../src/common/utils/stdio/write.c **** 		return -1;
+ 120:../src/common/utils/stdio/write.c **** 	}
+ 121:../src/common/utils/stdio/write.c **** 
+ 122:../src/common/utils/stdio/write.c **** 	for (; len != 0; --len) {
+ 123:../src/common/utils/stdio/write.c **** 		if (ptr_put(stdio_base, *ptr++) < 0) {
+  50              		.loc 1 123 0
+  51 000e 0B4B     		ldr	r3, .L8
+  52 0010 1868     		ldr	r0, [r3]
+  53 0012 4E1C     		adds	r6, r1, #1
+  54              	.LVL3:
+  55 0014 0A4B     		ldr	r3, .L8+4
+  56 0016 1B68     		ldr	r3, [r3]
+  57 0018 91F90010 		ldrsb	r1, [r1]
+  58 001c 9847     		blx	r3
+  59              	.LVL4:
+  60 001e 0028     		cmp	r0, #0
+  61 0020 09DB     		blt	.L6
+ 124:../src/common/utils/stdio/write.c **** 			return -1;
+ 125:../src/common/utils/stdio/write.c **** 		}
+ 126:../src/common/utils/stdio/write.c **** 		++nChars;
+  62              		.loc 1 126 0
+  63 0022 0135     		adds	r5, r5, #1
+  64              	.LVL5:
+ 122:../src/common/utils/stdio/write.c **** 		if (ptr_put(stdio_base, *ptr++) < 0) {
+  65              		.loc 1 122 0
+  66 0024 013C     		subs	r4, r4, #1
+  67              	.LVL6:
+ 123:../src/common/utils/stdio/write.c **** 			return -1;
+  68              		.loc 1 123 0
+  69 0026 3146     		mov	r1, r6
+  70              	.LVL7:
+  71              	.L3:
+ 122:../src/common/utils/stdio/write.c **** 		if (ptr_put(stdio_base, *ptr++) < 0) {
+  72              		.loc 1 122 0 discriminator 1
+  73 0028 002C     		cmp	r4, #0
+  74 002a F0D1     		bne	.L4
+ 127:../src/common/utils/stdio/write.c **** 	}
+ 128:../src/common/utils/stdio/write.c **** 	return nChars;
+  75              		.loc 1 128 0
+  76 002c 2846     		mov	r0, r5
+  77 002e 70BD     		pop	{r4, r5, r6, pc}
+  78              	.LVL8:
+  79              	.L5:
+  80              		.cfi_def_cfa_offset 0
+  81              		.cfi_restore 4
+  82              		.cfi_restore 5
+  83              		.cfi_restore 6
+  84              		.cfi_restore 14
+ 119:../src/common/utils/stdio/write.c **** 	}
+  85              		.loc 1 119 0
+  86 0030 4FF0FF30 		mov	r0, #-1
+ 129:../src/common/utils/stdio/write.c **** }
+  87              		.loc 1 129 0
+  88 0034 7047     		bx	lr
+  89              	.LVL9:
+  90              	.L6:
+  91              		.cfi_def_cfa_offset 16
+  92              		.cfi_offset 4, -16
+  93              		.cfi_offset 5, -12
+  94              		.cfi_offset 6, -8
+  95              		.cfi_offset 14, -4
+ 124:../src/common/utils/stdio/write.c **** 		}
+  96              		.loc 1 124 0
+  97 0036 4FF0FF30 		mov	r0, #-1
+  98              		.loc 1 129 0
+  99 003a 70BD     		pop	{r4, r5, r6, pc}
+ 100              	.LVL10:
+ 101              	.L9:
+ 102              		.align	2
+ 103              	.L8:
+ 104 003c 00000000 		.word	stdio_base
+ 105 0040 00000000 		.word	ptr_put
+ 106              		.cfi_endproc
+ 107              	.LFE73:
+ 109              		.comm	ptr_put,4,4
+ 110              		.comm	stdio_base,4,4
+ 111              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 112              		.align	2
+ 115              	cpu_irq_critical_section_counter:
+ 116 0000 00000000 		.space	4
+ 117              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 120              	cpu_irq_prev_interrupt_state:
+ 121 0000 00       		.space	1
+ 122              		.text
+ 123              	.Letext0:
+ 124              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 125              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 126              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 127              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 write.c
+     /tmp/ccvQv7Gm.s:20     .text._write:00000000 $t
+     /tmp/ccvQv7Gm.s:25     .text._write:00000000 _write
+     /tmp/ccvQv7Gm.s:104    .text._write:0000003c $d
+                            *COM*:00000004 stdio_base
+                            *COM*:00000004 ptr_put
+     /tmp/ccvQv7Gm.s:112    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccvQv7Gm.s:115    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccvQv7Gm.s:120    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccvQv7Gm.s:121    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+
+NO UNDEFINED SYMBOLS

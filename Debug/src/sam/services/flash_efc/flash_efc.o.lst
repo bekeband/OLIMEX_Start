@@ -1,0 +1,2542 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"flash_efc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.translate_address,"ax",%progbits
+  20              		.align	2
+  21              		.thumb
+  22              		.thumb_func
+  24              	translate_address:
+  25              	.LFB93:
+  26              		.file 1 "../src/sam/services/flash_efc/flash_efc.c"
+   1:../src/sam/services/flash_efc/flash_efc.c **** /**
+   2:../src/sam/services/flash_efc/flash_efc.c ****  * \file
+   3:../src/sam/services/flash_efc/flash_efc.c ****  *
+   4:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Embedded Flash service for SAM.
+   5:../src/sam/services/flash_efc/flash_efc.c ****  *
+   6:../src/sam/services/flash_efc/flash_efc.c ****  * Copyright (c) 2011-2016 Atmel Corporation. All rights reserved.
+   7:../src/sam/services/flash_efc/flash_efc.c ****  *
+   8:../src/sam/services/flash_efc/flash_efc.c ****  * \asf_license_start
+   9:../src/sam/services/flash_efc/flash_efc.c ****  *
+  10:../src/sam/services/flash_efc/flash_efc.c ****  * \page License
+  11:../src/sam/services/flash_efc/flash_efc.c ****  *
+  12:../src/sam/services/flash_efc/flash_efc.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/sam/services/flash_efc/flash_efc.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/sam/services/flash_efc/flash_efc.c ****  *
+  15:../src/sam/services/flash_efc/flash_efc.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/sam/services/flash_efc/flash_efc.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/sam/services/flash_efc/flash_efc.c ****  *
+  18:../src/sam/services/flash_efc/flash_efc.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/sam/services/flash_efc/flash_efc.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/sam/services/flash_efc/flash_efc.c ****  *    and/or other materials provided with the distribution.
+  21:../src/sam/services/flash_efc/flash_efc.c ****  *
+  22:../src/sam/services/flash_efc/flash_efc.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/sam/services/flash_efc/flash_efc.c ****  *    from this software without specific prior written permission.
+  24:../src/sam/services/flash_efc/flash_efc.c ****  *
+  25:../src/sam/services/flash_efc/flash_efc.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/sam/services/flash_efc/flash_efc.c ****  *    Atmel microcontroller product.
+  27:../src/sam/services/flash_efc/flash_efc.c ****  *
+  28:../src/sam/services/flash_efc/flash_efc.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/sam/services/flash_efc/flash_efc.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/sam/services/flash_efc/flash_efc.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/sam/services/flash_efc/flash_efc.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/sam/services/flash_efc/flash_efc.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/sam/services/flash_efc/flash_efc.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/sam/services/flash_efc/flash_efc.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/sam/services/flash_efc/flash_efc.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/sam/services/flash_efc/flash_efc.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/sam/services/flash_efc/flash_efc.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/sam/services/flash_efc/flash_efc.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/sam/services/flash_efc/flash_efc.c ****  *
+  40:../src/sam/services/flash_efc/flash_efc.c ****  * \asf_license_stop
+  41:../src/sam/services/flash_efc/flash_efc.c ****  *
+  42:../src/sam/services/flash_efc/flash_efc.c ****  */
+  43:../src/sam/services/flash_efc/flash_efc.c **** /*
+  44:../src/sam/services/flash_efc/flash_efc.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/sam/services/flash_efc/flash_efc.c ****  */
+  46:../src/sam/services/flash_efc/flash_efc.c **** 
+  47:../src/sam/services/flash_efc/flash_efc.c **** #include <string.h>
+  48:../src/sam/services/flash_efc/flash_efc.c **** #include <assert.h>
+  49:../src/sam/services/flash_efc/flash_efc.c **** #include "flash_efc.h"
+  50:../src/sam/services/flash_efc/flash_efc.c **** #include "sysclk.h"
+  51:../src/sam/services/flash_efc/flash_efc.c **** 
+  52:../src/sam/services/flash_efc/flash_efc.c **** /// @cond 0
+  53:../src/sam/services/flash_efc/flash_efc.c **** /**INDENT-OFF**/
+  54:../src/sam/services/flash_efc/flash_efc.c **** #ifdef __cplusplus
+  55:../src/sam/services/flash_efc/flash_efc.c **** extern "C" {
+  56:../src/sam/services/flash_efc/flash_efc.c **** #endif
+  57:../src/sam/services/flash_efc/flash_efc.c **** /**INDENT-ON**/
+  58:../src/sam/services/flash_efc/flash_efc.c **** /// @endcond
+  59:../src/sam/services/flash_efc/flash_efc.c **** 
+  60:../src/sam/services/flash_efc/flash_efc.c **** /**
+  61:../src/sam/services/flash_efc/flash_efc.c ****  * \defgroup sam_services_flash_efc_group Embedded Flash Service
+  62:../src/sam/services/flash_efc/flash_efc.c ****  *
+  63:../src/sam/services/flash_efc/flash_efc.c ****  * The Embedded Flash service provides functions for internal flash operations.
+  64:../src/sam/services/flash_efc/flash_efc.c ****  *
+  65:../src/sam/services/flash_efc/flash_efc.c ****  * @{
+  66:../src/sam/services/flash_efc/flash_efc.c ****  */
+  67:../src/sam/services/flash_efc/flash_efc.c **** 
+  68:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4E || SAM4N || SAM4S || SAM4C || SAMG || SAM4CP || SAM4CM || \
+  69:../src/sam/services/flash_efc/flash_efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+  70:../src/sam/services/flash_efc/flash_efc.c **** /* User signature size */
+  71:../src/sam/services/flash_efc/flash_efc.c **** # define FLASH_USER_SIG_SIZE   (512)
+  72:../src/sam/services/flash_efc/flash_efc.c **** #endif
+  73:../src/sam/services/flash_efc/flash_efc.c **** 
+  74:../src/sam/services/flash_efc/flash_efc.c **** #if SAM4S
+  75:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash Controller 0. */
+  76:../src/sam/services/flash_efc/flash_efc.c **** # define EFC     EFC0
+  77:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4SD16 || SAM4SD32)
+  78:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+  79:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        3
+  80:../src/sam/services/flash_efc/flash_efc.c **** #else
+  81:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+  82:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        2
+  83:../src/sam/services/flash_efc/flash_efc.c **** #endif
+  84:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash 0 base address. */
+  85:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_ADDR     IFLASH0_ADDR
+  86:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash page size. */
+  87:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_PAGE_SIZE     IFLASH0_PAGE_SIZE
+  88:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash lock region size. */
+  89:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_LOCK_REGION_SIZE     IFLASH0_LOCK_REGION_SIZE
+  90:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM3XA || SAM3U4)
+  91:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash Controller 0. */
+  92:../src/sam/services/flash_efc/flash_efc.c **** # define EFC     EFC0
+  93:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+  94:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        3
+  95:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash 0 base address. */
+  96:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_ADDR     IFLASH0_ADDR
+  97:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash page size. */
+  98:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_PAGE_SIZE     IFLASH0_PAGE_SIZE
+  99:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash lock region size. */
+ 100:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_LOCK_REGION_SIZE     IFLASH0_LOCK_REGION_SIZE
+ 101:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM3U)
+ 102:../src/sam/services/flash_efc/flash_efc.c **** /* There is no EFC1 for SAM3U except for SAM3U4 */
+ 103:../src/sam/services/flash_efc/flash_efc.c **** # undef EFC1
+ 104:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash Controller 0. */
+ 105:../src/sam/services/flash_efc/flash_efc.c **** # define EFC     EFC0
+ 106:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+ 107:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        2
+ 108:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash 0 base address. */
+ 109:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_ADDR     IFLASH0_ADDR
+ 110:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash page size. */
+ 111:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_PAGE_SIZE     IFLASH0_PAGE_SIZE
+ 112:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash lock region size. */
+ 113:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_LOCK_REGION_SIZE     IFLASH0_LOCK_REGION_SIZE
+ 114:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM3S8 || SAM3SD8)
+ 115:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+ 116:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        3
+ 117:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash page size. */
+ 118:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_PAGE_SIZE     IFLASH0_PAGE_SIZE
+ 119:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash lock region size. */
+ 120:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_LOCK_REGION_SIZE     IFLASH0_LOCK_REGION_SIZE
+ 121:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM4C32 || SAM4CMP32 || SAM4CMS32)
+ 122:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number SAM4C(M)32. */
+ 123:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        3
+ 124:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAMG)
+ 125:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number SAMG. */
+ 126:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        8
+ 127:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 128:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number SAMV/S/E. */
+ 129:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        9
+ 130:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 131:../src/sam/services/flash_efc/flash_efc.c **** /* The max GPNVM number. */
+ 132:../src/sam/services/flash_efc/flash_efc.c **** # define GPNVM_NUM_MAX        2
+ 133:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 134:../src/sam/services/flash_efc/flash_efc.c **** 
+ 135:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4C || SAM4CP || SAM4CM)
+ 136:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4C32 || SAM4CMP32 || SAM4CMS32)
+ 137:../src/sam/services/flash_efc/flash_efc.c **** # define EFC     EFC0
+ 138:../src/sam/services/flash_efc/flash_efc.c **** /* Internal Flash 0 base address. */
+ 139:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH0_ADDR    IFLASH0_CNC_ADDR
+ 140:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH1_ADDR    IFLASH1_CNC_ADDR
+ 141:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_ADDR     IFLASH0_ADDR
+ 142:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash page size. */
+ 143:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_PAGE_SIZE     IFLASH0_PAGE_SIZE
+ 144:../src/sam/services/flash_efc/flash_efc.c **** /* Internal flash lock region size. */
+ 145:../src/sam/services/flash_efc/flash_efc.c **** # define IFLASH_LOCK_REGION_SIZE     IFLASH0_LOCK_REGION_SIZE
+ 146:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 147:../src/sam/services/flash_efc/flash_efc.c **** #define IFLASH_ADDR  IFLASH_CNC_ADDR
+ 148:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 149:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 150:../src/sam/services/flash_efc/flash_efc.c **** 
+ 151:../src/sam/services/flash_efc/flash_efc.c **** /* Flash page buffer for alignment */
+ 152:../src/sam/services/flash_efc/flash_efc.c **** static uint32_t gs_ul_page_buffer[IFLASH_PAGE_SIZE / sizeof(uint32_t)];
+ 153:../src/sam/services/flash_efc/flash_efc.c **** 
+ 154:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 155:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Translate the given flash address to page and offset values.
+ 156:../src/sam/services/flash_efc/flash_efc.c ****  * \note pus_page and pus_offset must not be null in order to store the
+ 157:../src/sam/services/flash_efc/flash_efc.c ****  * corresponding values.
+ 158:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 159:../src/sam/services/flash_efc/flash_efc.c ****  * \param pp_efc Pointer to an EFC pointer.
+ 160:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_addr Address to translate.
+ 161:../src/sam/services/flash_efc/flash_efc.c ****  * \param pus_page The first page accessed.
+ 162:../src/sam/services/flash_efc/flash_efc.c ****  * \param pus_offset Byte offset in the first page.
+ 163:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 164:../src/sam/services/flash_efc/flash_efc.c **** static void translate_address(Efc **pp_efc, uint32_t ul_addr,
+ 165:../src/sam/services/flash_efc/flash_efc.c **** 		uint16_t *pus_page, uint16_t *pus_offset)
+ 166:../src/sam/services/flash_efc/flash_efc.c **** {
+  27              		.loc 1 166 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+  33 0000 30B4     		push	{r4, r5}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 5, -4
+  37              	.LVL1:
+ 167:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 168:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_page;
+ 169:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_offset;
+ 170:../src/sam/services/flash_efc/flash_efc.c **** 
+ 171:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM3XA || SAM3U4)
+ 172:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_addr >= IFLASH1_ADDR) {
+ 173:../src/sam/services/flash_efc/flash_efc.c **** 		p_efc = EFC1;
+ 174:../src/sam/services/flash_efc/flash_efc.c **** 		us_page = (ul_addr - IFLASH1_ADDR) / IFLASH1_PAGE_SIZE;
+ 175:../src/sam/services/flash_efc/flash_efc.c **** 		us_offset = (ul_addr - IFLASH1_ADDR) % IFLASH1_PAGE_SIZE;
+ 176:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 177:../src/sam/services/flash_efc/flash_efc.c **** 		p_efc = EFC0;
+ 178:../src/sam/services/flash_efc/flash_efc.c **** 		us_page = (ul_addr - IFLASH0_ADDR) / IFLASH0_PAGE_SIZE;
+ 179:../src/sam/services/flash_efc/flash_efc.c **** 		us_offset = (ul_addr - IFLASH0_ADDR) % IFLASH0_PAGE_SIZE;
+ 180:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 181:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM4SD16 || SAM4SD32 || SAM4C32 || SAM4CMP32 || SAM4CMS32)
+ 182:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t uc_gpnvm2;
+ 183:../src/sam/services/flash_efc/flash_efc.c **** 	uc_gpnvm2 = flash_is_gpnvm_set(2);
+ 184:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_addr >= IFLASH1_ADDR) {
+ 185:../src/sam/services/flash_efc/flash_efc.c **** 		if(uc_gpnvm2 == FLASH_RC_YES) {
+ 186:../src/sam/services/flash_efc/flash_efc.c **** 			p_efc = EFC0;
+ 187:../src/sam/services/flash_efc/flash_efc.c **** 		} else {
+ 188:../src/sam/services/flash_efc/flash_efc.c **** 			p_efc = EFC1;
+ 189:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 190:../src/sam/services/flash_efc/flash_efc.c **** 		us_page = (ul_addr - IFLASH1_ADDR) / IFLASH1_PAGE_SIZE;
+ 191:../src/sam/services/flash_efc/flash_efc.c **** 		us_offset = (ul_addr - IFLASH1_ADDR) % IFLASH1_PAGE_SIZE;
+ 192:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 193:../src/sam/services/flash_efc/flash_efc.c **** 		if(uc_gpnvm2 == FLASH_RC_YES) {
+ 194:../src/sam/services/flash_efc/flash_efc.c **** 			p_efc = EFC1;
+ 195:../src/sam/services/flash_efc/flash_efc.c **** 		} else {
+ 196:../src/sam/services/flash_efc/flash_efc.c **** 			p_efc = EFC0;
+ 197:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 198:../src/sam/services/flash_efc/flash_efc.c **** 		us_page = (ul_addr - IFLASH0_ADDR) / IFLASH0_PAGE_SIZE;
+ 199:../src/sam/services/flash_efc/flash_efc.c **** 		us_offset = (ul_addr - IFLASH0_ADDR) % IFLASH0_PAGE_SIZE;
+ 200:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 201:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM3S8 || SAM3SD8)
+ 202:../src/sam/services/flash_efc/flash_efc.c **** 	p_efc = EFC;
+ 203:../src/sam/services/flash_efc/flash_efc.c **** 	us_page = (ul_addr - IFLASH0_ADDR) / IFLASH0_PAGE_SIZE;
+ 204:../src/sam/services/flash_efc/flash_efc.c **** 	us_offset = (ul_addr - IFLASH0_ADDR) % IFLASH0_PAGE_SIZE;
+ 205:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 206:../src/sam/services/flash_efc/flash_efc.c **** 	Assert(ul_addr >= IFLASH_ADDR);
+ 207:../src/sam/services/flash_efc/flash_efc.c **** 	Assert(ul_addr <= (IFLASH_ADDR + IFLASH_SIZE));
+ 208:../src/sam/services/flash_efc/flash_efc.c **** 
+ 209:../src/sam/services/flash_efc/flash_efc.c **** 	p_efc = EFC;
+ 210:../src/sam/services/flash_efc/flash_efc.c **** 	us_page = (ul_addr - IFLASH_ADDR) / IFLASH_PAGE_SIZE;
+  38              		.loc 1 210 0
+  39 0002 A1F58004 		sub	r4, r1, #4194304
+  40 0006 C4F30F24 		ubfx	r4, r4, #8, #16
+  41              	.LVL2:
+ 211:../src/sam/services/flash_efc/flash_efc.c **** 	us_offset = (ul_addr - IFLASH_ADDR) % IFLASH_PAGE_SIZE;
+  42              		.loc 1 211 0
+  43 000a C9B2     		uxtb	r1, r1
+  44              	.LVL3:
+ 212:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 213:../src/sam/services/flash_efc/flash_efc.c **** 
+ 214:../src/sam/services/flash_efc/flash_efc.c **** 	/* Store values */
+ 215:../src/sam/services/flash_efc/flash_efc.c **** 	if (pp_efc) {
+  45              		.loc 1 215 0
+  46 000c 10B1     		cbz	r0, .L2
+  47 000e 0546     		mov	r5, r0
+ 216:../src/sam/services/flash_efc/flash_efc.c **** 		*pp_efc = p_efc;
+  48              		.loc 1 216 0
+  49 0010 0348     		ldr	r0, .L6
+  50              	.LVL4:
+  51 0012 2860     		str	r0, [r5]
+  52              	.LVL5:
+  53              	.L2:
+ 217:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 218:../src/sam/services/flash_efc/flash_efc.c **** 
+ 219:../src/sam/services/flash_efc/flash_efc.c **** 	if (pus_page) {
+  54              		.loc 1 219 0
+  55 0014 02B1     		cbz	r2, .L3
+ 220:../src/sam/services/flash_efc/flash_efc.c **** 		*pus_page = us_page;
+  56              		.loc 1 220 0
+  57 0016 1480     		strh	r4, [r2]	@ movhi
+  58              	.L3:
+ 221:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 222:../src/sam/services/flash_efc/flash_efc.c **** 
+ 223:../src/sam/services/flash_efc/flash_efc.c **** 	if (pus_offset) {
+  59              		.loc 1 223 0
+  60 0018 03B1     		cbz	r3, .L1
+ 224:../src/sam/services/flash_efc/flash_efc.c **** 		*pus_offset = us_offset;
+  61              		.loc 1 224 0
+  62 001a 1980     		strh	r1, [r3]	@ movhi
+  63              	.L1:
+ 225:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 226:../src/sam/services/flash_efc/flash_efc.c **** }
+  64              		.loc 1 226 0
+  65 001c 30BC     		pop	{r4, r5}
+  66              		.cfi_restore 5
+  67              		.cfi_restore 4
+  68              		.cfi_def_cfa_offset 0
+  69              	.LVL6:
+  70 001e 7047     		bx	lr
+  71              	.L7:
+  72              		.align	2
+  73              	.L6:
+  74 0020 000A0E40 		.word	1074661888
+  75              		.cfi_endproc
+  76              	.LFE93:
+  78              		.section	.text.compute_address,"ax",%progbits
+  79              		.align	2
+  80              		.thumb
+  81              		.thumb_func
+  83              	compute_address:
+  84              	.LFB94:
+ 227:../src/sam/services/flash_efc/flash_efc.c **** 
+ 228:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 229:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Compute the address of a flash by the given page and offset.
+ 230:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 231:../src/sam/services/flash_efc/flash_efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 232:../src/sam/services/flash_efc/flash_efc.c ****  * \param us_page Page number.
+ 233:../src/sam/services/flash_efc/flash_efc.c ****  * \param us_offset Byte offset inside page.
+ 234:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_addr Computed address (optional).
+ 235:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 236:../src/sam/services/flash_efc/flash_efc.c **** static void compute_address(Efc *p_efc, uint16_t us_page, uint16_t us_offset,
+ 237:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t *pul_addr)
+ 238:../src/sam/services/flash_efc/flash_efc.c **** {
+  85              		.loc 1 238 0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		@ link register save eliminated.
+  90              	.LVL7:
+ 239:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_addr;
+ 240:../src/sam/services/flash_efc/flash_efc.c **** 
+ 241:../src/sam/services/flash_efc/flash_efc.c **** /* Dual bank flash */
+ 242:../src/sam/services/flash_efc/flash_efc.c **** #ifdef EFC1
+ 243:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute address */
+ 244:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4SD16 || SAM4SD32 || SAM4C32 || SAM4CMP32 || SAM4CMS32)
+ 245:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t uc_gpnvm2;
+ 246:../src/sam/services/flash_efc/flash_efc.c **** 	uc_gpnvm2 = flash_is_gpnvm_set(2);
+ 247:../src/sam/services/flash_efc/flash_efc.c **** 	if (p_efc == EFC0) {
+ 248:../src/sam/services/flash_efc/flash_efc.c **** 		if(uc_gpnvm2 == FLASH_RC_YES) {
+ 249:../src/sam/services/flash_efc/flash_efc.c **** 			ul_addr = IFLASH1_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+ 250:../src/sam/services/flash_efc/flash_efc.c **** 		} else {
+ 251:../src/sam/services/flash_efc/flash_efc.c **** 			ul_addr = IFLASH0_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+ 252:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 253:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 254:../src/sam/services/flash_efc/flash_efc.c **** 		if(uc_gpnvm2 == FLASH_RC_YES) {
+ 255:../src/sam/services/flash_efc/flash_efc.c **** 			ul_addr = IFLASH0_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+ 256:../src/sam/services/flash_efc/flash_efc.c **** 		} else {
+ 257:../src/sam/services/flash_efc/flash_efc.c **** 			ul_addr = IFLASH1_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+ 258:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 259:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 260:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 261:../src/sam/services/flash_efc/flash_efc.c **** 	ul_addr = (p_efc == EFC0) ?
+ 262:../src/sam/services/flash_efc/flash_efc.c **** 			IFLASH0_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset :
+ 263:../src/sam/services/flash_efc/flash_efc.c **** 			IFLASH1_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+ 264:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 265:../src/sam/services/flash_efc/flash_efc.c **** /* One bank flash */
+ 266:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 267:../src/sam/services/flash_efc/flash_efc.c **** 	/* avoid Cppcheck Warning */
+ 268:../src/sam/services/flash_efc/flash_efc.c **** 	UNUSED(p_efc);
+ 269:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute address */
+ 270:../src/sam/services/flash_efc/flash_efc.c **** 	ul_addr = IFLASH_ADDR + us_page * IFLASH_PAGE_SIZE + us_offset;
+  91              		.loc 1 270 0
+  92 0000 01F58041 		add	r1, r1, #16384
+  93              	.LVL8:
+  94 0004 02EB0122 		add	r2, r2, r1, lsl #8
+  95              	.LVL9:
+ 271:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 272:../src/sam/services/flash_efc/flash_efc.c **** 
+ 273:../src/sam/services/flash_efc/flash_efc.c **** 	/* Store result */
+ 274:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_addr != NULL) {
+  96              		.loc 1 274 0
+  97 0008 03B1     		cbz	r3, .L8
+ 275:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_addr = ul_addr;
+  98              		.loc 1 275 0
+  99 000a 1A60     		str	r2, [r3]
+ 100              	.L8:
+ 101 000c 7047     		bx	lr
+ 102              		.cfi_endproc
+ 103              	.LFE94:
+ 105 000e 00BF     		.section	.text.compute_lock_range,"ax",%progbits
+ 106              		.align	2
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	compute_lock_range:
+ 111              	.LFB95:
+ 276:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 277:../src/sam/services/flash_efc/flash_efc.c **** }
+ 278:../src/sam/services/flash_efc/flash_efc.c **** 
+ 279:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 280:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Compute the lock range associated with the given address range.
+ 281:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 282:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_start Start address of lock range.
+ 283:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_end End address of lock range.
+ 284:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_start Actual start address of lock range.
+ 285:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_end Actual end address of lock range.
+ 286:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 287:../src/sam/services/flash_efc/flash_efc.c **** static void compute_lock_range(uint32_t ul_start, uint32_t ul_end,
+ 288:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t *pul_actual_start, uint32_t *pul_actual_end)
+ 289:../src/sam/services/flash_efc/flash_efc.c **** {
+ 112              		.loc 1 289 0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116              		@ link register save eliminated.
+ 117              	.LVL10:
+ 118 0000 10B4     		push	{r4}
+ 119              		.cfi_def_cfa_offset 4
+ 120              		.cfi_offset 4, -4
+ 121              	.LVL11:
+ 290:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_actual_start, ul_actual_end;
+ 291:../src/sam/services/flash_efc/flash_efc.c **** 
+ 292:../src/sam/services/flash_efc/flash_efc.c **** 	ul_actual_start = ul_start - (ul_start % IFLASH_LOCK_REGION_SIZE);
+ 293:../src/sam/services/flash_efc/flash_efc.c **** 	ul_actual_end = ul_end - (ul_end % IFLASH_LOCK_REGION_SIZE) +
+ 122              		.loc 1 293 0
+ 123 0002 6FEA9131 		mvn	r1, r1, lsr #14
+ 124              	.LVL12:
+ 125 0006 6FEA8131 		mvn	r1, r1, lsl #14
+ 126              	.LVL13:
+ 294:../src/sam/services/flash_efc/flash_efc.c **** 			IFLASH_LOCK_REGION_SIZE - 1;
+ 295:../src/sam/services/flash_efc/flash_efc.c **** 
+ 296:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_start) {
+ 127              		.loc 1 296 0
+ 128 000a 22B1     		cbz	r2, .L11
+ 129 000c 20F47F50 		bic	r0, r0, #16320
+ 130              	.LVL14:
+ 131 0010 20F03F00 		bic	r0, r0, #63
+ 297:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_start = ul_actual_start;
+ 132              		.loc 1 297 0
+ 133 0014 1060     		str	r0, [r2]
+ 134              	.L11:
+ 298:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 299:../src/sam/services/flash_efc/flash_efc.c **** 
+ 300:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_end) {
+ 135              		.loc 1 300 0
+ 136 0016 03B1     		cbz	r3, .L10
+ 301:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_end = ul_actual_end;
+ 137              		.loc 1 301 0
+ 138 0018 1960     		str	r1, [r3]
+ 139              	.L10:
+ 302:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 303:../src/sam/services/flash_efc/flash_efc.c **** }
+ 140              		.loc 1 303 0
+ 141 001a 10BC     		pop	{r4}
+ 142              		.cfi_restore 4
+ 143              		.cfi_def_cfa_offset 0
+ 144 001c 7047     		bx	lr
+ 145              		.cfi_endproc
+ 146              	.LFE95:
+ 148 001e 00BF     		.section	.text.flash_init,"ax",%progbits
+ 149              		.align	2
+ 150              		.global	flash_init
+ 151              		.thumb
+ 152              		.thumb_func
+ 154              	flash_init:
+ 155              	.LFB96:
+ 304:../src/sam/services/flash_efc/flash_efc.c **** 
+ 305:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 306:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Initialize the flash service.
+ 307:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 308:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_mode FLASH_ACCESS_MODE_128 or FLASH_ACCESS_MODE_64.
+ 309:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_fws The number of wait states in cycle (no shift).
+ 310:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 311:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 312:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 313:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_init(uint32_t ul_mode, uint32_t ul_fws)
+ 314:../src/sam/services/flash_efc/flash_efc.c **** {
+ 156              		.loc 1 314 0
+ 157              		.cfi_startproc
+ 158              		@ args = 0, pretend = 0, frame = 0
+ 159              		@ frame_needed = 0, uses_anonymous_args = 0
+ 160              	.LVL15:
+ 161 0000 08B5     		push	{r3, lr}
+ 162              		.cfi_def_cfa_offset 8
+ 163              		.cfi_offset 3, -8
+ 164              		.cfi_offset 14, -4
+ 315:../src/sam/services/flash_efc/flash_efc.c **** 	efc_init(EFC, ul_mode, ul_fws);
+ 165              		.loc 1 315 0
+ 166 0002 0A46     		mov	r2, r1
+ 167 0004 0146     		mov	r1, r0
+ 168              	.LVL16:
+ 169 0006 0248     		ldr	r0, .L16
+ 170              	.LVL17:
+ 171 0008 FFF7FEFF 		bl	efc_init
+ 172              	.LVL18:
+ 316:../src/sam/services/flash_efc/flash_efc.c **** 
+ 317:../src/sam/services/flash_efc/flash_efc.c **** #ifdef EFC1
+ 318:../src/sam/services/flash_efc/flash_efc.c **** 	efc_init(EFC1, ul_mode, ul_fws);
+ 319:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 320:../src/sam/services/flash_efc/flash_efc.c **** 
+ 321:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 322:../src/sam/services/flash_efc/flash_efc.c **** }
+ 173              		.loc 1 322 0
+ 174 000c 0020     		movs	r0, #0
+ 175 000e 08BD     		pop	{r3, pc}
+ 176              	.L17:
+ 177              		.align	2
+ 178              	.L16:
+ 179 0010 000A0E40 		.word	1074661888
+ 180              		.cfi_endproc
+ 181              	.LFE96:
+ 183              		.section	.text.flash_set_wait_state,"ax",%progbits
+ 184              		.align	2
+ 185              		.global	flash_set_wait_state
+ 186              		.thumb
+ 187              		.thumb_func
+ 189              	flash_set_wait_state:
+ 190              	.LFB97:
+ 323:../src/sam/services/flash_efc/flash_efc.c **** 
+ 324:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 325:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Set flash wait state.
+ 326:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 327:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash bank start address.
+ 328:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_fws The number of wait states in cycle (no shift).
+ 329:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 330:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 331:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 332:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_set_wait_state(uint32_t ul_address, uint32_t ul_fws)
+ 333:../src/sam/services/flash_efc/flash_efc.c **** {
+ 191              		.loc 1 333 0
+ 192              		.cfi_startproc
+ 193              		@ args = 0, pretend = 0, frame = 8
+ 194              		@ frame_needed = 0, uses_anonymous_args = 0
+ 195              	.LVL19:
+ 196 0000 10B5     		push	{r4, lr}
+ 197              		.cfi_def_cfa_offset 8
+ 198              		.cfi_offset 4, -8
+ 199              		.cfi_offset 14, -4
+ 200 0002 82B0     		sub	sp, sp, #8
+ 201              		.cfi_def_cfa_offset 16
+ 202 0004 0C46     		mov	r4, r1
+ 334:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 335:../src/sam/services/flash_efc/flash_efc.c **** 
+ 336:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, NULL, NULL);
+ 203              		.loc 1 336 0
+ 204 0006 0023     		movs	r3, #0
+ 205 0008 1A46     		mov	r2, r3
+ 206 000a 0146     		mov	r1, r0
+ 207              	.LVL20:
+ 208 000c 01A8     		add	r0, sp, #4
+ 209              	.LVL21:
+ 210 000e FFF7FEFF 		bl	translate_address
+ 211              	.LVL22:
+ 337:../src/sam/services/flash_efc/flash_efc.c **** 	efc_set_wait_state(p_efc, ul_fws);
+ 212              		.loc 1 337 0
+ 213 0012 2146     		mov	r1, r4
+ 214 0014 0198     		ldr	r0, [sp, #4]
+ 215 0016 FFF7FEFF 		bl	efc_set_wait_state
+ 216              	.LVL23:
+ 338:../src/sam/services/flash_efc/flash_efc.c **** 
+ 339:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 340:../src/sam/services/flash_efc/flash_efc.c **** }
+ 217              		.loc 1 340 0
+ 218 001a 0020     		movs	r0, #0
+ 219 001c 02B0     		add	sp, sp, #8
+ 220              		.cfi_def_cfa_offset 8
+ 221              		@ sp needed
+ 222 001e 10BD     		pop	{r4, pc}
+ 223              		.cfi_endproc
+ 224              	.LFE97:
+ 226              		.section	.text.flash_set_wait_state_adaptively,"ax",%progbits
+ 227              		.align	2
+ 228              		.global	flash_set_wait_state_adaptively
+ 229              		.thumb
+ 230              		.thumb_func
+ 232              	flash_set_wait_state_adaptively:
+ 233              	.LFB98:
+ 341:../src/sam/services/flash_efc/flash_efc.c **** 
+ 342:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 343:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Set flash wait state.
+ 344:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 345:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash bank start address.
+ 346:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_fws The number of wait states in cycle (no shift).
+ 347:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 348:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 349:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 350:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_set_wait_state_adaptively(uint32_t ul_address)
+ 351:../src/sam/services/flash_efc/flash_efc.c **** {
+ 234              		.loc 1 351 0
+ 235              		.cfi_startproc
+ 236              		@ args = 0, pretend = 0, frame = 8
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238              	.LVL24:
+ 239 0000 00B5     		push	{lr}
+ 240              		.cfi_def_cfa_offset 4
+ 241              		.cfi_offset 14, -4
+ 242 0002 83B0     		sub	sp, sp, #12
+ 243              		.cfi_def_cfa_offset 16
+ 352:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 353:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t clock = sysclk_get_cpu_hz();
+ 354:../src/sam/services/flash_efc/flash_efc.c **** 
+ 355:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, NULL, NULL);
+ 244              		.loc 1 355 0
+ 245 0004 0023     		movs	r3, #0
+ 246 0006 1A46     		mov	r2, r3
+ 247 0008 0146     		mov	r1, r0
+ 248 000a 01A8     		add	r0, sp, #4
+ 249              	.LVL25:
+ 250 000c FFF7FEFF 		bl	translate_address
+ 251              	.LVL26:
+ 356:../src/sam/services/flash_efc/flash_efc.c **** 
+ 357:../src/sam/services/flash_efc/flash_efc.c **** 	/* Set FWS for embedded Flash access according to operating frequency */
+ 358:../src/sam/services/flash_efc/flash_efc.c **** 	if (clock < CHIP_FREQ_FWS_0) {
+ 359:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 0);
+ 252              		.loc 1 359 0
+ 253 0010 0021     		movs	r1, #0
+ 254 0012 0198     		ldr	r0, [sp, #4]
+ 255 0014 FFF7FEFF 		bl	efc_set_wait_state
+ 256              	.LVL27:
+ 360:../src/sam/services/flash_efc/flash_efc.c **** 	} else if (clock < CHIP_FREQ_FWS_1) {
+ 361:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 1);
+ 362:../src/sam/services/flash_efc/flash_efc.c **** 	} else if (clock < CHIP_FREQ_FWS_2) {
+ 363:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 2);
+ 364:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM3XA || SAM3U)
+ 365:../src/sam/services/flash_efc/flash_efc.c **** 	} else if (clock < CHIP_FREQ_FWS_3) {
+ 366:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 3);
+ 367:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 368:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 4);
+ 369:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 370:../src/sam/services/flash_efc/flash_efc.c **** #elif (SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || \
+ 371:../src/sam/services/flash_efc/flash_efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 372:../src/sam/services/flash_efc/flash_efc.c **** 	} else if (clock < CHIP_FREQ_FWS_3) {
+ 373:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 3);
+ 374:../src/sam/services/flash_efc/flash_efc.c **** 	} else if (clock < CHIP_FREQ_FWS_4) {
+ 375:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 4);
+ 376:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 377:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 5);
+ 378:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 379:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 380:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 381:../src/sam/services/flash_efc/flash_efc.c **** 		efc_set_wait_state(p_efc, 3);
+ 382:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 383:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 384:../src/sam/services/flash_efc/flash_efc.c **** 
+ 385:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 386:../src/sam/services/flash_efc/flash_efc.c **** }
+ 257              		.loc 1 386 0
+ 258 0018 0020     		movs	r0, #0
+ 259 001a 03B0     		add	sp, sp, #12
+ 260              		.cfi_def_cfa_offset 4
+ 261              		@ sp needed
+ 262 001c 5DF804FB 		ldr	pc, [sp], #4
+ 263              		.cfi_endproc
+ 264              	.LFE98:
+ 266              		.section	.text.flash_get_wait_state,"ax",%progbits
+ 267              		.align	2
+ 268              		.global	flash_get_wait_state
+ 269              		.thumb
+ 270              		.thumb_func
+ 272              	flash_get_wait_state:
+ 273              	.LFB99:
+ 387:../src/sam/services/flash_efc/flash_efc.c **** 
+ 388:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 389:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get flash wait state.
+ 390:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 391:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash bank start address.
+ 392:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 393:../src/sam/services/flash_efc/flash_efc.c ****  * \return The number of wait states in cycle (no shift).
+ 394:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 395:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_get_wait_state(uint32_t ul_address)
+ 396:../src/sam/services/flash_efc/flash_efc.c **** {
+ 274              		.loc 1 396 0
+ 275              		.cfi_startproc
+ 276              		@ args = 0, pretend = 0, frame = 8
+ 277              		@ frame_needed = 0, uses_anonymous_args = 0
+ 278              	.LVL28:
+ 279 0000 00B5     		push	{lr}
+ 280              		.cfi_def_cfa_offset 4
+ 281              		.cfi_offset 14, -4
+ 282 0002 83B0     		sub	sp, sp, #12
+ 283              		.cfi_def_cfa_offset 16
+ 397:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 398:../src/sam/services/flash_efc/flash_efc.c **** 
+ 399:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, NULL, NULL);
+ 284              		.loc 1 399 0
+ 285 0004 0023     		movs	r3, #0
+ 286 0006 1A46     		mov	r2, r3
+ 287 0008 0146     		mov	r1, r0
+ 288 000a 01A8     		add	r0, sp, #4
+ 289              	.LVL29:
+ 290 000c FFF7FEFF 		bl	translate_address
+ 291              	.LVL30:
+ 400:../src/sam/services/flash_efc/flash_efc.c **** 	return efc_get_wait_state(p_efc);
+ 292              		.loc 1 400 0
+ 293 0010 0198     		ldr	r0, [sp, #4]
+ 294 0012 FFF7FEFF 		bl	efc_get_wait_state
+ 295              	.LVL31:
+ 401:../src/sam/services/flash_efc/flash_efc.c **** }
+ 296              		.loc 1 401 0
+ 297 0016 03B0     		add	sp, sp, #12
+ 298              		.cfi_def_cfa_offset 4
+ 299              		@ sp needed
+ 300 0018 5DF804FB 		ldr	pc, [sp], #4
+ 301              		.cfi_endproc
+ 302              	.LFE99:
+ 304              		.section	.text.flash_get_descriptor,"ax",%progbits
+ 305              		.align	2
+ 306              		.global	flash_get_descriptor
+ 307              		.thumb
+ 308              		.thumb_func
+ 310              	flash_get_descriptor:
+ 311              	.LFB100:
+ 402:../src/sam/services/flash_efc/flash_efc.c **** 
+ 403:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 404:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get flash descriptor.
+ 405:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 406:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash bank start address.
+ 407:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_flash_descriptor Pointer to a data buffer to store flash descriptor.
+ 408:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_size Data buffer size in DWORD.
+ 409:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 410:../src/sam/services/flash_efc/flash_efc.c ****  * \return The actual descriptor length.
+ 411:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 412:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_get_descriptor(uint32_t ul_address,
+ 413:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t *pul_flash_descriptor, uint32_t ul_size)
+ 414:../src/sam/services/flash_efc/flash_efc.c **** {
+ 312              		.loc 1 414 0
+ 313              		.cfi_startproc
+ 314              		@ args = 0, pretend = 0, frame = 8
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              	.LVL32:
+ 317 0000 70B5     		push	{r4, r5, r6, lr}
+ 318              		.cfi_def_cfa_offset 16
+ 319              		.cfi_offset 4, -16
+ 320              		.cfi_offset 5, -12
+ 321              		.cfi_offset 6, -8
+ 322              		.cfi_offset 14, -4
+ 323 0002 82B0     		sub	sp, sp, #8
+ 324              		.cfi_def_cfa_offset 24
+ 325 0004 0D46     		mov	r5, r1
+ 326 0006 1646     		mov	r6, r2
+ 415:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 416:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_tmp;
+ 417:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_cnt;
+ 418:../src/sam/services/flash_efc/flash_efc.c **** 
+ 419:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, NULL, NULL);
+ 327              		.loc 1 419 0
+ 328 0008 0023     		movs	r3, #0
+ 329 000a 1A46     		mov	r2, r3
+ 330              	.LVL33:
+ 331 000c 0146     		mov	r1, r0
+ 332              	.LVL34:
+ 333 000e 01A8     		add	r0, sp, #4
+ 334              	.LVL35:
+ 335 0010 FFF7FEFF 		bl	translate_address
+ 336              	.LVL36:
+ 420:../src/sam/services/flash_efc/flash_efc.c **** 
+ 421:../src/sam/services/flash_efc/flash_efc.c **** 	/* Command fails */
+ 422:../src/sam/services/flash_efc/flash_efc.c **** 	if (FLASH_RC_OK != efc_perform_command(p_efc, EFC_FCMD_GETD, 0)) {
+ 337              		.loc 1 422 0
+ 338 0014 0022     		movs	r2, #0
+ 339 0016 1146     		mov	r1, r2
+ 340 0018 0198     		ldr	r0, [sp, #4]
+ 341 001a FFF7FEFF 		bl	efc_perform_command
+ 342              	.LVL37:
+ 343 001e 50B9     		cbnz	r0, .L27
+ 344 0020 0024     		movs	r4, #0
+ 345              	.L26:
+ 346              	.LVL38:
+ 423:../src/sam/services/flash_efc/flash_efc.c **** 		return 0;
+ 424:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 425:../src/sam/services/flash_efc/flash_efc.c **** 		/* Read until no result */
+ 426:../src/sam/services/flash_efc/flash_efc.c **** 		for (ul_cnt = 0;; ul_cnt++) {
+ 427:../src/sam/services/flash_efc/flash_efc.c **** 			ul_tmp = efc_get_result(p_efc);
+ 347              		.loc 1 427 0
+ 348 0022 0198     		ldr	r0, [sp, #4]
+ 349 0024 FFF7FEFF 		bl	efc_get_result
+ 350              	.LVL39:
+ 428:../src/sam/services/flash_efc/flash_efc.c **** 			if ((ul_size > ul_cnt) && (ul_tmp != 0)) {
+ 351              		.loc 1 428 0
+ 352 0028 B442     		cmp	r4, r6
+ 353 002a 06D2     		bcs	.L28
+ 354              		.loc 1 428 0 is_stmt 0 discriminator 1
+ 355 002c 38B1     		cbz	r0, .L29
+ 356              	.LVL40:
+ 429:../src/sam/services/flash_efc/flash_efc.c **** 				*pul_flash_descriptor++ = ul_tmp;
+ 357              		.loc 1 429 0 is_stmt 1
+ 358 002e 2860     		str	r0, [r5]
+ 426:../src/sam/services/flash_efc/flash_efc.c **** 			ul_tmp = efc_get_result(p_efc);
+ 359              		.loc 1 426 0
+ 360 0030 0134     		adds	r4, r4, #1
+ 361              	.LVL41:
+ 362              		.loc 1 429 0
+ 363 0032 0435     		adds	r5, r5, #4
+ 364              	.LVL42:
+ 430:../src/sam/services/flash_efc/flash_efc.c **** 			} else {
+ 431:../src/sam/services/flash_efc/flash_efc.c **** 				break;
+ 432:../src/sam/services/flash_efc/flash_efc.c **** 			}
+ 433:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 365              		.loc 1 433 0
+ 366 0034 F5E7     		b	.L26
+ 367              	.LVL43:
+ 368              	.L27:
+ 423:../src/sam/services/flash_efc/flash_efc.c **** 	} else {
+ 369              		.loc 1 423 0
+ 370 0036 0020     		movs	r0, #0
+ 371 0038 02E0     		b	.L25
+ 372              	.LVL44:
+ 373              	.L28:
+ 434:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 435:../src/sam/services/flash_efc/flash_efc.c **** 
+ 436:../src/sam/services/flash_efc/flash_efc.c **** 	return ul_cnt;
+ 374              		.loc 1 436 0
+ 375 003a 2046     		mov	r0, r4
+ 376              	.LVL45:
+ 377 003c 00E0     		b	.L25
+ 378              	.LVL46:
+ 379              	.L29:
+ 380 003e 2046     		mov	r0, r4
+ 381              	.LVL47:
+ 382              	.L25:
+ 437:../src/sam/services/flash_efc/flash_efc.c **** }
+ 383              		.loc 1 437 0
+ 384 0040 02B0     		add	sp, sp, #8
+ 385              		.cfi_def_cfa_offset 16
+ 386              		@ sp needed
+ 387 0042 70BD     		pop	{r4, r5, r6, pc}
+ 388              		.cfi_endproc
+ 389              	.LFE100:
+ 391              		.section	.text.flash_get_page_count,"ax",%progbits
+ 392              		.align	2
+ 393              		.global	flash_get_page_count
+ 394              		.thumb
+ 395              		.thumb_func
+ 397              	flash_get_page_count:
+ 398              	.LFB101:
+ 438:../src/sam/services/flash_efc/flash_efc.c **** 
+ 439:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 440:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get flash total page count for the specified bank.
+ 441:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 442:../src/sam/services/flash_efc/flash_efc.c ****  * \note The flash descriptor must be fetched from flash_get_descriptor
+ 443:../src/sam/services/flash_efc/flash_efc.c ****  * function first.
+ 444:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 445:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_flash_descriptor Pointer to a flash descriptor.
+ 446:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 447:../src/sam/services/flash_efc/flash_efc.c ****  * \return The flash total page count.
+ 448:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 449:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_get_page_count(const uint32_t *pul_flash_descriptor)
+ 450:../src/sam/services/flash_efc/flash_efc.c **** {
+ 399              		.loc 1 450 0
+ 400              		.cfi_startproc
+ 401              		@ args = 0, pretend = 0, frame = 0
+ 402              		@ frame_needed = 0, uses_anonymous_args = 0
+ 403              		@ link register save eliminated.
+ 404              	.LVL48:
+ 451:../src/sam/services/flash_efc/flash_efc.c **** 	return (pul_flash_descriptor[1] / pul_flash_descriptor[2]);
+ 405              		.loc 1 451 0
+ 406 0000 4268     		ldr	r2, [r0, #4]
+ 407 0002 8068     		ldr	r0, [r0, #8]
+ 408              	.LVL49:
+ 452:../src/sam/services/flash_efc/flash_efc.c **** }
+ 409              		.loc 1 452 0
+ 410 0004 B2FBF0F0 		udiv	r0, r2, r0
+ 411 0008 7047     		bx	lr
+ 412              		.cfi_endproc
+ 413              	.LFE101:
+ 415              		.section	.text.flash_get_page_count_per_region,"ax",%progbits
+ 416              		.align	2
+ 417              		.global	flash_get_page_count_per_region
+ 418              		.thumb
+ 419              		.thumb_func
+ 421              	flash_get_page_count_per_region:
+ 422              	.LFB102:
+ 453:../src/sam/services/flash_efc/flash_efc.c **** 
+ 454:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 455:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get flash page count per region (plane) for the specified bank.
+ 456:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 457:../src/sam/services/flash_efc/flash_efc.c ****  * \note The flash descriptor must be fetched from flash_get_descriptor
+ 458:../src/sam/services/flash_efc/flash_efc.c ****  * function first.
+ 459:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 460:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_flash_descriptor Pointer to a flash descriptor.
+ 461:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 462:../src/sam/services/flash_efc/flash_efc.c ****  * \return The flash page count per region (plane).
+ 463:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 464:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_get_page_count_per_region(const uint32_t *pul_flash_descriptor)
+ 465:../src/sam/services/flash_efc/flash_efc.c **** {
+ 423              		.loc 1 465 0
+ 424              		.cfi_startproc
+ 425              		@ args = 0, pretend = 0, frame = 0
+ 426              		@ frame_needed = 0, uses_anonymous_args = 0
+ 427              		@ link register save eliminated.
+ 428              	.LVL50:
+ 466:../src/sam/services/flash_efc/flash_efc.c **** 	return (pul_flash_descriptor[4] / pul_flash_descriptor[2]);
+ 429              		.loc 1 466 0
+ 430 0000 0269     		ldr	r2, [r0, #16]
+ 431 0002 8068     		ldr	r0, [r0, #8]
+ 432              	.LVL51:
+ 467:../src/sam/services/flash_efc/flash_efc.c **** }
+ 433              		.loc 1 467 0
+ 434 0004 B2FBF0F0 		udiv	r0, r2, r0
+ 435 0008 7047     		bx	lr
+ 436              		.cfi_endproc
+ 437              	.LFE102:
+ 439              		.section	.text.flash_get_region_count,"ax",%progbits
+ 440              		.align	2
+ 441              		.global	flash_get_region_count
+ 442              		.thumb
+ 443              		.thumb_func
+ 445              	flash_get_region_count:
+ 446              	.LFB103:
+ 468:../src/sam/services/flash_efc/flash_efc.c **** 
+ 469:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 470:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get flash region (plane) count for the specified bank.
+ 471:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 472:../src/sam/services/flash_efc/flash_efc.c ****  * \note The flash descriptor must be fetched from flash_get_descriptor
+ 473:../src/sam/services/flash_efc/flash_efc.c ****  * function first.
+ 474:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 475:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_flash_descriptor Pointer to a flash descriptor.
+ 476:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 477:../src/sam/services/flash_efc/flash_efc.c ****  * \return The flash region (plane) count.
+ 478:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 479:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_get_region_count(const uint32_t *pul_flash_descriptor)
+ 480:../src/sam/services/flash_efc/flash_efc.c **** {
+ 447              		.loc 1 480 0
+ 448              		.cfi_startproc
+ 449              		@ args = 0, pretend = 0, frame = 0
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ 451              		@ link register save eliminated.
+ 452              	.LVL52:
+ 481:../src/sam/services/flash_efc/flash_efc.c **** 	return (pul_flash_descriptor[3]);
+ 482:../src/sam/services/flash_efc/flash_efc.c **** }
+ 453              		.loc 1 482 0
+ 454 0000 C068     		ldr	r0, [r0, #12]
+ 455              	.LVL53:
+ 456 0002 7047     		bx	lr
+ 457              		.cfi_endproc
+ 458              	.LFE103:
+ 460              		.section	.text.flash_erase_all,"ax",%progbits
+ 461              		.align	2
+ 462              		.global	flash_erase_all
+ 463              		.thumb
+ 464              		.thumb_func
+ 466              	flash_erase_all:
+ 467              	.LFB104:
+ 483:../src/sam/services/flash_efc/flash_efc.c **** 
+ 484:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 485:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Erase the entire flash.
+ 486:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 487:../src/sam/services/flash_efc/flash_efc.c ****  * \note Only the flash bank including ul_address will be erased. If there are
+ 488:../src/sam/services/flash_efc/flash_efc.c ****  * two flash banks, we need to call this function twice with each bank start
+ 489:../src/sam/services/flash_efc/flash_efc.c ****  * address.
+ 490:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 491:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address  Flash bank start address.
+ 492:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 493:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 494:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 495:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_erase_all(uint32_t ul_address)
+ 496:../src/sam/services/flash_efc/flash_efc.c **** {
+ 468              		.loc 1 496 0
+ 469              		.cfi_startproc
+ 470              		@ args = 0, pretend = 0, frame = 8
+ 471              		@ frame_needed = 0, uses_anonymous_args = 0
+ 472              	.LVL54:
+ 473 0000 00B5     		push	{lr}
+ 474              		.cfi_def_cfa_offset 4
+ 475              		.cfi_offset 14, -4
+ 476 0002 83B0     		sub	sp, sp, #12
+ 477              		.cfi_def_cfa_offset 16
+ 497:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 498:../src/sam/services/flash_efc/flash_efc.c **** 
+ 499:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, NULL, NULL);
+ 478              		.loc 1 499 0
+ 479 0004 0023     		movs	r3, #0
+ 480 0006 1A46     		mov	r2, r3
+ 481 0008 0146     		mov	r1, r0
+ 482 000a 01A8     		add	r0, sp, #4
+ 483              	.LVL55:
+ 484 000c FFF7FEFF 		bl	translate_address
+ 485              	.LVL56:
+ 500:../src/sam/services/flash_efc/flash_efc.c **** 
+ 501:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK != efc_perform_command(p_efc, EFC_FCMD_EA, 0)) {
+ 486              		.loc 1 501 0
+ 487 0010 0022     		movs	r2, #0
+ 488 0012 0521     		movs	r1, #5
+ 489 0014 0198     		ldr	r0, [sp, #4]
+ 490 0016 FFF7FEFF 		bl	efc_perform_command
+ 491              	.LVL57:
+ 492 001a 0346     		mov	r3, r0
+ 493 001c 00B1     		cbz	r0, .L35
+ 502:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 494              		.loc 1 502 0
+ 495 001e 1023     		movs	r3, #16
+ 496              	.L35:
+ 503:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 504:../src/sam/services/flash_efc/flash_efc.c **** 
+ 505:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 506:../src/sam/services/flash_efc/flash_efc.c **** }
+ 497              		.loc 1 506 0
+ 498 0020 1846     		mov	r0, r3
+ 499 0022 03B0     		add	sp, sp, #12
+ 500              		.cfi_def_cfa_offset 4
+ 501              		@ sp needed
+ 502 0024 5DF804FB 		ldr	pc, [sp], #4
+ 503              		.cfi_endproc
+ 504              	.LFE104:
+ 506              		.section	.text.flash_write,"ax",%progbits
+ 507              		.align	2
+ 508              		.global	flash_write
+ 509              		.thumb
+ 510              		.thumb_func
+ 512              	flash_write:
+ 513              	.LFB105:
+ 507:../src/sam/services/flash_efc/flash_efc.c **** 
+ 508:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM3S8 || SAM3SD8)
+ 509:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 510:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Erase the flash by plane.
+ 511:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 512:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash plane start address.
+ 513:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 514:../src/sam/services/flash_efc/flash_efc.c ****  * \note Erase plane command needs a page number parameter which belongs to
+ 515:../src/sam/services/flash_efc/flash_efc.c ****  * the plane to be erased.
+ 516:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 517:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 518:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 519:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_erase_plane(uint32_t ul_address)
+ 520:../src/sam/services/flash_efc/flash_efc.c **** {
+ 521:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 522:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_page;
+ 523:../src/sam/services/flash_efc/flash_efc.c **** 
+ 524:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, &us_page, NULL);
+ 525:../src/sam/services/flash_efc/flash_efc.c **** 
+ 526:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK != efc_perform_command(p_efc, EFC_FCMD_EPL, us_page)) {
+ 527:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 528:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 529:../src/sam/services/flash_efc/flash_efc.c **** 
+ 530:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 531:../src/sam/services/flash_efc/flash_efc.c **** }
+ 532:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 533:../src/sam/services/flash_efc/flash_efc.c **** 
+ 534:../src/sam/services/flash_efc/flash_efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 535:../src/sam/services/flash_efc/flash_efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 536:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 537:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Erase the specified pages of flash.
+ 538:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 539:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash bank start address.
+ 540:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 541:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 542:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 543:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_erase_page(uint32_t ul_address, uint8_t uc_page_num)
+ 544:../src/sam/services/flash_efc/flash_efc.c **** {
+ 545:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 546:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_page;
+ 547:../src/sam/services/flash_efc/flash_efc.c **** 
+ 548:../src/sam/services/flash_efc/flash_efc.c **** 	if (uc_page_num >= IFLASH_ERASE_PAGES_INVALID) {
+ 549:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 550:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 551:../src/sam/services/flash_efc/flash_efc.c **** 
+ 552:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_address & (IFLASH_PAGE_SIZE - 1)) {
+ 553:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 554:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 555:../src/sam/services/flash_efc/flash_efc.c **** 
+ 556:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, &us_page, NULL);
+ 557:../src/sam/services/flash_efc/flash_efc.c **** 
+ 558:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK != efc_perform_command(p_efc, EFC_FCMD_EPA,
+ 559:../src/sam/services/flash_efc/flash_efc.c **** 					(us_page | uc_page_num))) {
+ 560:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 561:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 562:../src/sam/services/flash_efc/flash_efc.c **** 
+ 563:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 564:../src/sam/services/flash_efc/flash_efc.c **** }
+ 565:../src/sam/services/flash_efc/flash_efc.c **** 
+ 566:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 567:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Erase the flash sector.
+ 568:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 569:../src/sam/services/flash_efc/flash_efc.c ****  * \note Erase sector command needs a page number parameter which belongs to
+ 570:../src/sam/services/flash_efc/flash_efc.c ****  * the sector to be erased.
+ 571:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 572:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Flash sector start address.
+ 573:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 574:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 575:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 576:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_erase_sector(uint32_t ul_address)
+ 577:../src/sam/services/flash_efc/flash_efc.c **** {
+ 578:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 579:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_page;
+ 580:../src/sam/services/flash_efc/flash_efc.c **** 
+ 581:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, &us_page, NULL);
+ 582:../src/sam/services/flash_efc/flash_efc.c **** 
+ 583:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK != efc_perform_command(p_efc, EFC_FCMD_ES, us_page)) {
+ 584:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 585:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 586:../src/sam/services/flash_efc/flash_efc.c **** 
+ 587:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 588:../src/sam/services/flash_efc/flash_efc.c **** }
+ 589:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 590:../src/sam/services/flash_efc/flash_efc.c **** 
+ 591:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 592:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Write a data buffer on flash.
+ 593:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 594:../src/sam/services/flash_efc/flash_efc.c ****  * \note This function works in polling mode, and thus only returns when the
+ 595:../src/sam/services/flash_efc/flash_efc.c ****  * data has been effectively written.
+ 596:../src/sam/services/flash_efc/flash_efc.c ****  * \note For dual bank flash, this function doesn't support cross write from
+ 597:../src/sam/services/flash_efc/flash_efc.c ****  * bank 0 to bank 1. In this case, flash_write must be called twice (ie for
+ 598:../src/sam/services/flash_efc/flash_efc.c ****  * each bank).
+ 599:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 600:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_address Write address.
+ 601:../src/sam/services/flash_efc/flash_efc.c ****  * \param p_buffer Data buffer.
+ 602:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_size Size of data buffer in bytes.
+ 603:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_erase_flag Flag to set if erase first.
+ 604:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 605:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful, otherwise returns an error code.
+ 606:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 607:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_write(uint32_t ul_address, const void *p_buffer,
+ 608:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t ul_size, uint32_t ul_erase_flag)
+ 609:../src/sam/services/flash_efc/flash_efc.c **** {
+ 514              		.loc 1 609 0
+ 515              		.cfi_startproc
+ 516              		@ args = 0, pretend = 0, frame = 16
+ 517              		@ frame_needed = 0, uses_anonymous_args = 0
+ 518              	.LVL58:
+ 519 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 520              		.cfi_def_cfa_offset 36
+ 521              		.cfi_offset 4, -36
+ 522              		.cfi_offset 5, -32
+ 523              		.cfi_offset 6, -28
+ 524              		.cfi_offset 7, -24
+ 525              		.cfi_offset 8, -20
+ 526              		.cfi_offset 9, -16
+ 527              		.cfi_offset 10, -12
+ 528              		.cfi_offset 11, -8
+ 529              		.cfi_offset 14, -4
+ 530 0004 85B0     		sub	sp, sp, #20
+ 531              		.cfi_def_cfa_offset 56
+ 532 0006 0E46     		mov	r6, r1
+ 533 0008 1546     		mov	r5, r2
+ 534 000a 1F46     		mov	r7, r3
+ 535              	.LVL59:
+ 610:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 611:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_fws_temp;
+ 612:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_page;
+ 613:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_offset;
+ 614:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t writeSize;
+ 615:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_page_addr;
+ 616:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_padding;
+ 617:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_error;
+ 618:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_idx;
+ 619:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t *p_aligned_dest;
+ 620:../src/sam/services/flash_efc/flash_efc.c **** 	uint8_t *puc_page_buffer = (uint8_t *) gs_ul_page_buffer;
+ 621:../src/sam/services/flash_efc/flash_efc.c **** 
+ 622:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_address, &us_page, &us_offset);
+ 536              		.loc 1 622 0
+ 537 000c 02AB     		add	r3, sp, #8
+ 538              	.LVL60:
+ 539 000e 0DF10A02 		add	r2, sp, #10
+ 540              	.LVL61:
+ 541 0012 0146     		mov	r1, r0
+ 542              	.LVL62:
+ 543 0014 03A8     		add	r0, sp, #12
+ 544              	.LVL63:
+ 545 0016 FFF7FEFF 		bl	translate_address
+ 546              	.LVL64:
+ 623:../src/sam/services/flash_efc/flash_efc.c **** 
+ 624:../src/sam/services/flash_efc/flash_efc.c **** #if SAM3S || SAM3N || SAM3XA || SAM3U
+ 625:../src/sam/services/flash_efc/flash_efc.c **** 	/* According to the errata, set the wait state value to 6. */
+ 626:../src/sam/services/flash_efc/flash_efc.c **** 	ul_fws_temp = efc_get_wait_state(p_efc);
+ 547              		.loc 1 626 0
+ 548 001a 0398     		ldr	r0, [sp, #12]
+ 549 001c FFF7FEFF 		bl	efc_get_wait_state
+ 550              	.LVL65:
+ 551 0020 8046     		mov	r8, r0
+ 552              	.LVL66:
+ 627:../src/sam/services/flash_efc/flash_efc.c **** 	efc_set_wait_state(p_efc, 6);
+ 553              		.loc 1 627 0
+ 554 0022 0621     		movs	r1, #6
+ 555 0024 0398     		ldr	r0, [sp, #12]
+ 556              	.LVL67:
+ 557 0026 FFF7FEFF 		bl	efc_set_wait_state
+ 558              	.LVL68:
+ 628:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 629:../src/sam/services/flash_efc/flash_efc.c **** 	UNUSED(ul_fws_temp);
+ 630:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 631:../src/sam/services/flash_efc/flash_efc.c **** 
+ 632:../src/sam/services/flash_efc/flash_efc.c **** 	/* Write all pages */
+ 633:../src/sam/services/flash_efc/flash_efc.c **** 	while (ul_size > 0) {
+ 559              		.loc 1 633 0
+ 560 002a 52E0     		b	.L38
+ 561              	.L44:
+ 634:../src/sam/services/flash_efc/flash_efc.c **** 		/* Copy data in temporary buffer to avoid alignment problems. */
+ 635:../src/sam/services/flash_efc/flash_efc.c **** 		writeSize = Min((uint32_t) IFLASH_PAGE_SIZE - us_offset,
+ 562              		.loc 1 635 0
+ 563 002c BDF80840 		ldrh	r4, [sp, #8]
+ 564 0030 C4F58074 		rsb	r4, r4, #256
+ 565 0034 AC42     		cmp	r4, r5
+ 566 0036 28BF     		it	cs
+ 567 0038 2C46     		movcs	r4, r5
+ 568              	.LVL69:
+ 636:../src/sam/services/flash_efc/flash_efc.c **** 				ul_size);
+ 637:../src/sam/services/flash_efc/flash_efc.c **** 		compute_address(p_efc, us_page, 0, &ul_page_addr);
+ 569              		.loc 1 637 0
+ 570 003a 01AB     		add	r3, sp, #4
+ 571 003c 0022     		movs	r2, #0
+ 572 003e BDF80A10 		ldrh	r1, [sp, #10]
+ 573 0042 0398     		ldr	r0, [sp, #12]
+ 574 0044 FFF7FEFF 		bl	compute_address
+ 575              	.LVL70:
+ 638:../src/sam/services/flash_efc/flash_efc.c **** 		us_padding = IFLASH_PAGE_SIZE - us_offset - writeSize;
+ 576              		.loc 1 638 0
+ 577 0048 BDF808A0 		ldrh	r10, [sp, #8]
+ 578 004c CAF10009 		rsb	r9, r10, #0
+ 579 0050 C4EB0909 		rsb	r9, r4, r9
+ 580 0054 09F58079 		add	r9, r9, #256
+ 581 0058 1FFA89F9 		uxth	r9, r9
+ 582              	.LVL71:
+ 639:../src/sam/services/flash_efc/flash_efc.c **** 
+ 640:../src/sam/services/flash_efc/flash_efc.c **** 		/* Pre-buffer data */
+ 641:../src/sam/services/flash_efc/flash_efc.c **** 		memcpy(puc_page_buffer, (void *)ul_page_addr, us_offset);
+ 583              		.loc 1 641 0
+ 584 005c DFF888B0 		ldr	fp, .L47
+ 585 0060 5246     		mov	r2, r10
+ 586 0062 0199     		ldr	r1, [sp, #4]
+ 587 0064 5846     		mov	r0, fp
+ 588 0066 FFF7FEFF 		bl	memcpy
+ 589              	.LVL72:
+ 642:../src/sam/services/flash_efc/flash_efc.c **** 
+ 643:../src/sam/services/flash_efc/flash_efc.c **** 		/* Buffer data */
+ 644:../src/sam/services/flash_efc/flash_efc.c **** 		memcpy(puc_page_buffer + us_offset, p_buffer, writeSize);
+ 590              		.loc 1 644 0
+ 591 006a 2246     		mov	r2, r4
+ 592 006c 3146     		mov	r1, r6
+ 593 006e 0BEB0A00 		add	r0, fp, r10
+ 594 0072 FFF7FEFF 		bl	memcpy
+ 595              	.LVL73:
+ 645:../src/sam/services/flash_efc/flash_efc.c **** 
+ 646:../src/sam/services/flash_efc/flash_efc.c **** 		/* Post-buffer data */
+ 647:../src/sam/services/flash_efc/flash_efc.c **** 		memcpy(puc_page_buffer + us_offset + writeSize,
+ 596              		.loc 1 647 0
+ 597 0076 BDF80820 		ldrh	r2, [sp, #8]
+ 598 007a A018     		adds	r0, r4, r2
+ 648:../src/sam/services/flash_efc/flash_efc.c **** 				(void *)(ul_page_addr + us_offset + writeSize),
+ 599              		.loc 1 648 0
+ 600 007c 019B     		ldr	r3, [sp, #4]
+ 601 007e D118     		adds	r1, r2, r3
+ 647:../src/sam/services/flash_efc/flash_efc.c **** 				(void *)(ul_page_addr + us_offset + writeSize),
+ 602              		.loc 1 647 0
+ 603 0080 4A46     		mov	r2, r9
+ 604 0082 2144     		add	r1, r1, r4
+ 605 0084 5844     		add	r0, r0, fp
+ 606 0086 FFF7FEFF 		bl	memcpy
+ 607              	.LVL74:
+ 649:../src/sam/services/flash_efc/flash_efc.c **** 				us_padding);
+ 650:../src/sam/services/flash_efc/flash_efc.c **** 
+ 651:../src/sam/services/flash_efc/flash_efc.c **** 		/* Write page.
+ 652:../src/sam/services/flash_efc/flash_efc.c **** 		 * Writing 8-bit and 16-bit data is not allowed and may lead to
+ 653:../src/sam/services/flash_efc/flash_efc.c **** 		 * unpredictable data corruption.
+ 654:../src/sam/services/flash_efc/flash_efc.c **** 		 */
+ 655:../src/sam/services/flash_efc/flash_efc.c **** 		p_aligned_dest = (uint32_t *) ul_page_addr;
+ 608              		.loc 1 655 0
+ 609 008a 019A     		ldr	r2, [sp, #4]
+ 610              	.LVL75:
+ 656:../src/sam/services/flash_efc/flash_efc.c **** 		for (ul_idx = 0; ul_idx < (IFLASH_PAGE_SIZE / sizeof(uint32_t));
+ 611              		.loc 1 656 0
+ 612 008c 0023     		movs	r3, #0
+ 613 008e 05E0     		b	.L39
+ 614              	.LVL76:
+ 615              	.L40:
+ 657:../src/sam/services/flash_efc/flash_efc.c **** 				++ul_idx) {
+ 658:../src/sam/services/flash_efc/flash_efc.c **** 			*p_aligned_dest++ = gs_ul_page_buffer[ul_idx];
+ 616              		.loc 1 658 0
+ 617 0090 1549     		ldr	r1, .L47
+ 618 0092 51F82310 		ldr	r1, [r1, r3, lsl #2]
+ 619 0096 1160     		str	r1, [r2]
+ 657:../src/sam/services/flash_efc/flash_efc.c **** 				++ul_idx) {
+ 620              		.loc 1 657 0
+ 621 0098 0133     		adds	r3, r3, #1
+ 622              	.LVL77:
+ 623              		.loc 1 658 0
+ 624 009a 0432     		adds	r2, r2, #4
+ 625              	.LVL78:
+ 626              	.L39:
+ 656:../src/sam/services/flash_efc/flash_efc.c **** 		for (ul_idx = 0; ul_idx < (IFLASH_PAGE_SIZE / sizeof(uint32_t));
+ 627              		.loc 1 656 0 discriminator 1
+ 628 009c 3F2B     		cmp	r3, #63
+ 629 009e F7D9     		bls	.L40
+ 659:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 660:../src/sam/services/flash_efc/flash_efc.c **** 
+ 661:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_erase_flag) {
+ 630              		.loc 1 661 0
+ 631 00a0 37B1     		cbz	r7, .L41
+ 662:../src/sam/services/flash_efc/flash_efc.c **** 			ul_error = efc_perform_command(p_efc, EFC_FCMD_EWP,
+ 632              		.loc 1 662 0
+ 633 00a2 BDF80A20 		ldrh	r2, [sp, #10]
+ 634              	.LVL79:
+ 635 00a6 0321     		movs	r1, #3
+ 636 00a8 0398     		ldr	r0, [sp, #12]
+ 637 00aa FFF7FEFF 		bl	efc_perform_command
+ 638              	.LVL80:
+ 639 00ae 05E0     		b	.L42
+ 640              	.LVL81:
+ 641              	.L41:
+ 663:../src/sam/services/flash_efc/flash_efc.c **** 					us_page);
+ 664:../src/sam/services/flash_efc/flash_efc.c **** 		} else {
+ 665:../src/sam/services/flash_efc/flash_efc.c **** 			ul_error = efc_perform_command(p_efc, EFC_FCMD_WP,
+ 642              		.loc 1 665 0
+ 643 00b0 BDF80A20 		ldrh	r2, [sp, #10]
+ 644              	.LVL82:
+ 645 00b4 0121     		movs	r1, #1
+ 646 00b6 0398     		ldr	r0, [sp, #12]
+ 647 00b8 FFF7FEFF 		bl	efc_perform_command
+ 648              	.LVL83:
+ 649              	.L42:
+ 666:../src/sam/services/flash_efc/flash_efc.c **** 					us_page);
+ 667:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 668:../src/sam/services/flash_efc/flash_efc.c **** 
+ 669:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_error) {
+ 650              		.loc 1 669 0
+ 651 00bc 80B9     		cbnz	r0, .L43
+ 670:../src/sam/services/flash_efc/flash_efc.c **** 			return ul_error;
+ 671:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 672:../src/sam/services/flash_efc/flash_efc.c **** 
+ 673:../src/sam/services/flash_efc/flash_efc.c **** 		/* Progression */
+ 674:../src/sam/services/flash_efc/flash_efc.c **** 		p_buffer = (void *)((uint32_t) p_buffer + writeSize);
+ 652              		.loc 1 674 0
+ 653 00be 2644     		add	r6, r6, r4
+ 654              	.LVL84:
+ 675:../src/sam/services/flash_efc/flash_efc.c **** 		ul_size -= writeSize;
+ 655              		.loc 1 675 0
+ 656 00c0 2D1B     		subs	r5, r5, r4
+ 657              	.LVL85:
+ 676:../src/sam/services/flash_efc/flash_efc.c **** 		us_page++;
+ 658              		.loc 1 676 0
+ 659 00c2 BDF80A30 		ldrh	r3, [sp, #10]
+ 660 00c6 0133     		adds	r3, r3, #1
+ 661 00c8 ADF80A30 		strh	r3, [sp, #10]	@ movhi
+ 677:../src/sam/services/flash_efc/flash_efc.c **** 		us_offset = 0;
+ 662              		.loc 1 677 0
+ 663 00cc 0023     		movs	r3, #0
+ 664 00ce ADF80830 		strh	r3, [sp, #8]	@ movhi
+ 665              	.LVL86:
+ 666              	.L38:
+ 633:../src/sam/services/flash_efc/flash_efc.c **** 		/* Copy data in temporary buffer to avoid alignment problems. */
+ 667              		.loc 1 633 0
+ 668 00d2 002D     		cmp	r5, #0
+ 669 00d4 AAD1     		bne	.L44
+ 678:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 679:../src/sam/services/flash_efc/flash_efc.c **** 
+ 680:../src/sam/services/flash_efc/flash_efc.c **** #if SAM3S || SAM3N || SAM3XA || SAM3U
+ 681:../src/sam/services/flash_efc/flash_efc.c **** 	/* According to the errata, restore the wait state value. */
+ 682:../src/sam/services/flash_efc/flash_efc.c **** 	efc_set_wait_state(p_efc, ul_fws_temp);
+ 670              		.loc 1 682 0
+ 671 00d6 4146     		mov	r1, r8
+ 672 00d8 0398     		ldr	r0, [sp, #12]
+ 673 00da FFF7FEFF 		bl	efc_set_wait_state
+ 674              	.LVL87:
+ 683:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 684:../src/sam/services/flash_efc/flash_efc.c **** 
+ 685:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 675              		.loc 1 685 0
+ 676 00de 0020     		movs	r0, #0
+ 677              	.L43:
+ 686:../src/sam/services/flash_efc/flash_efc.c **** }
+ 678              		.loc 1 686 0
+ 679 00e0 05B0     		add	sp, sp, #20
+ 680              		.cfi_def_cfa_offset 36
+ 681              		@ sp needed
+ 682 00e2 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 683              	.LVL88:
+ 684              	.L48:
+ 685 00e6 00BF     		.align	2
+ 686              	.L47:
+ 687 00e8 00000000 		.word	.LANCHOR0
+ 688              		.cfi_endproc
+ 689              	.LFE105:
+ 691              		.section	.text.flash_lock,"ax",%progbits
+ 692              		.align	2
+ 693              		.global	flash_lock
+ 694              		.thumb
+ 695              		.thumb_func
+ 697              	flash_lock:
+ 698              	.LFB106:
+ 687:../src/sam/services/flash_efc/flash_efc.c **** 
+ 688:../src/sam/services/flash_efc/flash_efc.c **** 
+ 689:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 690:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Lock all the regions in the given address range. The actual lock
+ 691:../src/sam/services/flash_efc/flash_efc.c ****  * range is reported through two output parameters.
+ 692:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 693:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_start Start address of lock range.
+ 694:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_end End address of lock range.
+ 695:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_start Start address of the actual lock range (optional).
+ 696:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_end End address of the actual lock range (optional).
+ 697:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 698:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful, otherwise returns an error code.
+ 699:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 700:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_lock(uint32_t ul_start, uint32_t ul_end,
+ 701:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t *pul_actual_start, uint32_t *pul_actual_end)
+ 702:../src/sam/services/flash_efc/flash_efc.c **** {
+ 699              		.loc 1 702 0
+ 700              		.cfi_startproc
+ 701              		@ args = 0, pretend = 0, frame = 16
+ 702              		@ frame_needed = 0, uses_anonymous_args = 0
+ 703              	.LVL89:
+ 704 0000 30B5     		push	{r4, r5, lr}
+ 705              		.cfi_def_cfa_offset 12
+ 706              		.cfi_offset 4, -12
+ 707              		.cfi_offset 5, -8
+ 708              		.cfi_offset 14, -4
+ 709 0002 85B0     		sub	sp, sp, #20
+ 710              		.cfi_def_cfa_offset 32
+ 711 0004 1546     		mov	r5, r2
+ 712 0006 1C46     		mov	r4, r3
+ 713              	.LVL90:
+ 703:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 704:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_actual_start, ul_actual_end;
+ 705:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_start_page, us_end_page;
+ 706:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_error;
+ 707:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_num_pages_in_region =
+ 708:../src/sam/services/flash_efc/flash_efc.c **** 			IFLASH_LOCK_REGION_SIZE / IFLASH_PAGE_SIZE;
+ 709:../src/sam/services/flash_efc/flash_efc.c **** 
+ 710:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute actual lock range and store it */
+ 711:../src/sam/services/flash_efc/flash_efc.c **** 	compute_lock_range(ul_start, ul_end, &ul_actual_start, &ul_actual_end);
+ 714              		.loc 1 711 0
+ 715 0008 01AB     		add	r3, sp, #4
+ 716              	.LVL91:
+ 717 000a 02AA     		add	r2, sp, #8
+ 718              	.LVL92:
+ 719 000c FFF7FEFF 		bl	compute_lock_range
+ 720              	.LVL93:
+ 712:../src/sam/services/flash_efc/flash_efc.c **** 
+ 713:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_start != NULL) {
+ 721              		.loc 1 713 0
+ 722 0010 0DB1     		cbz	r5, .L50
+ 714:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_start = ul_actual_start;
+ 723              		.loc 1 714 0
+ 724 0012 029B     		ldr	r3, [sp, #8]
+ 725 0014 2B60     		str	r3, [r5]
+ 726              	.L50:
+ 715:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 716:../src/sam/services/flash_efc/flash_efc.c **** 
+ 717:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_end != NULL) {
+ 727              		.loc 1 717 0
+ 728 0016 0CB1     		cbz	r4, .L51
+ 718:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_end = ul_actual_end;
+ 729              		.loc 1 718 0
+ 730 0018 019B     		ldr	r3, [sp, #4]
+ 731 001a 2360     		str	r3, [r4]
+ 732              	.L51:
+ 719:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 720:../src/sam/services/flash_efc/flash_efc.c **** 
+ 721:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute page numbers */
+ 722:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_actual_start, &us_start_page, 0);
+ 733              		.loc 1 722 0
+ 734 001c 0023     		movs	r3, #0
+ 735 001e 0DF10202 		add	r2, sp, #2
+ 736 0022 0299     		ldr	r1, [sp, #8]
+ 737 0024 03A8     		add	r0, sp, #12
+ 738 0026 FFF7FEFF 		bl	translate_address
+ 739              	.LVL94:
+ 723:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(0, ul_actual_end, &us_end_page, 0);
+ 740              		.loc 1 723 0
+ 741 002a 0023     		movs	r3, #0
+ 742 002c 6A46     		mov	r2, sp
+ 743 002e 0199     		ldr	r1, [sp, #4]
+ 744 0030 1846     		mov	r0, r3
+ 745 0032 FFF7FEFF 		bl	translate_address
+ 746              	.LVL95:
+ 724:../src/sam/services/flash_efc/flash_efc.c **** 
+ 725:../src/sam/services/flash_efc/flash_efc.c **** 	/* Lock all pages */
+ 726:../src/sam/services/flash_efc/flash_efc.c **** 	while (us_start_page < us_end_page) {
+ 747              		.loc 1 726 0
+ 748 0036 09E0     		b	.L52
+ 749              	.L54:
+ 727:../src/sam/services/flash_efc/flash_efc.c **** 		ul_error = efc_perform_command(p_efc, EFC_FCMD_SLB, us_start_page);
+ 750              		.loc 1 727 0
+ 751 0038 0821     		movs	r1, #8
+ 752 003a 0398     		ldr	r0, [sp, #12]
+ 753 003c FFF7FEFF 		bl	efc_perform_command
+ 754              	.LVL96:
+ 728:../src/sam/services/flash_efc/flash_efc.c **** 
+ 729:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_error) {
+ 755              		.loc 1 729 0
+ 756 0040 60B9     		cbnz	r0, .L55
+ 730:../src/sam/services/flash_efc/flash_efc.c **** 			return ul_error;
+ 731:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 732:../src/sam/services/flash_efc/flash_efc.c **** 		us_start_page += us_num_pages_in_region;
+ 757              		.loc 1 732 0
+ 758 0042 BDF80230 		ldrh	r3, [sp, #2]
+ 759 0046 4033     		adds	r3, r3, #64
+ 760 0048 ADF80230 		strh	r3, [sp, #2]	@ movhi
+ 761              	.LVL97:
+ 762              	.L52:
+ 726:../src/sam/services/flash_efc/flash_efc.c **** 		ul_error = efc_perform_command(p_efc, EFC_FCMD_SLB, us_start_page);
+ 763              		.loc 1 726 0
+ 764 004c BDF80220 		ldrh	r2, [sp, #2]
+ 765 0050 BDF80030 		ldrh	r3, [sp]
+ 766 0054 9A42     		cmp	r2, r3
+ 767 0056 EFD3     		bcc	.L54
+ 733:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 734:../src/sam/services/flash_efc/flash_efc.c **** 
+ 735:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 768              		.loc 1 735 0
+ 769 0058 0020     		movs	r0, #0
+ 770 005a FFE7     		b	.L53
+ 771              	.LVL98:
+ 772              	.L55:
+ 773              	.L53:
+ 736:../src/sam/services/flash_efc/flash_efc.c **** }
+ 774              		.loc 1 736 0
+ 775 005c 05B0     		add	sp, sp, #20
+ 776              		.cfi_def_cfa_offset 12
+ 777              		@ sp needed
+ 778 005e 30BD     		pop	{r4, r5, pc}
+ 779              		.cfi_endproc
+ 780              	.LFE106:
+ 782              		.section	.text.flash_unlock,"ax",%progbits
+ 783              		.align	2
+ 784              		.global	flash_unlock
+ 785              		.thumb
+ 786              		.thumb_func
+ 788              	flash_unlock:
+ 789              	.LFB107:
+ 737:../src/sam/services/flash_efc/flash_efc.c **** 
+ 738:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 739:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Unlock all the regions in the given address range. The actual unlock
+ 740:../src/sam/services/flash_efc/flash_efc.c ****  * range is reported through two output parameters.
+ 741:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 742:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_start Start address of unlock range.
+ 743:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_end End address of unlock range.
+ 744:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_start Start address of the actual unlock range (optional).
+ 745:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_actual_end End address of the actual unlock range (optional).
+ 746:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 747:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful, otherwise returns an error code.
+ 748:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 749:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_unlock(uint32_t ul_start, uint32_t ul_end,
+ 750:../src/sam/services/flash_efc/flash_efc.c **** 		uint32_t *pul_actual_start, uint32_t *pul_actual_end)
+ 751:../src/sam/services/flash_efc/flash_efc.c **** {
+ 790              		.loc 1 751 0
+ 791              		.cfi_startproc
+ 792              		@ args = 0, pretend = 0, frame = 16
+ 793              		@ frame_needed = 0, uses_anonymous_args = 0
+ 794              	.LVL99:
+ 795 0000 30B5     		push	{r4, r5, lr}
+ 796              		.cfi_def_cfa_offset 12
+ 797              		.cfi_offset 4, -12
+ 798              		.cfi_offset 5, -8
+ 799              		.cfi_offset 14, -4
+ 800 0002 85B0     		sub	sp, sp, #20
+ 801              		.cfi_def_cfa_offset 32
+ 802 0004 1546     		mov	r5, r2
+ 803 0006 1C46     		mov	r4, r3
+ 804              	.LVL100:
+ 752:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 753:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_actual_start, ul_actual_end;
+ 754:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_start_page, us_end_page;
+ 755:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_error;
+ 756:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_num_pages_in_region =
+ 757:../src/sam/services/flash_efc/flash_efc.c **** 			IFLASH_LOCK_REGION_SIZE / IFLASH_PAGE_SIZE;
+ 758:../src/sam/services/flash_efc/flash_efc.c **** 
+ 759:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute actual unlock range and store it */
+ 760:../src/sam/services/flash_efc/flash_efc.c **** 	compute_lock_range(ul_start, ul_end, &ul_actual_start, &ul_actual_end);
+ 805              		.loc 1 760 0
+ 806 0008 01AB     		add	r3, sp, #4
+ 807              	.LVL101:
+ 808 000a 02AA     		add	r2, sp, #8
+ 809              	.LVL102:
+ 810 000c FFF7FEFF 		bl	compute_lock_range
+ 811              	.LVL103:
+ 761:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_start != NULL) {
+ 812              		.loc 1 761 0
+ 813 0010 0DB1     		cbz	r5, .L58
+ 762:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_start = ul_actual_start;
+ 814              		.loc 1 762 0
+ 815 0012 029B     		ldr	r3, [sp, #8]
+ 816 0014 2B60     		str	r3, [r5]
+ 817              	.L58:
+ 763:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 764:../src/sam/services/flash_efc/flash_efc.c **** 	if (pul_actual_end != NULL) {
+ 818              		.loc 1 764 0
+ 819 0016 0CB1     		cbz	r4, .L59
+ 765:../src/sam/services/flash_efc/flash_efc.c **** 		*pul_actual_end = ul_actual_end;
+ 820              		.loc 1 765 0
+ 821 0018 019B     		ldr	r3, [sp, #4]
+ 822 001a 2360     		str	r3, [r4]
+ 823              	.L59:
+ 766:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 767:../src/sam/services/flash_efc/flash_efc.c **** 
+ 768:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute page numbers */
+ 769:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_actual_start, &us_start_page, 0);
+ 824              		.loc 1 769 0
+ 825 001c 0023     		movs	r3, #0
+ 826 001e 0DF10202 		add	r2, sp, #2
+ 827 0022 0299     		ldr	r1, [sp, #8]
+ 828 0024 03A8     		add	r0, sp, #12
+ 829 0026 FFF7FEFF 		bl	translate_address
+ 830              	.LVL104:
+ 770:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(0, ul_actual_end, &us_end_page, 0);
+ 831              		.loc 1 770 0
+ 832 002a 0023     		movs	r3, #0
+ 833 002c 6A46     		mov	r2, sp
+ 834 002e 0199     		ldr	r1, [sp, #4]
+ 835 0030 1846     		mov	r0, r3
+ 836 0032 FFF7FEFF 		bl	translate_address
+ 837              	.LVL105:
+ 771:../src/sam/services/flash_efc/flash_efc.c **** 
+ 772:../src/sam/services/flash_efc/flash_efc.c **** 	/* Unlock all pages */
+ 773:../src/sam/services/flash_efc/flash_efc.c **** 	while (us_start_page < us_end_page) {
+ 838              		.loc 1 773 0
+ 839 0036 09E0     		b	.L60
+ 840              	.L62:
+ 774:../src/sam/services/flash_efc/flash_efc.c **** 		ul_error = efc_perform_command(p_efc, EFC_FCMD_CLB,
+ 841              		.loc 1 774 0
+ 842 0038 0921     		movs	r1, #9
+ 843 003a 0398     		ldr	r0, [sp, #12]
+ 844 003c FFF7FEFF 		bl	efc_perform_command
+ 845              	.LVL106:
+ 775:../src/sam/services/flash_efc/flash_efc.c **** 				us_start_page);
+ 776:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_error) {
+ 846              		.loc 1 776 0
+ 847 0040 60B9     		cbnz	r0, .L63
+ 777:../src/sam/services/flash_efc/flash_efc.c **** 			return ul_error;
+ 778:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 779:../src/sam/services/flash_efc/flash_efc.c **** 		us_start_page += us_num_pages_in_region;
+ 848              		.loc 1 779 0
+ 849 0042 BDF80230 		ldrh	r3, [sp, #2]
+ 850 0046 4033     		adds	r3, r3, #64
+ 851 0048 ADF80230 		strh	r3, [sp, #2]	@ movhi
+ 852              	.LVL107:
+ 853              	.L60:
+ 773:../src/sam/services/flash_efc/flash_efc.c **** 		ul_error = efc_perform_command(p_efc, EFC_FCMD_CLB,
+ 854              		.loc 1 773 0
+ 855 004c BDF80220 		ldrh	r2, [sp, #2]
+ 856 0050 BDF80030 		ldrh	r3, [sp]
+ 857 0054 9A42     		cmp	r2, r3
+ 858 0056 EFD3     		bcc	.L62
+ 780:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 781:../src/sam/services/flash_efc/flash_efc.c **** 
+ 782:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 859              		.loc 1 782 0
+ 860 0058 0020     		movs	r0, #0
+ 861 005a FFE7     		b	.L61
+ 862              	.LVL108:
+ 863              	.L63:
+ 864              	.L61:
+ 783:../src/sam/services/flash_efc/flash_efc.c **** }
+ 865              		.loc 1 783 0
+ 866 005c 05B0     		add	sp, sp, #20
+ 867              		.cfi_def_cfa_offset 12
+ 868              		@ sp needed
+ 869 005e 30BD     		pop	{r4, r5, pc}
+ 870              		.cfi_endproc
+ 871              	.LFE107:
+ 873              		.section	.text.flash_is_locked,"ax",%progbits
+ 874              		.align	2
+ 875              		.global	flash_is_locked
+ 876              		.thumb
+ 877              		.thumb_func
+ 879              	flash_is_locked:
+ 880              	.LFB108:
+ 784:../src/sam/services/flash_efc/flash_efc.c **** 
+ 785:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 786:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Get the number of locked regions inside the given address range.
+ 787:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 788:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_start Start address of range
+ 789:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_end End address of range.
+ 790:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 791:../src/sam/services/flash_efc/flash_efc.c ****  * \return The number of locked regions inside the given address range.
+ 792:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 793:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_is_locked(uint32_t ul_start, uint32_t ul_end)
+ 794:../src/sam/services/flash_efc/flash_efc.c **** {
+ 881              		.loc 1 794 0
+ 882              		.cfi_startproc
+ 883              		@ args = 0, pretend = 0, frame = 8
+ 884              		@ frame_needed = 0, uses_anonymous_args = 0
+ 885              	.LVL109:
+ 886 0000 70B5     		push	{r4, r5, r6, lr}
+ 887              		.cfi_def_cfa_offset 16
+ 888              		.cfi_offset 4, -16
+ 889              		.cfi_offset 5, -12
+ 890              		.cfi_offset 6, -8
+ 891              		.cfi_offset 14, -4
+ 892 0002 82B0     		sub	sp, sp, #8
+ 893              		.cfi_def_cfa_offset 24
+ 894 0004 0C46     		mov	r4, r1
+ 895              	.LVL110:
+ 795:../src/sam/services/flash_efc/flash_efc.c **** 	Efc *p_efc;
+ 796:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_start_page, us_end_page;
+ 797:../src/sam/services/flash_efc/flash_efc.c **** 	uint8_t uc_start_region, uc_end_region;
+ 798:../src/sam/services/flash_efc/flash_efc.c **** 	uint16_t us_num_pages_in_region;
+ 799:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_status;
+ 800:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_error;
+ 801:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_num_locked_regions = 0;
+ 802:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_count = 0;
+ 803:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_bit = 0;
+ 804:../src/sam/services/flash_efc/flash_efc.c **** 
+ 805:../src/sam/services/flash_efc/flash_efc.c **** 	Assert(ul_end >= ul_start);
+ 806:../src/sam/services/flash_efc/flash_efc.c **** 
+ 807:../src/sam/services/flash_efc/flash_efc.c **** #ifdef EFC1
+ 808:../src/sam/services/flash_efc/flash_efc.c **** 	Assert(((ul_start >= IFLASH0_ADDR)
+ 809:../src/sam/services/flash_efc/flash_efc.c **** 				&& (ul_end <= IFLASH0_ADDR + IFLASH0_SIZE))
+ 810:../src/sam/services/flash_efc/flash_efc.c **** 				|| ((ul_start >= IFLASH1_ADDR)
+ 811:../src/sam/services/flash_efc/flash_efc.c **** 					&& (ul_end <= IFLASH1_ADDR + IFLASH1_SIZE)));
+ 812:../src/sam/services/flash_efc/flash_efc.c **** #else
+ 813:../src/sam/services/flash_efc/flash_efc.c **** 	Assert((ul_start >= IFLASH_ADDR)
+ 814:../src/sam/services/flash_efc/flash_efc.c **** 				&& (ul_end <= IFLASH_ADDR + IFLASH_SIZE));
+ 815:../src/sam/services/flash_efc/flash_efc.c **** #endif
+ 816:../src/sam/services/flash_efc/flash_efc.c **** 
+ 817:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute page numbers */
+ 818:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(&p_efc, ul_start, &us_start_page, 0);
+ 896              		.loc 1 818 0
+ 897 0006 0023     		movs	r3, #0
+ 898 0008 0DF10202 		add	r2, sp, #2
+ 899 000c 0146     		mov	r1, r0
+ 900              	.LVL111:
+ 901 000e 01A8     		add	r0, sp, #4
+ 902              	.LVL112:
+ 903 0010 FFF7FEFF 		bl	translate_address
+ 904              	.LVL113:
+ 819:../src/sam/services/flash_efc/flash_efc.c **** 	translate_address(0, ul_end, &us_end_page, 0);
+ 905              		.loc 1 819 0
+ 906 0014 0023     		movs	r3, #0
+ 907 0016 6A46     		mov	r2, sp
+ 908 0018 2146     		mov	r1, r4
+ 909 001a 1846     		mov	r0, r3
+ 910 001c FFF7FEFF 		bl	translate_address
+ 911              	.LVL114:
+ 820:../src/sam/services/flash_efc/flash_efc.c **** 
+ 821:../src/sam/services/flash_efc/flash_efc.c **** 	/* Compute region numbers */
+ 822:../src/sam/services/flash_efc/flash_efc.c **** 	us_num_pages_in_region = IFLASH_LOCK_REGION_SIZE / IFLASH_PAGE_SIZE;
+ 823:../src/sam/services/flash_efc/flash_efc.c **** 	uc_start_region = us_start_page / us_num_pages_in_region;
+ 912              		.loc 1 823 0
+ 913 0020 BDF80250 		ldrh	r5, [sp, #2]
+ 914 0024 C5F38715 		ubfx	r5, r5, #6, #8
+ 915              	.LVL115:
+ 824:../src/sam/services/flash_efc/flash_efc.c **** 	uc_end_region = us_end_page / us_num_pages_in_region;
+ 916              		.loc 1 824 0
+ 917 0028 BDF80030 		ldrh	r3, [sp]
+ 918 002c C3F38716 		ubfx	r6, r3, #6, #8
+ 919              	.LVL116:
+ 825:../src/sam/services/flash_efc/flash_efc.c **** 
+ 826:../src/sam/services/flash_efc/flash_efc.c **** 	/* Retrieve lock status */
+ 827:../src/sam/services/flash_efc/flash_efc.c **** 	ul_error = efc_perform_command(p_efc, EFC_FCMD_GLB, 0);
+ 920              		.loc 1 827 0
+ 921 0030 0022     		movs	r2, #0
+ 922 0032 0A21     		movs	r1, #10
+ 923 0034 0198     		ldr	r0, [sp, #4]
+ 924 0036 FFF7FEFF 		bl	efc_perform_command
+ 925              	.LVL117:
+ 828:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_error) {
+ 926              		.loc 1 828 0
+ 927 003a 20BB     		cbnz	r0, .L73
+ 829:../src/sam/services/flash_efc/flash_efc.c **** 		return ul_error;
+ 830:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 831:../src/sam/services/flash_efc/flash_efc.c ****     UNUSED(ul_error);
+ 832:../src/sam/services/flash_efc/flash_efc.c **** 
+ 833:../src/sam/services/flash_efc/flash_efc.c **** 	/* Skip unrequested regions (if necessary) */
+ 834:../src/sam/services/flash_efc/flash_efc.c **** 	ul_status = efc_get_result(p_efc);
+ 928              		.loc 1 834 0
+ 929 003c 0198     		ldr	r0, [sp, #4]
+ 930              	.LVL118:
+ 931 003e FFF7FEFF 		bl	efc_get_result
+ 932              	.LVL119:
+ 802:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_bit = 0;
+ 933              		.loc 1 802 0
+ 934 0042 0024     		movs	r4, #0
+ 935              	.LVL120:
+ 835:../src/sam/services/flash_efc/flash_efc.c **** 	while (!(ul_count <= uc_start_region &&
+ 936              		.loc 1 835 0
+ 937 0044 03E0     		b	.L67
+ 938              	.LVL121:
+ 939              	.L68:
+ 836:../src/sam/services/flash_efc/flash_efc.c **** 			uc_start_region < (ul_count + 32))) {
+ 837:../src/sam/services/flash_efc/flash_efc.c **** 		ul_status = efc_get_result(p_efc);
+ 940              		.loc 1 837 0
+ 941 0046 0198     		ldr	r0, [sp, #4]
+ 942              	.LVL122:
+ 943 0048 FFF7FEFF 		bl	efc_get_result
+ 944              	.LVL123:
+ 838:../src/sam/services/flash_efc/flash_efc.c **** 		ul_count += 32;
+ 945              		.loc 1 838 0
+ 946 004c 2034     		adds	r4, r4, #32
+ 947              	.LVL124:
+ 948              	.L67:
+ 835:../src/sam/services/flash_efc/flash_efc.c **** 	while (!(ul_count <= uc_start_region &&
+ 949              		.loc 1 835 0
+ 950 004e AC42     		cmp	r4, r5
+ 951 0050 F9D8     		bhi	.L68
+ 836:../src/sam/services/flash_efc/flash_efc.c **** 			uc_start_region < (ul_count + 32))) {
+ 952              		.loc 1 836 0 discriminator 1
+ 953 0052 04F12002 		add	r2, r4, #32
+ 835:../src/sam/services/flash_efc/flash_efc.c **** 	while (!(ul_count <= uc_start_region &&
+ 954              		.loc 1 835 0 discriminator 1
+ 955 0056 9542     		cmp	r5, r2
+ 956 0058 F5D2     		bcs	.L68
+ 839:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 840:../src/sam/services/flash_efc/flash_efc.c **** 
+ 841:../src/sam/services/flash_efc/flash_efc.c **** 	/* Check status of each involved region */
+ 842:../src/sam/services/flash_efc/flash_efc.c **** 	ul_bit = uc_start_region - ul_count;
+ 957              		.loc 1 842 0
+ 958 005a 2B1B     		subs	r3, r5, r4
+ 959              	.LVL125:
+ 843:../src/sam/services/flash_efc/flash_efc.c **** 
+ 844:../src/sam/services/flash_efc/flash_efc.c **** 	/* Number of region to check (must be > 0) */
+ 845:../src/sam/services/flash_efc/flash_efc.c **** 	ul_count = uc_end_region - uc_start_region + 1;
+ 960              		.loc 1 845 0
+ 961 005c 751B     		subs	r5, r6, r5
+ 962              	.LVL126:
+ 963 005e 0135     		adds	r5, r5, #1
+ 964              	.LVL127:
+ 801:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_count = 0;
+ 965              		.loc 1 801 0
+ 966 0060 0024     		movs	r4, #0
+ 846:../src/sam/services/flash_efc/flash_efc.c **** 
+ 847:../src/sam/services/flash_efc/flash_efc.c **** 	while (ul_count > 0) {
+ 967              		.loc 1 847 0
+ 968 0062 0CE0     		b	.L69
+ 969              	.LVL128:
+ 970              	.L72:
+ 848:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_status & (1 << (ul_bit))) {
+ 971              		.loc 1 848 0
+ 972 0064 0122     		movs	r2, #1
+ 973 0066 9A40     		lsls	r2, r2, r3
+ 974 0068 0242     		tst	r2, r0
+ 975 006a 00D0     		beq	.L70
+ 849:../src/sam/services/flash_efc/flash_efc.c **** 			ul_num_locked_regions++;
+ 976              		.loc 1 849 0
+ 977 006c 0134     		adds	r4, r4, #1
+ 978              	.LVL129:
+ 979              	.L70:
+ 850:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 851:../src/sam/services/flash_efc/flash_efc.c **** 
+ 852:../src/sam/services/flash_efc/flash_efc.c **** 		ul_count -= 1;
+ 980              		.loc 1 852 0
+ 981 006e 013D     		subs	r5, r5, #1
+ 982              	.LVL130:
+ 853:../src/sam/services/flash_efc/flash_efc.c **** 		ul_bit += 1;
+ 983              		.loc 1 853 0
+ 984 0070 0133     		adds	r3, r3, #1
+ 985              	.LVL131:
+ 854:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_bit == 32) {
+ 986              		.loc 1 854 0
+ 987 0072 202B     		cmp	r3, #32
+ 988 0074 03D1     		bne	.L69
+ 855:../src/sam/services/flash_efc/flash_efc.c **** 			ul_status = efc_get_result(p_efc);
+ 989              		.loc 1 855 0
+ 990 0076 0198     		ldr	r0, [sp, #4]
+ 991              	.LVL132:
+ 992 0078 FFF7FEFF 		bl	efc_get_result
+ 993              	.LVL133:
+ 856:../src/sam/services/flash_efc/flash_efc.c **** 			ul_bit = 0;
+ 994              		.loc 1 856 0
+ 995 007c 0023     		movs	r3, #0
+ 996              	.LVL134:
+ 997              	.L69:
+ 847:../src/sam/services/flash_efc/flash_efc.c **** 		if (ul_status & (1 << (ul_bit))) {
+ 998              		.loc 1 847 0
+ 999 007e 002D     		cmp	r5, #0
+ 1000 0080 F0D1     		bne	.L72
+ 857:../src/sam/services/flash_efc/flash_efc.c **** 		}
+ 858:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 859:../src/sam/services/flash_efc/flash_efc.c **** 
+ 860:../src/sam/services/flash_efc/flash_efc.c **** 	return ul_num_locked_regions;
+ 1001              		.loc 1 860 0
+ 1002 0082 2046     		mov	r0, r4
+ 1003              	.LVL135:
+ 1004 0084 FFE7     		b	.L66
+ 1005              	.LVL136:
+ 1006              	.L73:
+ 1007              	.L66:
+ 861:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1008              		.loc 1 861 0
+ 1009 0086 02B0     		add	sp, sp, #8
+ 1010              		.cfi_def_cfa_offset 16
+ 1011              		@ sp needed
+ 1012 0088 70BD     		pop	{r4, r5, r6, pc}
+ 1013              		.cfi_endproc
+ 1014              	.LFE108:
+ 1016 008a 00BF     		.section	.text.flash_is_gpnvm_set,"ax",%progbits
+ 1017              		.align	2
+ 1018              		.global	flash_is_gpnvm_set
+ 1019              		.thumb
+ 1020              		.thumb_func
+ 1022              	flash_is_gpnvm_set:
+ 1023              	.LFB111:
+ 862:../src/sam/services/flash_efc/flash_efc.c **** 
+ 863:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 864:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Set the given GPNVM bit.
+ 865:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 866:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_gpnvm GPNVM bit index.
+ 867:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 868:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 869:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 870:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_set_gpnvm(uint32_t ul_gpnvm)
+ 871:../src/sam/services/flash_efc/flash_efc.c **** {
+ 872:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 873:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 874:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 875:../src/sam/services/flash_efc/flash_efc.c **** 
+ 876:../src/sam/services/flash_efc/flash_efc.c **** 	if (FLASH_RC_YES == flash_is_gpnvm_set(ul_gpnvm)) {
+ 877:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 878:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 879:../src/sam/services/flash_efc/flash_efc.c **** 
+ 880:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK == efc_perform_command(EFC, EFC_FCMD_SGPB, ul_gpnvm)) {
+ 881:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 882:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 883:../src/sam/services/flash_efc/flash_efc.c **** 
+ 884:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_ERROR;
+ 885:../src/sam/services/flash_efc/flash_efc.c **** }
+ 886:../src/sam/services/flash_efc/flash_efc.c **** 
+ 887:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 888:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Clear the given GPNVM bit.
+ 889:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 890:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_gpnvm GPNVM bit index.
+ 891:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 892:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 893:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 894:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_clear_gpnvm(uint32_t ul_gpnvm)
+ 895:../src/sam/services/flash_efc/flash_efc.c **** {
+ 896:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 897:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 898:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 899:../src/sam/services/flash_efc/flash_efc.c **** 
+ 900:../src/sam/services/flash_efc/flash_efc.c **** 	if (FLASH_RC_NO == flash_is_gpnvm_set(ul_gpnvm)) {
+ 901:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 902:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 903:../src/sam/services/flash_efc/flash_efc.c **** 
+ 904:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK == efc_perform_command(EFC, EFC_FCMD_CGPB, ul_gpnvm)) {
+ 905:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 906:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 907:../src/sam/services/flash_efc/flash_efc.c **** 
+ 908:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_ERROR;
+ 909:../src/sam/services/flash_efc/flash_efc.c **** }
+ 910:../src/sam/services/flash_efc/flash_efc.c **** 
+ 911:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 912:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Check if the given GPNVM bit is set or not.
+ 913:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 914:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_gpnvm GPNVM bit index.
+ 915:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 916:../src/sam/services/flash_efc/flash_efc.c ****  * \retval 1 If the given GPNVM bit is currently set.
+ 917:../src/sam/services/flash_efc/flash_efc.c ****  * \retval 0 If the given GPNVM bit is currently cleared.
+ 918:../src/sam/services/flash_efc/flash_efc.c ****  * otherwise returns an error code.
+ 919:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 920:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_is_gpnvm_set(uint32_t ul_gpnvm)
+ 921:../src/sam/services/flash_efc/flash_efc.c **** {
+ 1024              		.loc 1 921 0
+ 1025              		.cfi_startproc
+ 1026              		@ args = 0, pretend = 0, frame = 0
+ 1027              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1028              	.LVL137:
+ 922:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_gpnvm_bits;
+ 923:../src/sam/services/flash_efc/flash_efc.c **** 
+ 924:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 1029              		.loc 1 924 0
+ 1030 0000 0128     		cmp	r0, #1
+ 1031 0002 11D8     		bhi	.L77
+ 921:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_gpnvm_bits;
+ 1032              		.loc 1 921 0
+ 1033 0004 10B5     		push	{r4, lr}
+ 1034              		.cfi_def_cfa_offset 8
+ 1035              		.cfi_offset 4, -8
+ 1036              		.cfi_offset 14, -4
+ 1037 0006 0446     		mov	r4, r0
+ 925:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 926:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 927:../src/sam/services/flash_efc/flash_efc.c **** 
+ 928:../src/sam/services/flash_efc/flash_efc.c **** 	if (EFC_RC_OK != efc_perform_command(EFC, EFC_FCMD_GGPB, 0)) {
+ 1038              		.loc 1 928 0
+ 1039 0008 0022     		movs	r2, #0
+ 1040 000a 0D21     		movs	r1, #13
+ 1041 000c 0848     		ldr	r0, .L80
+ 1042              	.LVL138:
+ 1043 000e FFF7FEFF 		bl	efc_perform_command
+ 1044              	.LVL139:
+ 1045 0012 58B9     		cbnz	r0, .L78
+ 929:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 930:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 931:../src/sam/services/flash_efc/flash_efc.c **** 
+ 932:../src/sam/services/flash_efc/flash_efc.c **** 	ul_gpnvm_bits = efc_get_result(EFC);
+ 1046              		.loc 1 932 0
+ 1047 0014 0648     		ldr	r0, .L80
+ 1048 0016 FFF7FEFF 		bl	efc_get_result
+ 1049              	.LVL140:
+ 933:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm_bits & (1 << ul_gpnvm)) {
+ 1050              		.loc 1 933 0
+ 1051 001a 0123     		movs	r3, #1
+ 1052 001c 03FA04F4 		lsl	r4, r3, r4
+ 1053              	.LVL141:
+ 1054 0020 2040     		ands	r0, r4, r0
+ 1055              	.LVL142:
+ 1056 0022 04D0     		beq	.L76
+ 934:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_YES;
+ 1057              		.loc 1 934 0
+ 1058 0024 1846     		mov	r0, r3
+ 1059 0026 10BD     		pop	{r4, pc}
+ 1060              	.LVL143:
+ 1061              	.L77:
+ 1062              		.cfi_def_cfa_offset 0
+ 1063              		.cfi_restore 4
+ 1064              		.cfi_restore 14
+ 925:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1065              		.loc 1 925 0
+ 1066 0028 1120     		movs	r0, #17
+ 1067              	.LVL144:
+ 935:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 936:../src/sam/services/flash_efc/flash_efc.c **** 
+ 937:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_NO;
+ 938:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1068              		.loc 1 938 0
+ 1069 002a 7047     		bx	lr
+ 1070              	.LVL145:
+ 1071              	.L78:
+ 1072              		.cfi_def_cfa_offset 8
+ 1073              		.cfi_offset 4, -8
+ 1074              		.cfi_offset 14, -4
+ 929:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1075              		.loc 1 929 0
+ 1076 002c 1020     		movs	r0, #16
+ 1077              	.LVL146:
+ 1078              	.L76:
+ 1079              		.loc 1 938 0
+ 1080 002e 10BD     		pop	{r4, pc}
+ 1081              	.L81:
+ 1082              		.align	2
+ 1083              	.L80:
+ 1084 0030 000A0E40 		.word	1074661888
+ 1085              		.cfi_endproc
+ 1086              	.LFE111:
+ 1088              		.section	.text.flash_set_gpnvm,"ax",%progbits
+ 1089              		.align	2
+ 1090              		.global	flash_set_gpnvm
+ 1091              		.thumb
+ 1092              		.thumb_func
+ 1094              	flash_set_gpnvm:
+ 1095              	.LFB109:
+ 871:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 1096              		.loc 1 871 0
+ 1097              		.cfi_startproc
+ 1098              		@ args = 0, pretend = 0, frame = 0
+ 1099              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1100              	.LVL147:
+ 872:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 1101              		.loc 1 872 0
+ 1102 0000 0128     		cmp	r0, #1
+ 1103 0002 0DD8     		bhi	.L84
+ 871:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 1104              		.loc 1 871 0
+ 1105 0004 10B5     		push	{r4, lr}
+ 1106              		.cfi_def_cfa_offset 8
+ 1107              		.cfi_offset 4, -8
+ 1108              		.cfi_offset 14, -4
+ 1109 0006 0446     		mov	r4, r0
+ 876:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 1110              		.loc 1 876 0
+ 1111 0008 FFF7FEFF 		bl	flash_is_gpnvm_set
+ 1112              	.LVL148:
+ 1113 000c 0128     		cmp	r0, #1
+ 1114 000e 0AD0     		beq	.L85
+ 880:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 1115              		.loc 1 880 0
+ 1116 0010 2246     		mov	r2, r4
+ 1117 0012 0B21     		movs	r1, #11
+ 1118 0014 0648     		ldr	r0, .L88
+ 1119 0016 FFF7FEFF 		bl	efc_perform_command
+ 1120              	.LVL149:
+ 1121 001a 0346     		mov	r3, r0
+ 1122 001c 28B9     		cbnz	r0, .L86
+ 1123 001e 05E0     		b	.L83
+ 1124              	.LVL150:
+ 1125              	.L84:
+ 1126              		.cfi_def_cfa_offset 0
+ 1127              		.cfi_restore 4
+ 1128              		.cfi_restore 14
+ 873:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1129              		.loc 1 873 0
+ 1130 0020 1123     		movs	r3, #17
+ 885:../src/sam/services/flash_efc/flash_efc.c **** 
+ 1131              		.loc 1 885 0
+ 1132 0022 1846     		mov	r0, r3
+ 1133              	.LVL151:
+ 1134 0024 7047     		bx	lr
+ 1135              	.LVL152:
+ 1136              	.L85:
+ 1137              		.cfi_def_cfa_offset 8
+ 1138              		.cfi_offset 4, -8
+ 1139              		.cfi_offset 14, -4
+ 877:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1140              		.loc 1 877 0
+ 1141 0026 0023     		movs	r3, #0
+ 1142 0028 00E0     		b	.L83
+ 1143              	.L86:
+ 884:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1144              		.loc 1 884 0
+ 1145 002a 1023     		movs	r3, #16
+ 1146              	.L83:
+ 885:../src/sam/services/flash_efc/flash_efc.c **** 
+ 1147              		.loc 1 885 0
+ 1148 002c 1846     		mov	r0, r3
+ 1149 002e 10BD     		pop	{r4, pc}
+ 1150              	.LVL153:
+ 1151              	.L89:
+ 1152              		.align	2
+ 1153              	.L88:
+ 1154 0030 000A0E40 		.word	1074661888
+ 1155              		.cfi_endproc
+ 1156              	.LFE109:
+ 1158              		.section	.text.flash_clear_gpnvm,"ax",%progbits
+ 1159              		.align	2
+ 1160              		.global	flash_clear_gpnvm
+ 1161              		.thumb
+ 1162              		.thumb_func
+ 1164              	flash_clear_gpnvm:
+ 1165              	.LFB110:
+ 895:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 1166              		.loc 1 895 0
+ 1167              		.cfi_startproc
+ 1168              		@ args = 0, pretend = 0, frame = 0
+ 1169              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1170              	.LVL154:
+ 896:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_INVALID;
+ 1171              		.loc 1 896 0
+ 1172 0000 0128     		cmp	r0, #1
+ 1173 0002 0DD8     		bhi	.L92
+ 895:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_gpnvm >= GPNVM_NUM_MAX) {
+ 1174              		.loc 1 895 0
+ 1175 0004 10B5     		push	{r4, lr}
+ 1176              		.cfi_def_cfa_offset 8
+ 1177              		.cfi_offset 4, -8
+ 1178              		.cfi_offset 14, -4
+ 1179 0006 0446     		mov	r4, r0
+ 900:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 1180              		.loc 1 900 0
+ 1181 0008 FFF7FEFF 		bl	flash_is_gpnvm_set
+ 1182              	.LVL155:
+ 1183 000c 0346     		mov	r3, r0
+ 1184 000e 58B1     		cbz	r0, .L91
+ 904:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_OK;
+ 1185              		.loc 1 904 0
+ 1186 0010 2246     		mov	r2, r4
+ 1187 0012 0C21     		movs	r1, #12
+ 1188 0014 0548     		ldr	r0, .L95
+ 1189 0016 FFF7FEFF 		bl	efc_perform_command
+ 1190              	.LVL156:
+ 1191 001a 0346     		mov	r3, r0
+ 1192 001c 18B9     		cbnz	r0, .L93
+ 1193 001e 03E0     		b	.L91
+ 1194              	.LVL157:
+ 1195              	.L92:
+ 1196              		.cfi_def_cfa_offset 0
+ 1197              		.cfi_restore 4
+ 1198              		.cfi_restore 14
+ 897:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1199              		.loc 1 897 0
+ 1200 0020 1123     		movs	r3, #17
+ 909:../src/sam/services/flash_efc/flash_efc.c **** 
+ 1201              		.loc 1 909 0
+ 1202 0022 1846     		mov	r0, r3
+ 1203              	.LVL158:
+ 1204 0024 7047     		bx	lr
+ 1205              	.LVL159:
+ 1206              	.L93:
+ 1207              		.cfi_def_cfa_offset 8
+ 1208              		.cfi_offset 4, -8
+ 1209              		.cfi_offset 14, -4
+ 908:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1210              		.loc 1 908 0
+ 1211 0026 1023     		movs	r3, #16
+ 1212              	.L91:
+ 909:../src/sam/services/flash_efc/flash_efc.c **** 
+ 1213              		.loc 1 909 0
+ 1214 0028 1846     		mov	r0, r3
+ 1215 002a 10BD     		pop	{r4, pc}
+ 1216              	.LVL160:
+ 1217              	.L96:
+ 1218              		.align	2
+ 1219              	.L95:
+ 1220 002c 000A0E40 		.word	1074661888
+ 1221              		.cfi_endproc
+ 1222              	.LFE110:
+ 1224              		.section	.text.flash_enable_security_bit,"ax",%progbits
+ 1225              		.align	2
+ 1226              		.global	flash_enable_security_bit
+ 1227              		.thumb
+ 1228              		.thumb_func
+ 1230              	flash_enable_security_bit:
+ 1231              	.LFB112:
+ 939:../src/sam/services/flash_efc/flash_efc.c **** 
+ 940:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 941:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Set security bit.
+ 942:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 943:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 944:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 945:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_enable_security_bit(void)
+ 946:../src/sam/services/flash_efc/flash_efc.c **** {
+ 1232              		.loc 1 946 0
+ 1233              		.cfi_startproc
+ 1234              		@ args = 0, pretend = 0, frame = 0
+ 1235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1236 0000 08B5     		push	{r3, lr}
+ 1237              		.cfi_def_cfa_offset 8
+ 1238              		.cfi_offset 3, -8
+ 1239              		.cfi_offset 14, -4
+ 947:../src/sam/services/flash_efc/flash_efc.c **** 	return flash_set_gpnvm(0);
+ 1240              		.loc 1 947 0
+ 1241 0002 0020     		movs	r0, #0
+ 1242 0004 FFF7FEFF 		bl	flash_set_gpnvm
+ 1243              	.LVL161:
+ 948:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1244              		.loc 1 948 0
+ 1245 0008 08BD     		pop	{r3, pc}
+ 1246              		.cfi_endproc
+ 1247              	.LFE112:
+ 1249 000a 00BF     		.section	.text.flash_is_security_bit_enabled,"ax",%progbits
+ 1250              		.align	2
+ 1251              		.global	flash_is_security_bit_enabled
+ 1252              		.thumb
+ 1253              		.thumb_func
+ 1255              	flash_is_security_bit_enabled:
+ 1256              	.LFB113:
+ 949:../src/sam/services/flash_efc/flash_efc.c **** 
+ 950:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 951:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Check if the security bit is set or not.
+ 952:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 953:../src/sam/services/flash_efc/flash_efc.c ****  * \retval 1 If the security bit is currently set.
+ 954:../src/sam/services/flash_efc/flash_efc.c ****  * \retval 0 If the security bit is currently cleared.
+ 955:../src/sam/services/flash_efc/flash_efc.c ****  * otherwise returns an error code.
+ 956:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 957:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_is_security_bit_enabled(void)
+ 958:../src/sam/services/flash_efc/flash_efc.c **** {
+ 1257              		.loc 1 958 0
+ 1258              		.cfi_startproc
+ 1259              		@ args = 0, pretend = 0, frame = 0
+ 1260              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1261 0000 08B5     		push	{r3, lr}
+ 1262              		.cfi_def_cfa_offset 8
+ 1263              		.cfi_offset 3, -8
+ 1264              		.cfi_offset 14, -4
+ 959:../src/sam/services/flash_efc/flash_efc.c **** 	return flash_is_gpnvm_set(0);
+ 1265              		.loc 1 959 0
+ 1266 0002 0020     		movs	r0, #0
+ 1267 0004 FFF7FEFF 		bl	flash_is_gpnvm_set
+ 1268              	.LVL162:
+ 960:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1269              		.loc 1 960 0
+ 1270 0008 08BD     		pop	{r3, pc}
+ 1271              		.cfi_endproc
+ 1272              	.LFE113:
+ 1274 000a 00BF     		.section	.text.flash_read_unique_id,"ax",%progbits
+ 1275              		.align	2
+ 1276              		.global	flash_read_unique_id
+ 1277              		.thumb
+ 1278              		.thumb_func
+ 1280              	flash_read_unique_id:
+ 1281              	.LFB114:
+ 961:../src/sam/services/flash_efc/flash_efc.c **** 
+ 962:../src/sam/services/flash_efc/flash_efc.c **** /**
+ 963:../src/sam/services/flash_efc/flash_efc.c ****  * \brief Read the flash unique ID.
+ 964:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 965:../src/sam/services/flash_efc/flash_efc.c ****  * \param pul_data Pointer to a data buffer to store 128-bit unique ID.
+ 966:../src/sam/services/flash_efc/flash_efc.c ****  * \param ul_size Data buffer size in DWORD.
+ 967:../src/sam/services/flash_efc/flash_efc.c ****  *
+ 968:../src/sam/services/flash_efc/flash_efc.c ****  * \return 0 if successful; otherwise returns an error code.
+ 969:../src/sam/services/flash_efc/flash_efc.c ****  */
+ 970:../src/sam/services/flash_efc/flash_efc.c **** uint32_t flash_read_unique_id(uint32_t *pul_data, uint32_t ul_size)
+ 971:../src/sam/services/flash_efc/flash_efc.c **** {
+ 1282              		.loc 1 971 0
+ 1283              		.cfi_startproc
+ 1284              		@ args = 0, pretend = 0, frame = 16
+ 1285              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1286              	.LVL163:
+ 1287 0000 30B5     		push	{r4, r5, lr}
+ 1288              		.cfi_def_cfa_offset 12
+ 1289              		.cfi_offset 4, -12
+ 1290              		.cfi_offset 5, -8
+ 1291              		.cfi_offset 14, -4
+ 1292 0002 87B0     		sub	sp, sp, #28
+ 1293              		.cfi_def_cfa_offset 40
+ 1294 0004 0546     		mov	r5, r0
+ 1295 0006 0C46     		mov	r4, r1
+ 972:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t uid_buf[4];
+ 973:../src/sam/services/flash_efc/flash_efc.c **** 	uint32_t ul_idx;
+ 974:../src/sam/services/flash_efc/flash_efc.c **** 
+ 975:../src/sam/services/flash_efc/flash_efc.c **** 	if (FLASH_RC_OK != efc_perform_read_sequence(EFC, EFC_FCMD_STUI,
+ 1296              		.loc 1 975 0
+ 1297 0008 0423     		movs	r3, #4
+ 1298 000a 0093     		str	r3, [sp]
+ 1299 000c 02AB     		add	r3, sp, #8
+ 1300 000e 0F22     		movs	r2, #15
+ 1301 0010 0E21     		movs	r1, #14
+ 1302              	.LVL164:
+ 1303 0012 0C48     		ldr	r0, .L109
+ 1304              	.LVL165:
+ 1305 0014 FFF7FEFF 		bl	efc_perform_read_sequence
+ 1306              	.LVL166:
+ 1307 0018 80B9     		cbnz	r0, .L106
+ 1308 001a 0246     		mov	r2, r0
+ 976:../src/sam/services/flash_efc/flash_efc.c **** 			EFC_FCMD_SPUI, uid_buf, 4)) {
+ 977:../src/sam/services/flash_efc/flash_efc.c **** 		return FLASH_RC_ERROR;
+ 978:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 979:../src/sam/services/flash_efc/flash_efc.c **** 
+ 980:../src/sam/services/flash_efc/flash_efc.c **** 	if (ul_size > 4) {
+ 1309              		.loc 1 980 0
+ 1310 001c 042C     		cmp	r4, #4
+ 1311 001e 00D9     		bls	.L103
+ 981:../src/sam/services/flash_efc/flash_efc.c **** 		/* Only 4 dword to store unique ID */
+ 982:../src/sam/services/flash_efc/flash_efc.c **** 		ul_size = 4;
+ 1312              		.loc 1 982 0
+ 1313 0020 0424     		movs	r4, #4
+ 1314              	.LVL167:
+ 1315              	.L103:
+ 983:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 984:../src/sam/services/flash_efc/flash_efc.c **** 
+ 985:../src/sam/services/flash_efc/flash_efc.c **** 	for (ul_idx = 0; ul_idx < ul_size; ul_idx++) {
+ 1316              		.loc 1 985 0
+ 1317 0022 0023     		movs	r3, #0
+ 1318 0024 07E0     		b	.L104
+ 1319              	.LVL168:
+ 1320              	.L105:
+ 986:../src/sam/services/flash_efc/flash_efc.c **** 		pul_data[ul_idx] = uid_buf[ul_idx];
+ 1321              		.loc 1 986 0 discriminator 3
+ 1322 0026 06A9     		add	r1, sp, #24
+ 1323 0028 01EB8301 		add	r1, r1, r3, lsl #2
+ 1324 002c 51F8101C 		ldr	r1, [r1, #-16]
+ 1325 0030 45F82310 		str	r1, [r5, r3, lsl #2]
+ 985:../src/sam/services/flash_efc/flash_efc.c **** 		pul_data[ul_idx] = uid_buf[ul_idx];
+ 1326              		.loc 1 985 0 discriminator 3
+ 1327 0034 0133     		adds	r3, r3, #1
+ 1328              	.LVL169:
+ 1329              	.L104:
+ 985:../src/sam/services/flash_efc/flash_efc.c **** 		pul_data[ul_idx] = uid_buf[ul_idx];
+ 1330              		.loc 1 985 0 is_stmt 0 discriminator 1
+ 1331 0036 9C42     		cmp	r4, r3
+ 1332 0038 F5D8     		bhi	.L105
+ 1333 003a 00E0     		b	.L102
+ 1334              	.LVL170:
+ 1335              	.L106:
+ 977:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 1336              		.loc 1 977 0 is_stmt 1
+ 1337 003c 1022     		movs	r2, #16
+ 1338              	.L102:
+ 987:../src/sam/services/flash_efc/flash_efc.c **** 	}
+ 988:../src/sam/services/flash_efc/flash_efc.c **** 
+ 989:../src/sam/services/flash_efc/flash_efc.c **** 	return FLASH_RC_OK;
+ 990:../src/sam/services/flash_efc/flash_efc.c **** }
+ 1339              		.loc 1 990 0
+ 1340 003e 1046     		mov	r0, r2
+ 1341 0040 07B0     		add	sp, sp, #28
+ 1342              		.cfi_def_cfa_offset 12
+ 1343              		@ sp needed
+ 1344 0042 30BD     		pop	{r4, r5, pc}
+ 1345              	.LVL171:
+ 1346              	.L110:
+ 1347              		.align	2
+ 1348              	.L109:
+ 1349 0044 000A0E40 		.word	1074661888
+ 1350              		.cfi_endproc
+ 1351              	.LFE114:
+ 1353              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 1354              		.align	2
+ 1357              	cpu_irq_critical_section_counter:
+ 1358 0000 00000000 		.space	4
+ 1359              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 1362              	cpu_irq_prev_interrupt_state:
+ 1363 0000 00       		.space	1
+ 1364              		.section	.bss.gs_ul_page_buffer,"aw",%nobits
+ 1365              		.align	2
+ 1366              		.set	.LANCHOR0,. + 0
+ 1369              	gs_ul_page_buffer:
+ 1370 0000 00000000 		.space	256
+ 1370      00000000 
+ 1370      00000000 
+ 1370      00000000 
+ 1370      00000000 
+ 1371              		.text
+ 1372              	.Letext0:
+ 1373              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 1374              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 1375              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 1376              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_efc.h"
+ 1377              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/efc.h"
+ 1378              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/flash_efc.h"
+ 1379              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/pll.h"
+ 1380              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h"
+ 1381              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 1382              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 flash_efc.c
+     /tmp/ccYugTZd.s:20     .text.translate_address:00000000 $t
+     /tmp/ccYugTZd.s:24     .text.translate_address:00000000 translate_address
+     /tmp/ccYugTZd.s:74     .text.translate_address:00000020 $d
+     /tmp/ccYugTZd.s:79     .text.compute_address:00000000 $t
+     /tmp/ccYugTZd.s:83     .text.compute_address:00000000 compute_address
+     /tmp/ccYugTZd.s:106    .text.compute_lock_range:00000000 $t
+     /tmp/ccYugTZd.s:110    .text.compute_lock_range:00000000 compute_lock_range
+     /tmp/ccYugTZd.s:149    .text.flash_init:00000000 $t
+     /tmp/ccYugTZd.s:154    .text.flash_init:00000000 flash_init
+     /tmp/ccYugTZd.s:179    .text.flash_init:00000010 $d
+     /tmp/ccYugTZd.s:184    .text.flash_set_wait_state:00000000 $t
+     /tmp/ccYugTZd.s:189    .text.flash_set_wait_state:00000000 flash_set_wait_state
+     /tmp/ccYugTZd.s:227    .text.flash_set_wait_state_adaptively:00000000 $t
+     /tmp/ccYugTZd.s:232    .text.flash_set_wait_state_adaptively:00000000 flash_set_wait_state_adaptively
+     /tmp/ccYugTZd.s:267    .text.flash_get_wait_state:00000000 $t
+     /tmp/ccYugTZd.s:272    .text.flash_get_wait_state:00000000 flash_get_wait_state
+     /tmp/ccYugTZd.s:305    .text.flash_get_descriptor:00000000 $t
+     /tmp/ccYugTZd.s:310    .text.flash_get_descriptor:00000000 flash_get_descriptor
+     /tmp/ccYugTZd.s:392    .text.flash_get_page_count:00000000 $t
+     /tmp/ccYugTZd.s:397    .text.flash_get_page_count:00000000 flash_get_page_count
+     /tmp/ccYugTZd.s:416    .text.flash_get_page_count_per_region:00000000 $t
+     /tmp/ccYugTZd.s:421    .text.flash_get_page_count_per_region:00000000 flash_get_page_count_per_region
+     /tmp/ccYugTZd.s:440    .text.flash_get_region_count:00000000 $t
+     /tmp/ccYugTZd.s:445    .text.flash_get_region_count:00000000 flash_get_region_count
+     /tmp/ccYugTZd.s:461    .text.flash_erase_all:00000000 $t
+     /tmp/ccYugTZd.s:466    .text.flash_erase_all:00000000 flash_erase_all
+     /tmp/ccYugTZd.s:507    .text.flash_write:00000000 $t
+     /tmp/ccYugTZd.s:512    .text.flash_write:00000000 flash_write
+     /tmp/ccYugTZd.s:687    .text.flash_write:000000e8 $d
+     /tmp/ccYugTZd.s:692    .text.flash_lock:00000000 $t
+     /tmp/ccYugTZd.s:697    .text.flash_lock:00000000 flash_lock
+     /tmp/ccYugTZd.s:783    .text.flash_unlock:00000000 $t
+     /tmp/ccYugTZd.s:788    .text.flash_unlock:00000000 flash_unlock
+     /tmp/ccYugTZd.s:874    .text.flash_is_locked:00000000 $t
+     /tmp/ccYugTZd.s:879    .text.flash_is_locked:00000000 flash_is_locked
+     /tmp/ccYugTZd.s:1017   .text.flash_is_gpnvm_set:00000000 $t
+     /tmp/ccYugTZd.s:1022   .text.flash_is_gpnvm_set:00000000 flash_is_gpnvm_set
+     /tmp/ccYugTZd.s:1084   .text.flash_is_gpnvm_set:00000030 $d
+     /tmp/ccYugTZd.s:1089   .text.flash_set_gpnvm:00000000 $t
+     /tmp/ccYugTZd.s:1094   .text.flash_set_gpnvm:00000000 flash_set_gpnvm
+     /tmp/ccYugTZd.s:1154   .text.flash_set_gpnvm:00000030 $d
+     /tmp/ccYugTZd.s:1159   .text.flash_clear_gpnvm:00000000 $t
+     /tmp/ccYugTZd.s:1164   .text.flash_clear_gpnvm:00000000 flash_clear_gpnvm
+     /tmp/ccYugTZd.s:1220   .text.flash_clear_gpnvm:0000002c $d
+     /tmp/ccYugTZd.s:1225   .text.flash_enable_security_bit:00000000 $t
+     /tmp/ccYugTZd.s:1230   .text.flash_enable_security_bit:00000000 flash_enable_security_bit
+     /tmp/ccYugTZd.s:1250   .text.flash_is_security_bit_enabled:00000000 $t
+     /tmp/ccYugTZd.s:1255   .text.flash_is_security_bit_enabled:00000000 flash_is_security_bit_enabled
+     /tmp/ccYugTZd.s:1275   .text.flash_read_unique_id:00000000 $t
+     /tmp/ccYugTZd.s:1280   .text.flash_read_unique_id:00000000 flash_read_unique_id
+     /tmp/ccYugTZd.s:1349   .text.flash_read_unique_id:00000044 $d
+     /tmp/ccYugTZd.s:1354   .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccYugTZd.s:1357   .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccYugTZd.s:1362   .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccYugTZd.s:1363   .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccYugTZd.s:1365   .bss.gs_ul_page_buffer:00000000 $d
+     /tmp/ccYugTZd.s:1369   .bss.gs_ul_page_buffer:00000000 gs_ul_page_buffer
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4._default_types.h.6.35ee9e747940367bf2a634907d1c2382
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.assert.h.11.db24e541f16414db224bf986d21017e2
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.efc.h.48.e39dd8c0cbc4f5e89308c617721a0710
+                           .group:00000000 wm4.flash_efc.h.93.b6a2484f51c1de2b3aa071715efbf660
+                           .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
+                           .group:00000000 wm4.board.h.51.4ac0d93faa32d5a56598d2df92d1abff
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
+                           .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
+                           .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308
+                           .group:00000000 wm4.sysclk.h.240.cfab6246305f0088614c69f722fe0ee0
+
+UNDEFINED SYMBOLS
+efc_init
+efc_set_wait_state
+efc_get_wait_state
+efc_perform_command
+efc_get_result
+memcpy
+efc_perform_read_sequence

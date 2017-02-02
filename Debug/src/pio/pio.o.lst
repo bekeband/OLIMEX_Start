@@ -1,0 +1,3334 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"pio.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.pio_pull_up,"ax",%progbits
+  20              		.align	2
+  21              		.global	pio_pull_up
+  22              		.thumb
+  23              		.thumb_func
+  25              	pio_pull_up:
+  26              	.LFB73:
+  27              		.file 1 "../src/pio/pio.c"
+   1:../src/pio/pio.c **** /**
+   2:../src/pio/pio.c ****  * \file
+   3:../src/pio/pio.c ****  *
+   4:../src/pio/pio.c ****  * \brief Parallel Input/Output (PIO) Controller driver for SAM.
+   5:../src/pio/pio.c ****  *
+   6:../src/pio/pio.c ****  * Copyright (c) 2011-2016 Atmel Corporation. All rights reserved.
+   7:../src/pio/pio.c ****  *
+   8:../src/pio/pio.c ****  * \asf_license_start
+   9:../src/pio/pio.c ****  *
+  10:../src/pio/pio.c ****  * \page License
+  11:../src/pio/pio.c ****  *
+  12:../src/pio/pio.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/pio/pio.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/pio/pio.c ****  *
+  15:../src/pio/pio.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/pio/pio.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/pio/pio.c ****  *
+  18:../src/pio/pio.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/pio/pio.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/pio/pio.c ****  *    and/or other materials provided with the distribution.
+  21:../src/pio/pio.c ****  *
+  22:../src/pio/pio.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/pio/pio.c ****  *    from this software without specific prior written permission.
+  24:../src/pio/pio.c ****  *
+  25:../src/pio/pio.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/pio/pio.c ****  *    Atmel microcontroller product.
+  27:../src/pio/pio.c ****  *
+  28:../src/pio/pio.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/pio/pio.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/pio/pio.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/pio/pio.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/pio/pio.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/pio/pio.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/pio/pio.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/pio/pio.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/pio/pio.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/pio/pio.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/pio/pio.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/pio/pio.c ****  *
+  40:../src/pio/pio.c ****  * \asf_license_stop
+  41:../src/pio/pio.c ****  *
+  42:../src/pio/pio.c ****  */
+  43:../src/pio/pio.c **** /*
+  44:../src/pio/pio.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/pio/pio.c ****  */
+  46:../src/pio/pio.c **** 
+  47:../src/pio/pio.c **** #include "pio.h"
+  48:../src/pio/pio.c **** 
+  49:../src/pio/pio.c **** #ifndef PIO_WPMR_WPKEY_PASSWD
+  50:../src/pio/pio.c **** #  define PIO_WPMR_WPKEY_PASSWD PIO_WPMR_WPKEY(0x50494Fu)
+  51:../src/pio/pio.c **** #endif
+  52:../src/pio/pio.c **** 
+  53:../src/pio/pio.c **** /**
+  54:../src/pio/pio.c ****  * \defgroup sam_drivers_pio_group Peripheral Parallel Input/Output (PIO) Controller
+  55:../src/pio/pio.c ****  *
+  56:../src/pio/pio.c ****  * \par Purpose
+  57:../src/pio/pio.c ****  *
+  58:../src/pio/pio.c ****  * The Parallel Input/Output Controller (PIO) manages up to 32 fully
+  59:../src/pio/pio.c ****  * programmable input/output lines. Each I/O line may be dedicated as a
+  60:../src/pio/pio.c ****  * general-purpose I/O or be assigned to a function of an embedded peripheral.
+  61:../src/pio/pio.c ****  * This assures effective optimization of the pins of a product.
+  62:../src/pio/pio.c ****  *
+  63:../src/pio/pio.c ****  * @{
+  64:../src/pio/pio.c ****  */
+  65:../src/pio/pio.c **** 
+  66:../src/pio/pio.c **** #ifndef FREQ_SLOW_CLOCK_EXT
+  67:../src/pio/pio.c **** /* External slow clock frequency (hz) */
+  68:../src/pio/pio.c **** #define FREQ_SLOW_CLOCK_EXT 32768
+  69:../src/pio/pio.c **** #endif
+  70:../src/pio/pio.c **** 
+  71:../src/pio/pio.c **** /**
+  72:../src/pio/pio.c ****  * \brief Configure PIO internal pull-up.
+  73:../src/pio/pio.c ****  *
+  74:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+  75:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+  76:../src/pio/pio.c ****  * \param ul_pull_up_enable Indicates if the pin(s) internal pull-up shall be
+  77:../src/pio/pio.c ****  * configured.
+  78:../src/pio/pio.c ****  */
+  79:../src/pio/pio.c **** void pio_pull_up(Pio *p_pio, const uint32_t ul_mask,
+  80:../src/pio/pio.c **** 		const uint32_t ul_pull_up_enable)
+  81:../src/pio/pio.c **** {
+  28              		.loc 1 81 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  82:../src/pio/pio.c **** 	/* Enable the pull-up(s) if necessary */
+  83:../src/pio/pio.c **** 	if (ul_pull_up_enable) {
+  34              		.loc 1 83 0
+  35 0000 0AB1     		cbz	r2, .L2
+  84:../src/pio/pio.c **** 		p_pio->PIO_PUER = ul_mask;
+  36              		.loc 1 84 0
+  37 0002 4166     		str	r1, [r0, #100]
+  38 0004 7047     		bx	lr
+  39              	.L2:
+  85:../src/pio/pio.c **** 	} else {
+  86:../src/pio/pio.c **** 		p_pio->PIO_PUDR = ul_mask;
+  40              		.loc 1 86 0
+  41 0006 0166     		str	r1, [r0, #96]
+  42 0008 7047     		bx	lr
+  43              		.cfi_endproc
+  44              	.LFE73:
+  46 000a 00BF     		.section	.text.pio_set_debounce_filter,"ax",%progbits
+  47              		.align	2
+  48              		.global	pio_set_debounce_filter
+  49              		.thumb
+  50              		.thumb_func
+  52              	pio_set_debounce_filter:
+  53              	.LFB74:
+  87:../src/pio/pio.c **** 	}
+  88:../src/pio/pio.c **** }
+  89:../src/pio/pio.c **** 
+  90:../src/pio/pio.c **** /**
+  91:../src/pio/pio.c ****  * \brief Configure Glitch or Debouncing filter for the specified input(s).
+  92:../src/pio/pio.c ****  *
+  93:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+  94:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+  95:../src/pio/pio.c ****  * \param ul_cut_off Cuts off frequency for debouncing filter.
+  96:../src/pio/pio.c ****  */
+  97:../src/pio/pio.c **** void pio_set_debounce_filter(Pio *p_pio, const uint32_t ul_mask,
+  98:../src/pio/pio.c **** 		const uint32_t ul_cut_off)
+  99:../src/pio/pio.c **** {
+  54              		.loc 1 99 0
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 0, uses_anonymous_args = 0
+  58              		@ link register save eliminated.
+  59              	.LVL1:
+ 100:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || SAMV71 || SA
+ 101:../src/pio/pio.c **** 	/* Set Debouncing, 0 bit field no effect */
+ 102:../src/pio/pio.c **** 	p_pio->PIO_IFSCER = ul_mask;
+  60              		.loc 1 102 0
+  61 0000 C0F88410 		str	r1, [r0, #132]
+ 103:../src/pio/pio.c **** #elif (SAM3XA || SAM3U)
+ 104:../src/pio/pio.c **** 	/* Set Debouncing, 0 bit field no effect */
+ 105:../src/pio/pio.c **** 	p_pio->PIO_DIFSR = ul_mask;
+ 106:../src/pio/pio.c **** #else
+ 107:../src/pio/pio.c **** #error "Unsupported device"
+ 108:../src/pio/pio.c **** #endif
+ 109:../src/pio/pio.c **** 
+ 110:../src/pio/pio.c **** 	/*
+ 111:../src/pio/pio.c **** 	 * The debouncing filter can filter a pulse of less than 1/2 Period of a
+ 112:../src/pio/pio.c **** 	 * programmable Divided Slow Clock:
+ 113:../src/pio/pio.c **** 	 * Tdiv_slclk = ((DIV+1)*2).Tslow_clock
+ 114:../src/pio/pio.c **** 	 */
+ 115:../src/pio/pio.c **** 	p_pio->PIO_SCDR = PIO_SCDR_DIV((FREQ_SLOW_CLOCK_EXT /
+  62              		.loc 1 115 0
+  63 0004 5200     		lsls	r2, r2, #1
+  64              	.LVL2:
+  65 0006 4FF40043 		mov	r3, #32768
+  66 000a B3FBF2F2 		udiv	r2, r3, r2
+  67 000e 013A     		subs	r2, r2, #1
+  68 0010 C2F30D02 		ubfx	r2, r2, #0, #14
+  69 0014 C0F88C20 		str	r2, [r0, #140]
+  70 0018 7047     		bx	lr
+  71              		.cfi_endproc
+  72              	.LFE74:
+  74 001a 00BF     		.section	.text.pio_set,"ax",%progbits
+  75              		.align	2
+  76              		.global	pio_set
+  77              		.thumb
+  78              		.thumb_func
+  80              	pio_set:
+  81              	.LFB75:
+ 116:../src/pio/pio.c **** 			(2 * (ul_cut_off))) - 1);
+ 117:../src/pio/pio.c **** }
+ 118:../src/pio/pio.c **** 
+ 119:../src/pio/pio.c **** /**
+ 120:../src/pio/pio.c ****  * \brief Set a high output level on all the PIOs defined in ul_mask.
+ 121:../src/pio/pio.c ****  * This has no immediate effects on PIOs that are not output, but the PIO
+ 122:../src/pio/pio.c ****  * controller will save the value if they are changed to outputs.
+ 123:../src/pio/pio.c ****  *
+ 124:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 125:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 126:../src/pio/pio.c ****  */
+ 127:../src/pio/pio.c **** void pio_set(Pio *p_pio, const uint32_t ul_mask)
+ 128:../src/pio/pio.c **** {
+  82              		.loc 1 128 0
+  83              		.cfi_startproc
+  84              		@ args = 0, pretend = 0, frame = 0
+  85              		@ frame_needed = 0, uses_anonymous_args = 0
+  86              		@ link register save eliminated.
+  87              	.LVL3:
+ 129:../src/pio/pio.c **** 	p_pio->PIO_SODR = ul_mask;
+  88              		.loc 1 129 0
+  89 0000 0163     		str	r1, [r0, #48]
+  90 0002 7047     		bx	lr
+  91              		.cfi_endproc
+  92              	.LFE75:
+  94              		.section	.text.pio_clear,"ax",%progbits
+  95              		.align	2
+  96              		.global	pio_clear
+  97              		.thumb
+  98              		.thumb_func
+ 100              	pio_clear:
+ 101              	.LFB76:
+ 130:../src/pio/pio.c **** }
+ 131:../src/pio/pio.c **** 
+ 132:../src/pio/pio.c **** /**
+ 133:../src/pio/pio.c ****  * \brief Set a low output level on all the PIOs defined in ul_mask.
+ 134:../src/pio/pio.c ****  * This has no immediate effects on PIOs that are not output, but the PIO
+ 135:../src/pio/pio.c ****  * controller will save the value if they are changed to outputs.
+ 136:../src/pio/pio.c ****  *
+ 137:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 138:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 139:../src/pio/pio.c ****  */
+ 140:../src/pio/pio.c **** void pio_clear(Pio *p_pio, const uint32_t ul_mask)
+ 141:../src/pio/pio.c **** {
+ 102              		.loc 1 141 0
+ 103              		.cfi_startproc
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              		@ link register save eliminated.
+ 107              	.LVL4:
+ 142:../src/pio/pio.c **** 	p_pio->PIO_CODR = ul_mask;
+ 108              		.loc 1 142 0
+ 109 0000 4163     		str	r1, [r0, #52]
+ 110 0002 7047     		bx	lr
+ 111              		.cfi_endproc
+ 112              	.LFE76:
+ 114              		.section	.text.pio_get,"ax",%progbits
+ 115              		.align	2
+ 116              		.global	pio_get
+ 117              		.thumb
+ 118              		.thumb_func
+ 120              	pio_get:
+ 121              	.LFB77:
+ 143:../src/pio/pio.c **** }
+ 144:../src/pio/pio.c **** 
+ 145:../src/pio/pio.c **** /**
+ 146:../src/pio/pio.c ****  * \brief Return 1 if one or more PIOs of the given Pin instance currently have
+ 147:../src/pio/pio.c ****  * a high level; otherwise returns 0. This method returns the actual value that
+ 148:../src/pio/pio.c ****  * is being read on the pin. To return the supposed output value of a pin, use
+ 149:../src/pio/pio.c ****  * pio_get_output_data_status() instead.
+ 150:../src/pio/pio.c ****  *
+ 151:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 152:../src/pio/pio.c ****  * \param ul_type PIO type.
+ 153:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 154:../src/pio/pio.c ****  *
+ 155:../src/pio/pio.c ****  * \retval 1 at least one PIO currently has a high level.
+ 156:../src/pio/pio.c ****  * \retval 0 all PIOs have a low level.
+ 157:../src/pio/pio.c ****  */
+ 158:../src/pio/pio.c **** uint32_t pio_get(Pio *p_pio, const pio_type_t ul_type,
+ 159:../src/pio/pio.c **** 		const uint32_t ul_mask)
+ 160:../src/pio/pio.c **** {
+ 122              		.loc 1 160 0
+ 123              		.cfi_startproc
+ 124              		@ args = 0, pretend = 0, frame = 0
+ 125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 126              		@ link register save eliminated.
+ 127              	.LVL5:
+ 161:../src/pio/pio.c **** 	uint32_t ul_reg;
+ 162:../src/pio/pio.c **** 
+ 163:../src/pio/pio.c **** 	if ((ul_type == PIO_OUTPUT_0) || (ul_type == PIO_OUTPUT_1)) {
+ 128              		.loc 1 163 0
+ 129 0000 B1F1405F 		cmp	r1, #805306368
+ 130 0004 02D0     		beq	.L8
+ 131              		.loc 1 163 0 is_stmt 0 discriminator 1
+ 132 0006 B1F1605F 		cmp	r1, #939524096
+ 133 000a 01D1     		bne	.L9
+ 134              	.L8:
+ 164:../src/pio/pio.c **** 		ul_reg = p_pio->PIO_ODSR;
+ 135              		.loc 1 164 0 is_stmt 1
+ 136 000c 836B     		ldr	r3, [r0, #56]
+ 137              	.LVL6:
+ 138 000e 00E0     		b	.L10
+ 139              	.LVL7:
+ 140              	.L9:
+ 165:../src/pio/pio.c **** 	} else {
+ 166:../src/pio/pio.c **** 		ul_reg = p_pio->PIO_PDSR;
+ 141              		.loc 1 166 0
+ 142 0010 C36B     		ldr	r3, [r0, #60]
+ 143              	.LVL8:
+ 144              	.L10:
+ 167:../src/pio/pio.c **** 	}
+ 168:../src/pio/pio.c **** 
+ 169:../src/pio/pio.c **** 	if ((ul_reg & ul_mask) == 0) {
+ 145              		.loc 1 169 0
+ 146 0012 13EA0200 		ands	r0, r3, r2
+ 147              	.LVL9:
+ 148 0016 00D0     		beq	.L11
+ 170:../src/pio/pio.c **** 		return 0;
+ 171:../src/pio/pio.c **** 	} else {
+ 172:../src/pio/pio.c **** 		return 1;
+ 149              		.loc 1 172 0
+ 150 0018 0120     		movs	r0, #1
+ 151              	.L11:
+ 173:../src/pio/pio.c **** 	}
+ 174:../src/pio/pio.c **** }
+ 152              		.loc 1 174 0
+ 153 001a 7047     		bx	lr
+ 154              		.cfi_endproc
+ 155              	.LFE77:
+ 157              		.section	.text.pio_set_peripheral,"ax",%progbits
+ 158              		.align	2
+ 159              		.global	pio_set_peripheral
+ 160              		.thumb
+ 161              		.thumb_func
+ 163              	pio_set_peripheral:
+ 164              	.LFB78:
+ 175:../src/pio/pio.c **** 
+ 176:../src/pio/pio.c **** /**
+ 177:../src/pio/pio.c ****  * \brief Configure IO of a PIO controller as being controlled by a specific
+ 178:../src/pio/pio.c ****  * peripheral.
+ 179:../src/pio/pio.c ****  *
+ 180:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 181:../src/pio/pio.c ****  * \param ul_type PIO type.
+ 182:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 183:../src/pio/pio.c ****  */
+ 184:../src/pio/pio.c **** void pio_set_peripheral(Pio *p_pio, const pio_type_t ul_type,
+ 185:../src/pio/pio.c **** 		const uint32_t ul_mask)
+ 186:../src/pio/pio.c **** {
+ 165              		.loc 1 186 0
+ 166              		.cfi_startproc
+ 167              		@ args = 0, pretend = 0, frame = 0
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169              		@ link register save eliminated.
+ 170              	.LVL10:
+ 187:../src/pio/pio.c **** 	uint32_t ul_sr;
+ 188:../src/pio/pio.c **** 
+ 189:../src/pio/pio.c **** 	/* Disable interrupts on the pin(s) */
+ 190:../src/pio/pio.c **** 	p_pio->PIO_IDR = ul_mask;
+ 171              		.loc 1 190 0
+ 172 0000 4264     		str	r2, [r0, #68]
+ 191:../src/pio/pio.c **** 
+ 192:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || SAMV71 || SA
+ 193:../src/pio/pio.c **** 	switch (ul_type) {
+ 173              		.loc 1 193 0
+ 174 0002 B1F1C05F 		cmp	r1, #402653184
+ 175 0006 2FD0     		beq	.L15
+ 176 0008 07D8     		bhi	.L16
+ 177 000a B1F1006F 		cmp	r1, #134217728
+ 178 000e 14D0     		beq	.L17
+ 179 0010 B1F1805F 		cmp	r1, #268435456
+ 180 0014 1ED0     		beq	.L18
+ 181 0016 39B9     		cbnz	r1, .L23
+ 182 0018 7047     		bx	lr
+ 183              	.L16:
+ 184 001a B1F1205F 		cmp	r1, #671088640
+ 185 001e 36D0     		beq	.L25
+ 186 0020 04D8     		bhi	.L20
+ 187 0022 B1F1005F 		cmp	r1, #536870912
+ 188 0026 29D0     		beq	.L21
+ 189              	.LVL11:
+ 190              	.L23:
+ 194:../src/pio/pio.c **** 	case PIO_PERIPH_A:
+ 195:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[0];
+ 196:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] &= (~ul_mask & ul_sr);
+ 197:../src/pio/pio.c **** 
+ 198:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[1];
+ 199:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] &= (~ul_mask & ul_sr);
+ 200:../src/pio/pio.c **** 		break;
+ 201:../src/pio/pio.c **** 	case PIO_PERIPH_B:
+ 202:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[0];
+ 203:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] = (ul_mask | ul_sr);
+ 204:../src/pio/pio.c **** 
+ 205:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[1];
+ 206:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] &= (~ul_mask & ul_sr);
+ 207:../src/pio/pio.c **** 		break;
+ 208:../src/pio/pio.c **** #if (!SAMG)
+ 209:../src/pio/pio.c **** 	case PIO_PERIPH_C:
+ 210:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[0];
+ 211:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] &= (~ul_mask & ul_sr);
+ 212:../src/pio/pio.c **** 
+ 213:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[1];
+ 214:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] = (ul_mask | ul_sr);
+ 215:../src/pio/pio.c **** 		break;
+ 216:../src/pio/pio.c **** 	case PIO_PERIPH_D:
+ 217:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[0];
+ 218:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] = (ul_mask | ul_sr);
+ 219:../src/pio/pio.c **** 
+ 220:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABCDSR[1];
+ 221:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] = (ul_mask | ul_sr);
+ 222:../src/pio/pio.c **** 		break;
+ 223:../src/pio/pio.c **** #endif
+ 224:../src/pio/pio.c **** 		/* Other types are invalid in this function */
+ 225:../src/pio/pio.c **** 	case PIO_INPUT:
+ 226:../src/pio/pio.c **** 	case PIO_OUTPUT_0:
+ 227:../src/pio/pio.c **** 	case PIO_OUTPUT_1:
+ 228:../src/pio/pio.c **** 	case PIO_NOT_A_PIN:
+ 229:../src/pio/pio.c **** 		return;
+ 230:../src/pio/pio.c **** 	}
+ 231:../src/pio/pio.c **** #elif (SAM3XA|| SAM3U)
+ 232:../src/pio/pio.c **** 	switch (ul_type) {
+ 233:../src/pio/pio.c **** 	case PIO_PERIPH_A:
+ 234:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABSR;
+ 235:../src/pio/pio.c **** 		p_pio->PIO_ABSR &= (~ul_mask & ul_sr);
+ 236:../src/pio/pio.c **** 		break;
+ 237:../src/pio/pio.c **** 
+ 238:../src/pio/pio.c **** 	case PIO_PERIPH_B:
+ 239:../src/pio/pio.c **** 		ul_sr = p_pio->PIO_ABSR;
+ 240:../src/pio/pio.c **** 		p_pio->PIO_ABSR = (ul_mask | ul_sr);
+ 241:../src/pio/pio.c **** 		break;
+ 242:../src/pio/pio.c **** 
+ 243:../src/pio/pio.c **** 		// other types are invalid in this function
+ 244:../src/pio/pio.c **** 	case PIO_INPUT:
+ 245:../src/pio/pio.c **** 	case PIO_OUTPUT_0:
+ 246:../src/pio/pio.c **** 	case PIO_OUTPUT_1:
+ 247:../src/pio/pio.c **** 	case PIO_NOT_A_PIN:
+ 248:../src/pio/pio.c **** 		return;
+ 249:../src/pio/pio.c **** 	}
+ 250:../src/pio/pio.c **** #else
+ 251:../src/pio/pio.c **** #error "Unsupported device"
+ 252:../src/pio/pio.c **** #endif
+ 253:../src/pio/pio.c **** 
+ 254:../src/pio/pio.c **** 	/* Remove the pins from under the control of PIO */
+ 255:../src/pio/pio.c **** 	p_pio->PIO_PDR = ul_mask;
+ 191              		.loc 1 255 0
+ 192 0028 4260     		str	r2, [r0, #4]
+ 193 002a 7047     		bx	lr
+ 194              	.LVL12:
+ 195              	.L20:
+ 193:../src/pio/pio.c **** 	case PIO_PERIPH_A:
+ 196              		.loc 1 193 0
+ 197 002c B1F1405F 		cmp	r1, #805306368
+ 198 0030 2DD0     		beq	.L25
+ 199 0032 B1F1605F 		cmp	r1, #939524096
+ 200 0036 2AD0     		beq	.L25
+ 201 0038 F6E7     		b	.L23
+ 202              	.L17:
+ 186:../src/pio/pio.c **** 	uint32_t ul_sr;
+ 203              		.loc 1 186 0
+ 204 003a 10B4     		push	{r4}
+ 205              		.cfi_def_cfa_offset 4
+ 206              		.cfi_offset 4, -4
+ 195:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] &= (~ul_mask & ul_sr);
+ 207              		.loc 1 195 0
+ 208 003c 016F     		ldr	r1, [r0, #112]
+ 209              	.LVL13:
+ 196:../src/pio/pio.c **** 
+ 210              		.loc 1 196 0
+ 211 003e 046F     		ldr	r4, [r0, #112]
+ 212 0040 D343     		mvns	r3, r2
+ 213 0042 1940     		ands	r1, r1, r3
+ 214              	.LVL14:
+ 215 0044 2140     		ands	r1, r1, r4
+ 216 0046 0167     		str	r1, [r0, #112]
+ 198:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] &= (~ul_mask & ul_sr);
+ 217              		.loc 1 198 0
+ 218 0048 416F     		ldr	r1, [r0, #116]
+ 219              	.LVL15:
+ 199:../src/pio/pio.c **** 		break;
+ 220              		.loc 1 199 0
+ 221 004a 446F     		ldr	r4, [r0, #116]
+ 222 004c 0B40     		ands	r3, r3, r1
+ 223 004e 2340     		ands	r3, r3, r4
+ 224 0050 4367     		str	r3, [r0, #116]
+ 200:../src/pio/pio.c **** 	case PIO_PERIPH_B:
+ 225              		.loc 1 200 0
+ 226 0052 1AE0     		b	.L14
+ 227              	.LVL16:
+ 228              	.L18:
+ 229              		.cfi_def_cfa_offset 0
+ 230              		.cfi_restore 4
+ 202:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] = (ul_mask | ul_sr);
+ 231              		.loc 1 202 0
+ 232 0054 036F     		ldr	r3, [r0, #112]
+ 233              	.LVL17:
+ 203:../src/pio/pio.c **** 
+ 234              		.loc 1 203 0
+ 235 0056 1343     		orrs	r3, r3, r2
+ 236              	.LVL18:
+ 237 0058 0367     		str	r3, [r0, #112]
+ 205:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] &= (~ul_mask & ul_sr);
+ 238              		.loc 1 205 0
+ 239 005a 436F     		ldr	r3, [r0, #116]
+ 240              	.LVL19:
+ 206:../src/pio/pio.c **** 		break;
+ 241              		.loc 1 206 0
+ 242 005c 416F     		ldr	r1, [r0, #116]
+ 243              	.LVL20:
+ 244 005e 23EA0203 		bic	r3, r3, r2
+ 245              	.LVL21:
+ 246 0062 0B40     		ands	r3, r3, r1
+ 247 0064 4367     		str	r3, [r0, #116]
+ 207:../src/pio/pio.c **** #if (!SAMG)
+ 248              		.loc 1 207 0
+ 249 0066 DFE7     		b	.L23
+ 250              	.LVL22:
+ 251              	.L15:
+ 210:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] &= (~ul_mask & ul_sr);
+ 252              		.loc 1 210 0
+ 253 0068 036F     		ldr	r3, [r0, #112]
+ 254              	.LVL23:
+ 211:../src/pio/pio.c **** 
+ 255              		.loc 1 211 0
+ 256 006a 016F     		ldr	r1, [r0, #112]
+ 257              	.LVL24:
+ 258 006c 23EA0203 		bic	r3, r3, r2
+ 259              	.LVL25:
+ 260 0070 0B40     		ands	r3, r3, r1
+ 261 0072 0367     		str	r3, [r0, #112]
+ 213:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] = (ul_mask | ul_sr);
+ 262              		.loc 1 213 0
+ 263 0074 436F     		ldr	r3, [r0, #116]
+ 264              	.LVL26:
+ 214:../src/pio/pio.c **** 		break;
+ 265              		.loc 1 214 0
+ 266 0076 1343     		orrs	r3, r3, r2
+ 267              	.LVL27:
+ 268 0078 4367     		str	r3, [r0, #116]
+ 215:../src/pio/pio.c **** 	case PIO_PERIPH_D:
+ 269              		.loc 1 215 0
+ 270 007a D5E7     		b	.L23
+ 271              	.LVL28:
+ 272              	.L21:
+ 217:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[0] = (ul_mask | ul_sr);
+ 273              		.loc 1 217 0
+ 274 007c 036F     		ldr	r3, [r0, #112]
+ 275              	.LVL29:
+ 218:../src/pio/pio.c **** 
+ 276              		.loc 1 218 0
+ 277 007e 1343     		orrs	r3, r3, r2
+ 278              	.LVL30:
+ 279 0080 0367     		str	r3, [r0, #112]
+ 220:../src/pio/pio.c **** 		p_pio->PIO_ABCDSR[1] = (ul_mask | ul_sr);
+ 280              		.loc 1 220 0
+ 281 0082 436F     		ldr	r3, [r0, #116]
+ 282              	.LVL31:
+ 221:../src/pio/pio.c **** 		break;
+ 283              		.loc 1 221 0
+ 284 0084 1343     		orrs	r3, r3, r2
+ 285              	.LVL32:
+ 286 0086 4367     		str	r3, [r0, #116]
+ 222:../src/pio/pio.c **** #endif
+ 287              		.loc 1 222 0
+ 288 0088 CEE7     		b	.L23
+ 289              	.LVL33:
+ 290              	.L14:
+ 291              		.cfi_def_cfa_offset 4
+ 292              		.cfi_offset 4, -4
+ 293              		.loc 1 255 0
+ 294 008a 4260     		str	r2, [r0, #4]
+ 256:../src/pio/pio.c **** }
+ 295              		.loc 1 256 0
+ 296 008c 10BC     		pop	{r4}
+ 297              		.cfi_restore 4
+ 298              		.cfi_def_cfa_offset 0
+ 299              	.LVL34:
+ 300              	.L25:
+ 301 008e 7047     		bx	lr
+ 302              		.cfi_endproc
+ 303              	.LFE78:
+ 305              		.section	.text.pio_get_output_data_status,"ax",%progbits
+ 306              		.align	2
+ 307              		.global	pio_get_output_data_status
+ 308              		.thumb
+ 309              		.thumb_func
+ 311              	pio_get_output_data_status:
+ 312              	.LFB82:
+ 257:../src/pio/pio.c **** 
+ 258:../src/pio/pio.c **** /**
+ 259:../src/pio/pio.c ****  * \brief Configure one or more pin(s) or a PIO controller as inputs.
+ 260:../src/pio/pio.c ****  * Optionally, the corresponding internal pull-up(s) and glitch filter(s) can
+ 261:../src/pio/pio.c ****  * be enabled.
+ 262:../src/pio/pio.c ****  *
+ 263:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 264:../src/pio/pio.c ****  * \param ul_mask Bitmask indicating which pin(s) to configure as input(s).
+ 265:../src/pio/pio.c ****  * \param ul_attribute PIO attribute(s).
+ 266:../src/pio/pio.c ****  */
+ 267:../src/pio/pio.c **** void pio_set_input(Pio *p_pio, const uint32_t ul_mask,
+ 268:../src/pio/pio.c **** 		const uint32_t ul_attribute)
+ 269:../src/pio/pio.c **** {
+ 270:../src/pio/pio.c **** 	pio_disable_interrupt(p_pio, ul_mask);
+ 271:../src/pio/pio.c **** 	pio_pull_up(p_pio, ul_mask, ul_attribute & PIO_PULLUP);
+ 272:../src/pio/pio.c **** 
+ 273:../src/pio/pio.c **** 	/* Enable Input Filter if necessary */
+ 274:../src/pio/pio.c **** 	if (ul_attribute & (PIO_DEGLITCH | PIO_DEBOUNCE)) {
+ 275:../src/pio/pio.c **** 		p_pio->PIO_IFER = ul_mask;
+ 276:../src/pio/pio.c **** 	} else {
+ 277:../src/pio/pio.c **** 		p_pio->PIO_IFDR = ul_mask;
+ 278:../src/pio/pio.c **** 	}
+ 279:../src/pio/pio.c **** 
+ 280:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || SAMV71 || SA
+ 281:../src/pio/pio.c **** 	/* Enable de-glitch or de-bounce if necessary */
+ 282:../src/pio/pio.c **** 	if (ul_attribute & PIO_DEGLITCH) {
+ 283:../src/pio/pio.c **** 		p_pio->PIO_IFSCDR = ul_mask;
+ 284:../src/pio/pio.c **** 	} else {
+ 285:../src/pio/pio.c **** 		if (ul_attribute & PIO_DEBOUNCE) {
+ 286:../src/pio/pio.c **** 			p_pio->PIO_IFSCER = ul_mask;
+ 287:../src/pio/pio.c **** 		}
+ 288:../src/pio/pio.c **** 	}
+ 289:../src/pio/pio.c **** #elif (SAM3XA|| SAM3U)
+ 290:../src/pio/pio.c **** 	/* Enable de-glitch or de-bounce if necessary */
+ 291:../src/pio/pio.c **** 	if (ul_attribute & PIO_DEGLITCH) {
+ 292:../src/pio/pio.c **** 		p_pio->PIO_SCIFSR = ul_mask;
+ 293:../src/pio/pio.c **** 	} else {
+ 294:../src/pio/pio.c **** 		if (ul_attribute & PIO_DEBOUNCE) {
+ 295:../src/pio/pio.c **** 			p_pio->PIO_DIFSR = ul_mask;
+ 296:../src/pio/pio.c **** 		}
+ 297:../src/pio/pio.c **** 	}
+ 298:../src/pio/pio.c **** #else
+ 299:../src/pio/pio.c **** #error "Unsupported device"
+ 300:../src/pio/pio.c **** #endif
+ 301:../src/pio/pio.c **** 
+ 302:../src/pio/pio.c **** 	/* Configure pin as input */
+ 303:../src/pio/pio.c **** 	p_pio->PIO_ODR = ul_mask;
+ 304:../src/pio/pio.c **** 	p_pio->PIO_PER = ul_mask;
+ 305:../src/pio/pio.c **** }
+ 306:../src/pio/pio.c **** 
+ 307:../src/pio/pio.c **** /**
+ 308:../src/pio/pio.c ****  * \brief Configure one or more pin(s) of a PIO controller as outputs, with
+ 309:../src/pio/pio.c ****  * the given default value. Optionally, the multi-drive feature can be enabled
+ 310:../src/pio/pio.c ****  * on the pin(s).
+ 311:../src/pio/pio.c ****  *
+ 312:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 313:../src/pio/pio.c ****  * \param ul_mask Bitmask indicating which pin(s) to configure.
+ 314:../src/pio/pio.c ****  * \param ul_default_level Default level on the pin(s).
+ 315:../src/pio/pio.c ****  * \param ul_multidrive_enable Indicates if the pin(s) shall be configured as
+ 316:../src/pio/pio.c ****  * open-drain.
+ 317:../src/pio/pio.c ****  * \param ul_pull_up_enable Indicates if the pin shall have its pull-up
+ 318:../src/pio/pio.c ****  * activated.
+ 319:../src/pio/pio.c ****  */
+ 320:../src/pio/pio.c **** void pio_set_output(Pio *p_pio, const uint32_t ul_mask,
+ 321:../src/pio/pio.c **** 		const uint32_t ul_default_level,
+ 322:../src/pio/pio.c **** 		const uint32_t ul_multidrive_enable,
+ 323:../src/pio/pio.c **** 		const uint32_t ul_pull_up_enable)
+ 324:../src/pio/pio.c **** {
+ 325:../src/pio/pio.c **** 	pio_disable_interrupt(p_pio, ul_mask);
+ 326:../src/pio/pio.c **** 	pio_pull_up(p_pio, ul_mask, ul_pull_up_enable);
+ 327:../src/pio/pio.c **** 
+ 328:../src/pio/pio.c **** 	/* Enable multi-drive if necessary */
+ 329:../src/pio/pio.c **** 	if (ul_multidrive_enable) {
+ 330:../src/pio/pio.c **** 		p_pio->PIO_MDER = ul_mask;
+ 331:../src/pio/pio.c **** 	} else {
+ 332:../src/pio/pio.c **** 		p_pio->PIO_MDDR = ul_mask;
+ 333:../src/pio/pio.c **** 	}
+ 334:../src/pio/pio.c **** 
+ 335:../src/pio/pio.c **** 	/* Set default value */
+ 336:../src/pio/pio.c **** 	if (ul_default_level) {
+ 337:../src/pio/pio.c **** 		p_pio->PIO_SODR = ul_mask;
+ 338:../src/pio/pio.c **** 	} else {
+ 339:../src/pio/pio.c **** 		p_pio->PIO_CODR = ul_mask;
+ 340:../src/pio/pio.c **** 	}
+ 341:../src/pio/pio.c **** 
+ 342:../src/pio/pio.c **** 	/* Configure pin(s) as output(s) */
+ 343:../src/pio/pio.c **** 	p_pio->PIO_OER = ul_mask;
+ 344:../src/pio/pio.c **** 	p_pio->PIO_PER = ul_mask;
+ 345:../src/pio/pio.c **** }
+ 346:../src/pio/pio.c **** 
+ 347:../src/pio/pio.c **** /**
+ 348:../src/pio/pio.c ****  * \brief Perform complete pin(s) configuration; general attributes and PIO init
+ 349:../src/pio/pio.c ****  * if necessary.
+ 350:../src/pio/pio.c ****  *
+ 351:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 352:../src/pio/pio.c ****  * \param ul_type PIO type.
+ 353:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 354:../src/pio/pio.c ****  * \param ul_attribute Pins attributes.
+ 355:../src/pio/pio.c ****  *
+ 356:../src/pio/pio.c ****  * \return Whether the pin(s) have been configured properly.
+ 357:../src/pio/pio.c ****  */
+ 358:../src/pio/pio.c **** uint32_t pio_configure(Pio *p_pio, const pio_type_t ul_type,
+ 359:../src/pio/pio.c **** 		const uint32_t ul_mask, const uint32_t ul_attribute)
+ 360:../src/pio/pio.c **** {
+ 361:../src/pio/pio.c **** 	/* Configure pins */
+ 362:../src/pio/pio.c **** 	switch (ul_type) {
+ 363:../src/pio/pio.c **** 	case PIO_PERIPH_A:
+ 364:../src/pio/pio.c **** 	case PIO_PERIPH_B:
+ 365:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || 
+ 366:../src/pio/pio.c **** 	case PIO_PERIPH_C:
+ 367:../src/pio/pio.c **** 	case PIO_PERIPH_D:
+ 368:../src/pio/pio.c **** #endif
+ 369:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, ul_type, ul_mask);
+ 370:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_attribute & PIO_PULLUP));
+ 371:../src/pio/pio.c **** 		break;
+ 372:../src/pio/pio.c **** 
+ 373:../src/pio/pio.c **** 	case PIO_INPUT:
+ 374:../src/pio/pio.c **** 		pio_set_input(p_pio, ul_mask, ul_attribute);
+ 375:../src/pio/pio.c **** 		break;
+ 376:../src/pio/pio.c **** 
+ 377:../src/pio/pio.c **** 	case PIO_OUTPUT_0:
+ 378:../src/pio/pio.c **** 	case PIO_OUTPUT_1:
+ 379:../src/pio/pio.c **** 		pio_set_output(p_pio, ul_mask, (ul_type == PIO_OUTPUT_1),
+ 380:../src/pio/pio.c **** 				(ul_attribute & PIO_OPENDRAIN) ? 1 : 0,
+ 381:../src/pio/pio.c **** 				(ul_attribute & PIO_PULLUP) ? 1 : 0);
+ 382:../src/pio/pio.c **** 		break;
+ 383:../src/pio/pio.c **** 
+ 384:../src/pio/pio.c **** 	default:
+ 385:../src/pio/pio.c **** 		return 0;
+ 386:../src/pio/pio.c **** 	}
+ 387:../src/pio/pio.c **** 
+ 388:../src/pio/pio.c **** 	return 1;
+ 389:../src/pio/pio.c **** }
+ 390:../src/pio/pio.c **** 
+ 391:../src/pio/pio.c **** /**
+ 392:../src/pio/pio.c ****  * \brief Return 1 if one or more PIOs of the given Pin are configured to
+ 393:../src/pio/pio.c ****  * output a high level (even if they are not output).
+ 394:../src/pio/pio.c ****  * To get the actual value of the pin, use PIO_Get() instead.
+ 395:../src/pio/pio.c ****  *
+ 396:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 397:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s).
+ 398:../src/pio/pio.c ****  *
+ 399:../src/pio/pio.c ****  * \retval 1 At least one PIO is configured to output a high level.
+ 400:../src/pio/pio.c ****  * \retval 0 All PIOs are configured to output a low level.
+ 401:../src/pio/pio.c ****  */
+ 402:../src/pio/pio.c **** uint32_t pio_get_output_data_status(const Pio *p_pio,
+ 403:../src/pio/pio.c **** 		const uint32_t ul_mask)
+ 404:../src/pio/pio.c **** {
+ 313              		.loc 1 404 0
+ 314              		.cfi_startproc
+ 315              		@ args = 0, pretend = 0, frame = 0
+ 316              		@ frame_needed = 0, uses_anonymous_args = 0
+ 317              		@ link register save eliminated.
+ 318              	.LVL35:
+ 405:../src/pio/pio.c **** 	if ((p_pio->PIO_ODSR & ul_mask) == 0) {
+ 319              		.loc 1 405 0
+ 320 0000 806B     		ldr	r0, [r0, #56]
+ 321              	.LVL36:
+ 322 0002 0840     		ands	r0, r0, r1
+ 323 0004 00D0     		beq	.L27
+ 406:../src/pio/pio.c **** 		return 0;
+ 407:../src/pio/pio.c **** 	} else {
+ 408:../src/pio/pio.c **** 		return 1;
+ 324              		.loc 1 408 0
+ 325 0006 0120     		movs	r0, #1
+ 326              	.L27:
+ 409:../src/pio/pio.c **** 	}
+ 410:../src/pio/pio.c **** }
+ 327              		.loc 1 410 0
+ 328 0008 7047     		bx	lr
+ 329              		.cfi_endproc
+ 330              	.LFE82:
+ 332 000a 00BF     		.section	.text.pio_set_multi_driver,"ax",%progbits
+ 333              		.align	2
+ 334              		.global	pio_set_multi_driver
+ 335              		.thumb
+ 336              		.thumb_func
+ 338              	pio_set_multi_driver:
+ 339              	.LFB83:
+ 411:../src/pio/pio.c **** 
+ 412:../src/pio/pio.c **** /**
+ 413:../src/pio/pio.c ****  * \brief Configure PIO pin multi-driver.
+ 414:../src/pio/pio.c ****  *
+ 415:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 416:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 417:../src/pio/pio.c ****  * \param ul_multi_driver_enable Indicates if the pin(s) multi-driver shall be
+ 418:../src/pio/pio.c ****  * configured.
+ 419:../src/pio/pio.c ****  */
+ 420:../src/pio/pio.c **** void pio_set_multi_driver(Pio *p_pio, const uint32_t ul_mask,
+ 421:../src/pio/pio.c **** 		const uint32_t ul_multi_driver_enable)
+ 422:../src/pio/pio.c **** {
+ 340              		.loc 1 422 0
+ 341              		.cfi_startproc
+ 342              		@ args = 0, pretend = 0, frame = 0
+ 343              		@ frame_needed = 0, uses_anonymous_args = 0
+ 344              		@ link register save eliminated.
+ 345              	.LVL37:
+ 423:../src/pio/pio.c **** 	/* Enable the multi-driver if necessary */
+ 424:../src/pio/pio.c **** 	if (ul_multi_driver_enable) {
+ 346              		.loc 1 424 0
+ 347 0000 0AB1     		cbz	r2, .L30
+ 425:../src/pio/pio.c **** 		p_pio->PIO_MDER = ul_mask;
+ 348              		.loc 1 425 0
+ 349 0002 0165     		str	r1, [r0, #80]
+ 350 0004 7047     		bx	lr
+ 351              	.L30:
+ 426:../src/pio/pio.c **** 	} else {
+ 427:../src/pio/pio.c **** 		p_pio->PIO_MDDR = ul_mask;
+ 352              		.loc 1 427 0
+ 353 0006 4165     		str	r1, [r0, #84]
+ 354 0008 7047     		bx	lr
+ 355              		.cfi_endproc
+ 356              	.LFE83:
+ 358 000a 00BF     		.section	.text.pio_get_multi_driver_status,"ax",%progbits
+ 359              		.align	2
+ 360              		.global	pio_get_multi_driver_status
+ 361              		.thumb
+ 362              		.thumb_func
+ 364              	pio_get_multi_driver_status:
+ 365              	.LFB84:
+ 428:../src/pio/pio.c **** 	}
+ 429:../src/pio/pio.c **** }
+ 430:../src/pio/pio.c **** 
+ 431:../src/pio/pio.c **** /**
+ 432:../src/pio/pio.c ****  * \brief Get multi-driver status.
+ 433:../src/pio/pio.c ****  *
+ 434:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 435:../src/pio/pio.c ****  *
+ 436:../src/pio/pio.c ****  * \return The multi-driver mask value.
+ 437:../src/pio/pio.c ****  */
+ 438:../src/pio/pio.c **** uint32_t pio_get_multi_driver_status(const Pio *p_pio)
+ 439:../src/pio/pio.c **** {
+ 366              		.loc 1 439 0
+ 367              		.cfi_startproc
+ 368              		@ args = 0, pretend = 0, frame = 0
+ 369              		@ frame_needed = 0, uses_anonymous_args = 0
+ 370              		@ link register save eliminated.
+ 371              	.LVL38:
+ 440:../src/pio/pio.c **** 	return p_pio->PIO_MDSR;
+ 372              		.loc 1 440 0
+ 373 0000 806D     		ldr	r0, [r0, #88]
+ 374              	.LVL39:
+ 441:../src/pio/pio.c **** }
+ 375              		.loc 1 441 0
+ 376 0002 7047     		bx	lr
+ 377              		.cfi_endproc
+ 378              	.LFE84:
+ 380              		.section	.text.pio_pull_down,"ax",%progbits
+ 381              		.align	2
+ 382              		.global	pio_pull_down
+ 383              		.thumb
+ 384              		.thumb_func
+ 386              	pio_pull_down:
+ 387              	.LFB85:
+ 442:../src/pio/pio.c **** 
+ 443:../src/pio/pio.c **** 
+ 444:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || SAMV71 || SA
+ 445:../src/pio/pio.c **** /**
+ 446:../src/pio/pio.c ****  * \brief Configure PIO pin internal pull-down.
+ 447:../src/pio/pio.c ****  *
+ 448:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 449:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 450:../src/pio/pio.c ****  * \param ul_pull_down_enable Indicates if the pin(s) internal pull-down shall
+ 451:../src/pio/pio.c ****  * be configured.
+ 452:../src/pio/pio.c ****  */
+ 453:../src/pio/pio.c **** void pio_pull_down(Pio *p_pio, const uint32_t ul_mask,
+ 454:../src/pio/pio.c **** 		const uint32_t ul_pull_down_enable)
+ 455:../src/pio/pio.c **** {
+ 388              		.loc 1 455 0
+ 389              		.cfi_startproc
+ 390              		@ args = 0, pretend = 0, frame = 0
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392              		@ link register save eliminated.
+ 393              	.LVL40:
+ 456:../src/pio/pio.c **** 	/* Enable the pull-down if necessary */
+ 457:../src/pio/pio.c **** 	if (ul_pull_down_enable) {
+ 394              		.loc 1 457 0
+ 395 0000 12B1     		cbz	r2, .L34
+ 458:../src/pio/pio.c **** 		p_pio->PIO_PPDER = ul_mask;
+ 396              		.loc 1 458 0
+ 397 0002 C0F89410 		str	r1, [r0, #148]
+ 398 0006 7047     		bx	lr
+ 399              	.L34:
+ 459:../src/pio/pio.c **** 	} else {
+ 460:../src/pio/pio.c **** 		p_pio->PIO_PPDDR = ul_mask;
+ 400              		.loc 1 460 0
+ 401 0008 C0F89010 		str	r1, [r0, #144]
+ 402 000c 7047     		bx	lr
+ 403              		.cfi_endproc
+ 404              	.LFE85:
+ 406 000e 00BF     		.section	.text.pio_enable_output_write,"ax",%progbits
+ 407              		.align	2
+ 408              		.global	pio_enable_output_write
+ 409              		.thumb
+ 410              		.thumb_func
+ 412              	pio_enable_output_write:
+ 413              	.LFB86:
+ 461:../src/pio/pio.c **** 	}
+ 462:../src/pio/pio.c **** }
+ 463:../src/pio/pio.c **** #endif
+ 464:../src/pio/pio.c **** 
+ 465:../src/pio/pio.c **** /**
+ 466:../src/pio/pio.c ****  * \brief Enable PIO output write for synchronous data output.
+ 467:../src/pio/pio.c ****  *
+ 468:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 469:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 470:../src/pio/pio.c ****  */
+ 471:../src/pio/pio.c **** void pio_enable_output_write(Pio *p_pio, const uint32_t ul_mask)
+ 472:../src/pio/pio.c **** {
+ 414              		.loc 1 472 0
+ 415              		.cfi_startproc
+ 416              		@ args = 0, pretend = 0, frame = 0
+ 417              		@ frame_needed = 0, uses_anonymous_args = 0
+ 418              		@ link register save eliminated.
+ 419              	.LVL41:
+ 473:../src/pio/pio.c **** 	p_pio->PIO_OWER = ul_mask;
+ 420              		.loc 1 473 0
+ 421 0000 C0F8A010 		str	r1, [r0, #160]
+ 422 0004 7047     		bx	lr
+ 423              		.cfi_endproc
+ 424              	.LFE86:
+ 426 0006 00BF     		.section	.text.pio_disable_output_write,"ax",%progbits
+ 427              		.align	2
+ 428              		.global	pio_disable_output_write
+ 429              		.thumb
+ 430              		.thumb_func
+ 432              	pio_disable_output_write:
+ 433              	.LFB87:
+ 474:../src/pio/pio.c **** }
+ 475:../src/pio/pio.c **** 
+ 476:../src/pio/pio.c **** /**
+ 477:../src/pio/pio.c ****  * \brief Disable PIO output write.
+ 478:../src/pio/pio.c ****  *
+ 479:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 480:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 481:../src/pio/pio.c ****  */
+ 482:../src/pio/pio.c **** void pio_disable_output_write(Pio *p_pio, const uint32_t ul_mask)
+ 483:../src/pio/pio.c **** {
+ 434              		.loc 1 483 0
+ 435              		.cfi_startproc
+ 436              		@ args = 0, pretend = 0, frame = 0
+ 437              		@ frame_needed = 0, uses_anonymous_args = 0
+ 438              		@ link register save eliminated.
+ 439              	.LVL42:
+ 484:../src/pio/pio.c **** 	p_pio->PIO_OWDR = ul_mask;
+ 440              		.loc 1 484 0
+ 441 0000 C0F8A410 		str	r1, [r0, #164]
+ 442 0004 7047     		bx	lr
+ 443              		.cfi_endproc
+ 444              	.LFE87:
+ 446 0006 00BF     		.section	.text.pio_get_output_write_status,"ax",%progbits
+ 447              		.align	2
+ 448              		.global	pio_get_output_write_status
+ 449              		.thumb
+ 450              		.thumb_func
+ 452              	pio_get_output_write_status:
+ 453              	.LFB88:
+ 485:../src/pio/pio.c **** }
+ 486:../src/pio/pio.c **** 
+ 487:../src/pio/pio.c **** /**
+ 488:../src/pio/pio.c ****  * \brief Read PIO output write status.
+ 489:../src/pio/pio.c ****  *
+ 490:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 491:../src/pio/pio.c ****  *
+ 492:../src/pio/pio.c ****  * \return The output write mask value.
+ 493:../src/pio/pio.c ****  */
+ 494:../src/pio/pio.c **** uint32_t pio_get_output_write_status(const Pio *p_pio)
+ 495:../src/pio/pio.c **** {
+ 454              		.loc 1 495 0
+ 455              		.cfi_startproc
+ 456              		@ args = 0, pretend = 0, frame = 0
+ 457              		@ frame_needed = 0, uses_anonymous_args = 0
+ 458              		@ link register save eliminated.
+ 459              	.LVL43:
+ 496:../src/pio/pio.c **** 	return p_pio->PIO_OWSR;
+ 460              		.loc 1 496 0
+ 461 0000 D0F8A800 		ldr	r0, [r0, #168]
+ 462              	.LVL44:
+ 497:../src/pio/pio.c **** }
+ 463              		.loc 1 497 0
+ 464 0004 7047     		bx	lr
+ 465              		.cfi_endproc
+ 466              	.LFE88:
+ 468 0006 00BF     		.section	.text.pio_sync_output_write,"ax",%progbits
+ 469              		.align	2
+ 470              		.global	pio_sync_output_write
+ 471              		.thumb
+ 472              		.thumb_func
+ 474              	pio_sync_output_write:
+ 475              	.LFB89:
+ 498:../src/pio/pio.c **** 
+ 499:../src/pio/pio.c **** /**
+ 500:../src/pio/pio.c ****  * \brief Synchronously write on output pins.
+ 501:../src/pio/pio.c ****  * \note Only bits unmasked by PIO_OWSR (Output Write Status Register) are
+ 502:../src/pio/pio.c ****  * written.
+ 503:../src/pio/pio.c ****  *
+ 504:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 505:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 506:../src/pio/pio.c ****  */
+ 507:../src/pio/pio.c **** void pio_sync_output_write(Pio *p_pio, const uint32_t ul_mask)
+ 508:../src/pio/pio.c **** {
+ 476              		.loc 1 508 0
+ 477              		.cfi_startproc
+ 478              		@ args = 0, pretend = 0, frame = 0
+ 479              		@ frame_needed = 0, uses_anonymous_args = 0
+ 480              		@ link register save eliminated.
+ 481              	.LVL45:
+ 509:../src/pio/pio.c **** 	p_pio->PIO_ODSR = ul_mask;
+ 482              		.loc 1 509 0
+ 483 0000 8163     		str	r1, [r0, #56]
+ 484 0002 7047     		bx	lr
+ 485              		.cfi_endproc
+ 486              	.LFE89:
+ 488              		.section	.text.pio_set_schmitt_trigger,"ax",%progbits
+ 489              		.align	2
+ 490              		.global	pio_set_schmitt_trigger
+ 491              		.thumb
+ 492              		.thumb_func
+ 494              	pio_set_schmitt_trigger:
+ 495              	.LFB90:
+ 510:../src/pio/pio.c **** }
+ 511:../src/pio/pio.c **** 
+ 512:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || SAMV71 || SA
+ 513:../src/pio/pio.c **** /**
+ 514:../src/pio/pio.c ****  * \brief Configure PIO pin schmitt trigger. By default the Schmitt trigger is
+ 515:../src/pio/pio.c ****  * active.
+ 516:../src/pio/pio.c ****  * Disabling the Schmitt Trigger is requested when using the QTouch Library.
+ 517:../src/pio/pio.c ****  *
+ 518:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 519:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 520:../src/pio/pio.c ****  */
+ 521:../src/pio/pio.c **** void pio_set_schmitt_trigger(Pio *p_pio, const uint32_t ul_mask)
+ 522:../src/pio/pio.c **** {
+ 496              		.loc 1 522 0
+ 497              		.cfi_startproc
+ 498              		@ args = 0, pretend = 0, frame = 0
+ 499              		@ frame_needed = 0, uses_anonymous_args = 0
+ 500              		@ link register save eliminated.
+ 501              	.LVL46:
+ 523:../src/pio/pio.c **** 	p_pio->PIO_SCHMITT = ul_mask;
+ 502              		.loc 1 523 0
+ 503 0000 C0F80011 		str	r1, [r0, #256]
+ 504 0004 7047     		bx	lr
+ 505              		.cfi_endproc
+ 506              	.LFE90:
+ 508 0006 00BF     		.section	.text.pio_get_schmitt_trigger,"ax",%progbits
+ 509              		.align	2
+ 510              		.global	pio_get_schmitt_trigger
+ 511              		.thumb
+ 512              		.thumb_func
+ 514              	pio_get_schmitt_trigger:
+ 515              	.LFB91:
+ 524:../src/pio/pio.c **** }
+ 525:../src/pio/pio.c **** 
+ 526:../src/pio/pio.c **** /**
+ 527:../src/pio/pio.c ****  * \brief Get PIO pin schmitt trigger status.
+ 528:../src/pio/pio.c ****  *
+ 529:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 530:../src/pio/pio.c ****  *
+ 531:../src/pio/pio.c ****  * \return The schmitt trigger mask value.
+ 532:../src/pio/pio.c ****  */
+ 533:../src/pio/pio.c **** uint32_t pio_get_schmitt_trigger(const Pio *p_pio)
+ 534:../src/pio/pio.c **** {
+ 516              		.loc 1 534 0
+ 517              		.cfi_startproc
+ 518              		@ args = 0, pretend = 0, frame = 0
+ 519              		@ frame_needed = 0, uses_anonymous_args = 0
+ 520              		@ link register save eliminated.
+ 521              	.LVL47:
+ 535:../src/pio/pio.c **** 	return p_pio->PIO_SCHMITT;
+ 522              		.loc 1 535 0
+ 523 0000 D0F80001 		ldr	r0, [r0, #256]
+ 524              	.LVL48:
+ 536:../src/pio/pio.c **** }
+ 525              		.loc 1 536 0
+ 526 0004 7047     		bx	lr
+ 527              		.cfi_endproc
+ 528              	.LFE91:
+ 530 0006 00BF     		.section	.text.pio_configure_interrupt,"ax",%progbits
+ 531              		.align	2
+ 532              		.global	pio_configure_interrupt
+ 533              		.thumb
+ 534              		.thumb_func
+ 536              	pio_configure_interrupt:
+ 537              	.LFB92:
+ 537:../src/pio/pio.c **** #endif
+ 538:../src/pio/pio.c **** 
+ 539:../src/pio/pio.c **** /**
+ 540:../src/pio/pio.c ****  * \brief Configure the given interrupt source.
+ 541:../src/pio/pio.c ****  * Interrupt can be configured to trigger on rising edge, falling edge,
+ 542:../src/pio/pio.c ****  * high level, low level or simply on level change.
+ 543:../src/pio/pio.c ****  *
+ 544:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 545:../src/pio/pio.c ****  * \param ul_mask Interrupt source bit map.
+ 546:../src/pio/pio.c ****  * \param ul_attr Interrupt source attributes.
+ 547:../src/pio/pio.c ****  */
+ 548:../src/pio/pio.c **** void pio_configure_interrupt(Pio *p_pio, const uint32_t ul_mask,
+ 549:../src/pio/pio.c **** 		const uint32_t ul_attr)
+ 550:../src/pio/pio.c **** {
+ 538              		.loc 1 550 0
+ 539              		.cfi_startproc
+ 540              		@ args = 0, pretend = 0, frame = 0
+ 541              		@ frame_needed = 0, uses_anonymous_args = 0
+ 542              		@ link register save eliminated.
+ 543              	.LVL49:
+ 551:../src/pio/pio.c **** 	/* Configure additional interrupt mode registers. */
+ 552:../src/pio/pio.c **** 	if (ul_attr & PIO_IT_AIME) {
+ 544              		.loc 1 552 0
+ 545 0000 12F0100F 		tst	r2, #16
+ 546 0004 12D0     		beq	.L43
+ 553:../src/pio/pio.c **** 		/* Enable additional interrupt mode. */
+ 554:../src/pio/pio.c **** 		p_pio->PIO_AIMER = ul_mask;
+ 547              		.loc 1 554 0
+ 548 0006 C0F8B010 		str	r1, [r0, #176]
+ 555:../src/pio/pio.c **** 
+ 556:../src/pio/pio.c **** 		/* If bit field of the selected pin is 1, set as
+ 557:../src/pio/pio.c **** 		   Rising Edge/High level detection event. */
+ 558:../src/pio/pio.c **** 		if (ul_attr & PIO_IT_RE_OR_HL) {
+ 549              		.loc 1 558 0
+ 550 000a 12F0200F 		tst	r2, #32
+ 551 000e 02D0     		beq	.L44
+ 559:../src/pio/pio.c **** 			/* Rising Edge or High Level */
+ 560:../src/pio/pio.c **** 			p_pio->PIO_REHLSR = ul_mask;
+ 552              		.loc 1 560 0
+ 553 0010 C0F8D410 		str	r1, [r0, #212]
+ 554 0014 01E0     		b	.L45
+ 555              	.L44:
+ 561:../src/pio/pio.c **** 		} else {
+ 562:../src/pio/pio.c **** 			/* Falling Edge or Low Level */
+ 563:../src/pio/pio.c **** 			p_pio->PIO_FELLSR = ul_mask;
+ 556              		.loc 1 563 0
+ 557 0016 C0F8D010 		str	r1, [r0, #208]
+ 558              	.L45:
+ 564:../src/pio/pio.c **** 		}
+ 565:../src/pio/pio.c **** 
+ 566:../src/pio/pio.c **** 		/* If bit field of the selected pin is 1, set as
+ 567:../src/pio/pio.c **** 		   edge detection source. */
+ 568:../src/pio/pio.c **** 		if (ul_attr & PIO_IT_EDGE) {
+ 559              		.loc 1 568 0
+ 560 001a 12F0400F 		tst	r2, #64
+ 561 001e 02D0     		beq	.L46
+ 569:../src/pio/pio.c **** 			/* Edge select */
+ 570:../src/pio/pio.c **** 			p_pio->PIO_ESR = ul_mask;
+ 562              		.loc 1 570 0
+ 563 0020 C0F8C010 		str	r1, [r0, #192]
+ 564 0024 7047     		bx	lr
+ 565              	.L46:
+ 571:../src/pio/pio.c **** 		} else {
+ 572:../src/pio/pio.c **** 			/* Level select */
+ 573:../src/pio/pio.c **** 			p_pio->PIO_LSR = ul_mask;
+ 566              		.loc 1 573 0
+ 567 0026 C0F8C410 		str	r1, [r0, #196]
+ 568 002a 7047     		bx	lr
+ 569              	.L43:
+ 574:../src/pio/pio.c **** 		}
+ 575:../src/pio/pio.c **** 	} else {
+ 576:../src/pio/pio.c **** 		/* Disable additional interrupt mode. */
+ 577:../src/pio/pio.c **** 		p_pio->PIO_AIMDR = ul_mask;
+ 570              		.loc 1 577 0
+ 571 002c C0F8B410 		str	r1, [r0, #180]
+ 572 0030 7047     		bx	lr
+ 573              		.cfi_endproc
+ 574              	.LFE92:
+ 576 0032 00BF     		.section	.text.pio_enable_interrupt,"ax",%progbits
+ 577              		.align	2
+ 578              		.global	pio_enable_interrupt
+ 579              		.thumb
+ 580              		.thumb_func
+ 582              	pio_enable_interrupt:
+ 583              	.LFB93:
+ 578:../src/pio/pio.c **** 	}
+ 579:../src/pio/pio.c **** }
+ 580:../src/pio/pio.c **** 
+ 581:../src/pio/pio.c **** /**
+ 582:../src/pio/pio.c ****  * \brief Enable the given interrupt source.
+ 583:../src/pio/pio.c ****  * The PIO must be configured as an NVIC interrupt source as well.
+ 584:../src/pio/pio.c ****  * The status register of the corresponding PIO controller is cleared
+ 585:../src/pio/pio.c ****  * prior to enabling the interrupt.
+ 586:../src/pio/pio.c ****  *
+ 587:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 588:../src/pio/pio.c ****  * \param ul_mask Interrupt sources bit map.
+ 589:../src/pio/pio.c ****  */
+ 590:../src/pio/pio.c **** void pio_enable_interrupt(Pio *p_pio, const uint32_t ul_mask)
+ 591:../src/pio/pio.c **** {
+ 584              		.loc 1 591 0
+ 585              		.cfi_startproc
+ 586              		@ args = 0, pretend = 0, frame = 0
+ 587              		@ frame_needed = 0, uses_anonymous_args = 0
+ 588              		@ link register save eliminated.
+ 589              	.LVL50:
+ 592:../src/pio/pio.c **** 	p_pio->PIO_ISR;
+ 590              		.loc 1 592 0
+ 591 0000 C36C     		ldr	r3, [r0, #76]
+ 593:../src/pio/pio.c **** 	p_pio->PIO_IER = ul_mask;
+ 592              		.loc 1 593 0
+ 593 0002 0164     		str	r1, [r0, #64]
+ 594 0004 7047     		bx	lr
+ 595              		.cfi_endproc
+ 596              	.LFE93:
+ 598 0006 00BF     		.section	.text.pio_disable_interrupt,"ax",%progbits
+ 599              		.align	2
+ 600              		.global	pio_disable_interrupt
+ 601              		.thumb
+ 602              		.thumb_func
+ 604              	pio_disable_interrupt:
+ 605              	.LFB94:
+ 594:../src/pio/pio.c **** }
+ 595:../src/pio/pio.c **** 
+ 596:../src/pio/pio.c **** /**
+ 597:../src/pio/pio.c ****  * \brief Disable a given interrupt source, with no added side effects.
+ 598:../src/pio/pio.c ****  *
+ 599:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 600:../src/pio/pio.c ****  * \param ul_mask Interrupt sources bit map.
+ 601:../src/pio/pio.c ****  */
+ 602:../src/pio/pio.c **** void pio_disable_interrupt(Pio *p_pio, const uint32_t ul_mask)
+ 603:../src/pio/pio.c **** {
+ 606              		.loc 1 603 0
+ 607              		.cfi_startproc
+ 608              		@ args = 0, pretend = 0, frame = 0
+ 609              		@ frame_needed = 0, uses_anonymous_args = 0
+ 610              		@ link register save eliminated.
+ 611              	.LVL51:
+ 604:../src/pio/pio.c **** 	p_pio->PIO_IDR = ul_mask;
+ 612              		.loc 1 604 0
+ 613 0000 4164     		str	r1, [r0, #68]
+ 614 0002 7047     		bx	lr
+ 615              		.cfi_endproc
+ 616              	.LFE94:
+ 618              		.section	.text.pio_set_input,"ax",%progbits
+ 619              		.align	2
+ 620              		.global	pio_set_input
+ 621              		.thumb
+ 622              		.thumb_func
+ 624              	pio_set_input:
+ 625              	.LFB79:
+ 269:../src/pio/pio.c **** 	pio_disable_interrupt(p_pio, ul_mask);
+ 626              		.loc 1 269 0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 0
+ 629              		@ frame_needed = 0, uses_anonymous_args = 0
+ 630              	.LVL52:
+ 631 0000 70B5     		push	{r4, r5, r6, lr}
+ 632              		.cfi_def_cfa_offset 16
+ 633              		.cfi_offset 4, -16
+ 634              		.cfi_offset 5, -12
+ 635              		.cfi_offset 6, -8
+ 636              		.cfi_offset 14, -4
+ 637 0002 0446     		mov	r4, r0
+ 638 0004 0D46     		mov	r5, r1
+ 639 0006 1646     		mov	r6, r2
+ 270:../src/pio/pio.c **** 	pio_pull_up(p_pio, ul_mask, ul_attribute & PIO_PULLUP);
+ 640              		.loc 1 270 0
+ 641 0008 FFF7FEFF 		bl	pio_disable_interrupt
+ 642              	.LVL53:
+ 271:../src/pio/pio.c **** 
+ 643              		.loc 1 271 0
+ 644 000c 06F00102 		and	r2, r6, #1
+ 645 0010 2946     		mov	r1, r5
+ 646 0012 2046     		mov	r0, r4
+ 647 0014 FFF7FEFF 		bl	pio_pull_up
+ 648              	.LVL54:
+ 274:../src/pio/pio.c **** 		p_pio->PIO_IFER = ul_mask;
+ 649              		.loc 1 274 0
+ 650 0018 16F00A0F 		tst	r6, #10
+ 651 001c 01D0     		beq	.L51
+ 275:../src/pio/pio.c **** 	} else {
+ 652              		.loc 1 275 0
+ 653 001e 2562     		str	r5, [r4, #32]
+ 654 0020 00E0     		b	.L52
+ 655              	.L51:
+ 277:../src/pio/pio.c **** 	}
+ 656              		.loc 1 277 0
+ 657 0022 6562     		str	r5, [r4, #36]
+ 658              	.L52:
+ 282:../src/pio/pio.c **** 		p_pio->PIO_IFSCDR = ul_mask;
+ 659              		.loc 1 282 0
+ 660 0024 16F0020F 		tst	r6, #2
+ 661 0028 02D0     		beq	.L53
+ 283:../src/pio/pio.c **** 	} else {
+ 662              		.loc 1 283 0
+ 663 002a C4F88050 		str	r5, [r4, #128]
+ 664 002e 04E0     		b	.L54
+ 665              	.L53:
+ 285:../src/pio/pio.c **** 			p_pio->PIO_IFSCER = ul_mask;
+ 666              		.loc 1 285 0
+ 667 0030 16F0080F 		tst	r6, #8
+ 668 0034 01D0     		beq	.L54
+ 286:../src/pio/pio.c **** 		}
+ 669              		.loc 1 286 0
+ 670 0036 C4F88450 		str	r5, [r4, #132]
+ 671              	.L54:
+ 303:../src/pio/pio.c **** 	p_pio->PIO_PER = ul_mask;
+ 672              		.loc 1 303 0
+ 673 003a 6561     		str	r5, [r4, #20]
+ 304:../src/pio/pio.c **** }
+ 674              		.loc 1 304 0
+ 675 003c 2560     		str	r5, [r4]
+ 676 003e 70BD     		pop	{r4, r5, r6, pc}
+ 677              		.cfi_endproc
+ 678              	.LFE79:
+ 680              		.section	.text.pio_set_output,"ax",%progbits
+ 681              		.align	2
+ 682              		.global	pio_set_output
+ 683              		.thumb
+ 684              		.thumb_func
+ 686              	pio_set_output:
+ 687              	.LFB80:
+ 324:../src/pio/pio.c **** 	pio_disable_interrupt(p_pio, ul_mask);
+ 688              		.loc 1 324 0
+ 689              		.cfi_startproc
+ 690              		@ args = 4, pretend = 0, frame = 0
+ 691              		@ frame_needed = 0, uses_anonymous_args = 0
+ 692              	.LVL55:
+ 693 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 694              		.cfi_def_cfa_offset 24
+ 695              		.cfi_offset 3, -24
+ 696              		.cfi_offset 4, -20
+ 697              		.cfi_offset 5, -16
+ 698              		.cfi_offset 6, -12
+ 699              		.cfi_offset 7, -8
+ 700              		.cfi_offset 14, -4
+ 701 0002 0446     		mov	r4, r0
+ 702 0004 0D46     		mov	r5, r1
+ 703 0006 1646     		mov	r6, r2
+ 704 0008 1F46     		mov	r7, r3
+ 325:../src/pio/pio.c **** 	pio_pull_up(p_pio, ul_mask, ul_pull_up_enable);
+ 705              		.loc 1 325 0
+ 706 000a FFF7FEFF 		bl	pio_disable_interrupt
+ 707              	.LVL56:
+ 326:../src/pio/pio.c **** 
+ 708              		.loc 1 326 0
+ 709 000e 069A     		ldr	r2, [sp, #24]
+ 710 0010 2946     		mov	r1, r5
+ 711 0012 2046     		mov	r0, r4
+ 712 0014 FFF7FEFF 		bl	pio_pull_up
+ 713              	.LVL57:
+ 329:../src/pio/pio.c **** 		p_pio->PIO_MDER = ul_mask;
+ 714              		.loc 1 329 0
+ 715 0018 0FB1     		cbz	r7, .L57
+ 330:../src/pio/pio.c **** 	} else {
+ 716              		.loc 1 330 0
+ 717 001a 2565     		str	r5, [r4, #80]
+ 718 001c 00E0     		b	.L58
+ 719              	.L57:
+ 332:../src/pio/pio.c **** 	}
+ 720              		.loc 1 332 0
+ 721 001e 6565     		str	r5, [r4, #84]
+ 722              	.L58:
+ 336:../src/pio/pio.c **** 		p_pio->PIO_SODR = ul_mask;
+ 723              		.loc 1 336 0
+ 724 0020 0EB1     		cbz	r6, .L59
+ 337:../src/pio/pio.c **** 	} else {
+ 725              		.loc 1 337 0
+ 726 0022 2563     		str	r5, [r4, #48]
+ 727 0024 00E0     		b	.L60
+ 728              	.L59:
+ 339:../src/pio/pio.c **** 	}
+ 729              		.loc 1 339 0
+ 730 0026 6563     		str	r5, [r4, #52]
+ 731              	.L60:
+ 343:../src/pio/pio.c **** 	p_pio->PIO_PER = ul_mask;
+ 732              		.loc 1 343 0
+ 733 0028 2561     		str	r5, [r4, #16]
+ 344:../src/pio/pio.c **** }
+ 734              		.loc 1 344 0
+ 735 002a 2560     		str	r5, [r4]
+ 736 002c F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 737              		.cfi_endproc
+ 738              	.LFE80:
+ 740 002e 00BF     		.section	.text.pio_configure,"ax",%progbits
+ 741              		.align	2
+ 742              		.global	pio_configure
+ 743              		.thumb
+ 744              		.thumb_func
+ 746              	pio_configure:
+ 747              	.LFB81:
+ 360:../src/pio/pio.c **** 	/* Configure pins */
+ 748              		.loc 1 360 0
+ 749              		.cfi_startproc
+ 750              		@ args = 0, pretend = 0, frame = 0
+ 751              		@ frame_needed = 0, uses_anonymous_args = 0
+ 752              	.LVL58:
+ 753 0000 70B5     		push	{r4, r5, r6, lr}
+ 754              		.cfi_def_cfa_offset 16
+ 755              		.cfi_offset 4, -16
+ 756              		.cfi_offset 5, -12
+ 757              		.cfi_offset 6, -8
+ 758              		.cfi_offset 14, -4
+ 759 0002 82B0     		sub	sp, sp, #8
+ 760              		.cfi_def_cfa_offset 24
+ 761 0004 0446     		mov	r4, r0
+ 762 0006 1546     		mov	r5, r2
+ 763 0008 1E46     		mov	r6, r3
+ 362:../src/pio/pio.c **** 	case PIO_PERIPH_A:
+ 764              		.loc 1 362 0
+ 765 000a B1F1005F 		cmp	r1, #536870912
+ 766 000e 14D0     		beq	.L64
+ 767 0010 09D8     		bhi	.L65
+ 768 0012 B1F1805F 		cmp	r1, #268435456
+ 769 0016 10D0     		beq	.L64
+ 770 0018 B1F1C05F 		cmp	r1, #402653184
+ 771 001c 0DD0     		beq	.L64
+ 772 001e B1F1006F 		cmp	r1, #134217728
+ 773 0022 2CD1     		bne	.L68
+ 774 0024 09E0     		b	.L64
+ 775              	.L65:
+ 776 0026 B1F1405F 		cmp	r1, #805306368
+ 777 002a 18D0     		beq	.L66
+ 778 002c B1F1605F 		cmp	r1, #939524096
+ 779 0030 15D0     		beq	.L66
+ 780 0032 B1F1205F 		cmp	r1, #671088640
+ 781 0036 0CD0     		beq	.L67
+ 782 0038 21E0     		b	.L68
+ 783              	.L64:
+ 369:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_attribute & PIO_PULLUP));
+ 784              		.loc 1 369 0
+ 785 003a 2A46     		mov	r2, r5
+ 786              	.LVL59:
+ 787 003c 2046     		mov	r0, r4
+ 788              	.LVL60:
+ 789 003e FFF7FEFF 		bl	pio_set_peripheral
+ 790              	.LVL61:
+ 370:../src/pio/pio.c **** 		break;
+ 791              		.loc 1 370 0
+ 792 0042 06F00102 		and	r2, r6, #1
+ 793 0046 2946     		mov	r1, r5
+ 794 0048 2046     		mov	r0, r4
+ 795 004a FFF7FEFF 		bl	pio_pull_up
+ 796              	.LVL62:
+ 388:../src/pio/pio.c **** }
+ 797              		.loc 1 388 0
+ 798 004e 0120     		movs	r0, #1
+ 371:../src/pio/pio.c **** 
+ 799              		.loc 1 371 0
+ 800 0050 16E0     		b	.L63
+ 801              	.LVL63:
+ 802              	.L67:
+ 374:../src/pio/pio.c **** 		break;
+ 803              		.loc 1 374 0
+ 804 0052 1A46     		mov	r2, r3
+ 805              	.LVL64:
+ 806 0054 2946     		mov	r1, r5
+ 807              	.LVL65:
+ 808 0056 FFF7FEFF 		bl	pio_set_input
+ 809              	.LVL66:
+ 388:../src/pio/pio.c **** }
+ 810              		.loc 1 388 0
+ 811 005a 0120     		movs	r0, #1
+ 375:../src/pio/pio.c **** 
+ 812              		.loc 1 375 0
+ 813 005c 10E0     		b	.L63
+ 814              	.LVL67:
+ 815              	.L66:
+ 381:../src/pio/pio.c **** 		break;
+ 816              		.loc 1 381 0
+ 817 005e 06F00103 		and	r3, r6, #1
+ 818              	.LVL68:
+ 379:../src/pio/pio.c **** 				(ul_attribute & PIO_OPENDRAIN) ? 1 : 0,
+ 819              		.loc 1 379 0
+ 820 0062 0093     		str	r3, [sp]
+ 821 0064 C6F38003 		ubfx	r3, r6, #2, #1
+ 822 0068 B1F1605F 		cmp	r1, #939524096
+ 823 006c 14BF     		ite	ne
+ 824 006e 0022     		movne	r2, #0
+ 825              	.LVL69:
+ 826 0070 0122     		moveq	r2, #1
+ 827 0072 2946     		mov	r1, r5
+ 828              	.LVL70:
+ 829 0074 2046     		mov	r0, r4
+ 830              	.LVL71:
+ 831 0076 FFF7FEFF 		bl	pio_set_output
+ 832              	.LVL72:
+ 388:../src/pio/pio.c **** }
+ 833              		.loc 1 388 0
+ 834 007a 0120     		movs	r0, #1
+ 382:../src/pio/pio.c **** 
+ 835              		.loc 1 382 0
+ 836 007c 00E0     		b	.L63
+ 837              	.LVL73:
+ 838              	.L68:
+ 385:../src/pio/pio.c **** 	}
+ 839              		.loc 1 385 0
+ 840 007e 0020     		movs	r0, #0
+ 841              	.LVL74:
+ 842              	.L63:
+ 389:../src/pio/pio.c **** 
+ 843              		.loc 1 389 0
+ 844 0080 02B0     		add	sp, sp, #8
+ 845              		.cfi_def_cfa_offset 16
+ 846              		@ sp needed
+ 847 0082 70BD     		pop	{r4, r5, r6, pc}
+ 848              		.cfi_endproc
+ 849              	.LFE81:
+ 851              		.section	.text.pio_get_interrupt_status,"ax",%progbits
+ 852              		.align	2
+ 853              		.global	pio_get_interrupt_status
+ 854              		.thumb
+ 855              		.thumb_func
+ 857              	pio_get_interrupt_status:
+ 858              	.LFB95:
+ 605:../src/pio/pio.c **** }
+ 606:../src/pio/pio.c **** 
+ 607:../src/pio/pio.c **** /**
+ 608:../src/pio/pio.c ****  * \brief Read PIO interrupt status.
+ 609:../src/pio/pio.c ****  *
+ 610:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 611:../src/pio/pio.c ****  *
+ 612:../src/pio/pio.c ****  * \return The interrupt status mask value.
+ 613:../src/pio/pio.c ****  */
+ 614:../src/pio/pio.c **** uint32_t pio_get_interrupt_status(const Pio *p_pio)
+ 615:../src/pio/pio.c **** {
+ 859              		.loc 1 615 0
+ 860              		.cfi_startproc
+ 861              		@ args = 0, pretend = 0, frame = 0
+ 862              		@ frame_needed = 0, uses_anonymous_args = 0
+ 863              		@ link register save eliminated.
+ 864              	.LVL75:
+ 616:../src/pio/pio.c **** 	return p_pio->PIO_ISR;
+ 865              		.loc 1 616 0
+ 866 0000 C06C     		ldr	r0, [r0, #76]
+ 867              	.LVL76:
+ 617:../src/pio/pio.c **** }
+ 868              		.loc 1 617 0
+ 869 0002 7047     		bx	lr
+ 870              		.cfi_endproc
+ 871              	.LFE95:
+ 873              		.section	.text.pio_get_interrupt_mask,"ax",%progbits
+ 874              		.align	2
+ 875              		.global	pio_get_interrupt_mask
+ 876              		.thumb
+ 877              		.thumb_func
+ 879              	pio_get_interrupt_mask:
+ 880              	.LFB96:
+ 618:../src/pio/pio.c **** 
+ 619:../src/pio/pio.c **** /**
+ 620:../src/pio/pio.c ****  * \brief Read PIO interrupt mask.
+ 621:../src/pio/pio.c ****  *
+ 622:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 623:../src/pio/pio.c ****  *
+ 624:../src/pio/pio.c ****  * \return The interrupt mask value.
+ 625:../src/pio/pio.c ****  */
+ 626:../src/pio/pio.c **** uint32_t pio_get_interrupt_mask(const Pio *p_pio)
+ 627:../src/pio/pio.c **** {
+ 881              		.loc 1 627 0
+ 882              		.cfi_startproc
+ 883              		@ args = 0, pretend = 0, frame = 0
+ 884              		@ frame_needed = 0, uses_anonymous_args = 0
+ 885              		@ link register save eliminated.
+ 886              	.LVL77:
+ 628:../src/pio/pio.c **** 	return p_pio->PIO_IMR;
+ 887              		.loc 1 628 0
+ 888 0000 806C     		ldr	r0, [r0, #72]
+ 889              	.LVL78:
+ 629:../src/pio/pio.c **** }
+ 890              		.loc 1 629 0
+ 891 0002 7047     		bx	lr
+ 892              		.cfi_endproc
+ 893              	.LFE96:
+ 895              		.section	.text.pio_set_additional_interrupt_mode,"ax",%progbits
+ 896              		.align	2
+ 897              		.global	pio_set_additional_interrupt_mode
+ 898              		.thumb
+ 899              		.thumb_func
+ 901              	pio_set_additional_interrupt_mode:
+ 902              	.LFB97:
+ 630:../src/pio/pio.c **** 
+ 631:../src/pio/pio.c **** /**
+ 632:../src/pio/pio.c ****  * \brief Set additional interrupt mode.
+ 633:../src/pio/pio.c ****  *
+ 634:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 635:../src/pio/pio.c ****  * \param ul_mask Interrupt sources bit map.
+ 636:../src/pio/pio.c ****  * \param ul_attribute Pin(s) attributes.
+ 637:../src/pio/pio.c ****  */
+ 638:../src/pio/pio.c **** void pio_set_additional_interrupt_mode(Pio *p_pio,
+ 639:../src/pio/pio.c **** 		const uint32_t ul_mask, const uint32_t ul_attribute)
+ 640:../src/pio/pio.c **** {
+ 903              		.loc 1 640 0
+ 904              		.cfi_startproc
+ 905              		@ args = 0, pretend = 0, frame = 0
+ 906              		@ frame_needed = 0, uses_anonymous_args = 0
+ 907              		@ link register save eliminated.
+ 908              	.LVL79:
+ 641:../src/pio/pio.c **** 	/* Enables additional interrupt mode if needed */
+ 642:../src/pio/pio.c **** 	if (ul_attribute & PIO_IT_AIME) {
+ 909              		.loc 1 642 0
+ 910 0000 12F0100F 		tst	r2, #16
+ 911 0004 12D0     		beq	.L73
+ 643:../src/pio/pio.c **** 		/* Enables additional interrupt mode */
+ 644:../src/pio/pio.c **** 		p_pio->PIO_AIMER = ul_mask;
+ 912              		.loc 1 644 0
+ 913 0006 C0F8B010 		str	r1, [r0, #176]
+ 645:../src/pio/pio.c **** 
+ 646:../src/pio/pio.c **** 		/* Configures the Polarity of the event detection */
+ 647:../src/pio/pio.c **** 		/* (Rising/Falling Edge or High/Low Level) */
+ 648:../src/pio/pio.c **** 		if (ul_attribute & PIO_IT_RE_OR_HL) {
+ 914              		.loc 1 648 0
+ 915 000a 12F0200F 		tst	r2, #32
+ 916 000e 02D0     		beq	.L74
+ 649:../src/pio/pio.c **** 			/* Rising Edge or High Level */
+ 650:../src/pio/pio.c **** 			p_pio->PIO_REHLSR = ul_mask;
+ 917              		.loc 1 650 0
+ 918 0010 C0F8D410 		str	r1, [r0, #212]
+ 919 0014 01E0     		b	.L75
+ 920              	.L74:
+ 651:../src/pio/pio.c **** 		} else {
+ 652:../src/pio/pio.c **** 			/* Falling Edge or Low Level */
+ 653:../src/pio/pio.c **** 			p_pio->PIO_FELLSR = ul_mask;
+ 921              		.loc 1 653 0
+ 922 0016 C0F8D010 		str	r1, [r0, #208]
+ 923              	.L75:
+ 654:../src/pio/pio.c **** 		}
+ 655:../src/pio/pio.c **** 
+ 656:../src/pio/pio.c **** 		/* Configures the type of event detection (Edge or Level) */
+ 657:../src/pio/pio.c **** 		if (ul_attribute & PIO_IT_EDGE) {
+ 924              		.loc 1 657 0
+ 925 001a 12F0400F 		tst	r2, #64
+ 926 001e 02D0     		beq	.L76
+ 658:../src/pio/pio.c **** 			/* Edge select */
+ 659:../src/pio/pio.c **** 			p_pio->PIO_ESR = ul_mask;
+ 927              		.loc 1 659 0
+ 928 0020 C0F8C010 		str	r1, [r0, #192]
+ 929 0024 7047     		bx	lr
+ 930              	.L76:
+ 660:../src/pio/pio.c **** 		} else {
+ 661:../src/pio/pio.c **** 			/* Level select */
+ 662:../src/pio/pio.c **** 			p_pio->PIO_LSR = ul_mask;
+ 931              		.loc 1 662 0
+ 932 0026 C0F8C410 		str	r1, [r0, #196]
+ 933 002a 7047     		bx	lr
+ 934              	.L73:
+ 663:../src/pio/pio.c **** 		}
+ 664:../src/pio/pio.c **** 	} else {
+ 665:../src/pio/pio.c **** 		/* Disable additional interrupt mode */
+ 666:../src/pio/pio.c **** 		p_pio->PIO_AIMDR = ul_mask;
+ 935              		.loc 1 666 0
+ 936 002c C0F8B410 		str	r1, [r0, #180]
+ 937 0030 7047     		bx	lr
+ 938              		.cfi_endproc
+ 939              	.LFE97:
+ 941 0032 00BF     		.section	.text.pio_set_writeprotect,"ax",%progbits
+ 942              		.align	2
+ 943              		.global	pio_set_writeprotect
+ 944              		.thumb
+ 945              		.thumb_func
+ 947              	pio_set_writeprotect:
+ 948              	.LFB98:
+ 667:../src/pio/pio.c **** 	}
+ 668:../src/pio/pio.c **** }
+ 669:../src/pio/pio.c **** 
+ 670:../src/pio/pio.c **** #ifndef PIO_WPMR_WPKEY_PASSWD
+ 671:../src/pio/pio.c **** #define PIO_WPMR_WPKEY_PASSWD    PIO_WPMR_WPKEY(0x50494FU)
+ 672:../src/pio/pio.c **** #endif
+ 673:../src/pio/pio.c **** 
+ 674:../src/pio/pio.c **** /**
+ 675:../src/pio/pio.c ****  * \brief Enable or disable write protect of PIO registers.
+ 676:../src/pio/pio.c ****  *
+ 677:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 678:../src/pio/pio.c ****  * \param ul_enable 1 to enable, 0 to disable.
+ 679:../src/pio/pio.c ****  */
+ 680:../src/pio/pio.c **** void pio_set_writeprotect(Pio *p_pio, const uint32_t ul_enable)
+ 681:../src/pio/pio.c **** {
+ 949              		.loc 1 681 0
+ 950              		.cfi_startproc
+ 951              		@ args = 0, pretend = 0, frame = 0
+ 952              		@ frame_needed = 0, uses_anonymous_args = 0
+ 953              		@ link register save eliminated.
+ 954              	.LVL80:
+ 682:../src/pio/pio.c **** 	p_pio->PIO_WPMR = PIO_WPMR_WPKEY_PASSWD | (ul_enable & PIO_WPMR_WPEN);
+ 955              		.loc 1 682 0
+ 956 0000 01F00101 		and	r1, r1, #1
+ 957              	.LVL81:
+ 958 0004 024B     		ldr	r3, .L79
+ 959 0006 0B43     		orrs	r3, r3, r1
+ 960 0008 C0F8E430 		str	r3, [r0, #228]
+ 961 000c 7047     		bx	lr
+ 962              	.L80:
+ 963 000e 00BF     		.align	2
+ 964              	.L79:
+ 965 0010 004F4950 		.word	1346981632
+ 966              		.cfi_endproc
+ 967              	.LFE98:
+ 969              		.section	.text.pio_get_writeprotect_status,"ax",%progbits
+ 970              		.align	2
+ 971              		.global	pio_get_writeprotect_status
+ 972              		.thumb
+ 973              		.thumb_func
+ 975              	pio_get_writeprotect_status:
+ 976              	.LFB99:
+ 683:../src/pio/pio.c **** }
+ 684:../src/pio/pio.c **** 
+ 685:../src/pio/pio.c **** /**
+ 686:../src/pio/pio.c ****  * \brief Read write protect status.
+ 687:../src/pio/pio.c ****  *
+ 688:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 689:../src/pio/pio.c ****  *
+ 690:../src/pio/pio.c ****  * \return Return write protect status.
+ 691:../src/pio/pio.c ****  */
+ 692:../src/pio/pio.c **** uint32_t pio_get_writeprotect_status(const Pio *p_pio)
+ 693:../src/pio/pio.c **** {
+ 977              		.loc 1 693 0
+ 978              		.cfi_startproc
+ 979              		@ args = 0, pretend = 0, frame = 0
+ 980              		@ frame_needed = 0, uses_anonymous_args = 0
+ 981              		@ link register save eliminated.
+ 982              	.LVL82:
+ 694:../src/pio/pio.c **** 	return p_pio->PIO_WPSR;
+ 983              		.loc 1 694 0
+ 984 0000 D0F8E800 		ldr	r0, [r0, #232]
+ 985              	.LVL83:
+ 695:../src/pio/pio.c **** }
+ 986              		.loc 1 695 0
+ 987 0004 7047     		bx	lr
+ 988              		.cfi_endproc
+ 989              	.LFE99:
+ 991 0006 00BF     		.section	.text.pio_set_pin_group_high,"ax",%progbits
+ 992              		.align	2
+ 993              		.global	pio_set_pin_group_high
+ 994              		.thumb
+ 995              		.thumb_func
+ 997              	pio_set_pin_group_high:
+ 998              	.LFB105:
+ 696:../src/pio/pio.c **** 
+ 697:../src/pio/pio.c **** /**
+ 698:../src/pio/pio.c ****  * \brief Return the value of a pin.
+ 699:../src/pio/pio.c ****  *
+ 700:../src/pio/pio.c ****  * \param ul_pin The pin number.
+ 701:../src/pio/pio.c ****  *
+ 702:../src/pio/pio.c ****  * \return The pin value.
+ 703:../src/pio/pio.c ****  *
+ 704:../src/pio/pio.c ****  * \note If pin is output: a pull-up or pull-down could hide the actual value.
+ 705:../src/pio/pio.c ****  *       The function \ref pio_get can be called to get the actual pin output
+ 706:../src/pio/pio.c ****  *       level.
+ 707:../src/pio/pio.c ****  * \note If pin is input: PIOx must be clocked to sample the signal.
+ 708:../src/pio/pio.c ****  *       See PMC driver.
+ 709:../src/pio/pio.c ****  */
+ 710:../src/pio/pio.c **** uint32_t pio_get_pin_value(uint32_t ul_pin)
+ 711:../src/pio/pio.c **** {
+ 712:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 713:../src/pio/pio.c **** 
+ 714:../src/pio/pio.c **** 	return (p_pio->PIO_PDSR >> (ul_pin & 0x1F)) & 1;
+ 715:../src/pio/pio.c **** }
+ 716:../src/pio/pio.c **** 
+ 717:../src/pio/pio.c **** /**
+ 718:../src/pio/pio.c ****  * \brief Drive a GPIO pin to 1.
+ 719:../src/pio/pio.c ****  *
+ 720:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 721:../src/pio/pio.c ****  *
+ 722:../src/pio/pio.c ****  * \note The function \ref pio_configure_pin must be called beforehand.
+ 723:../src/pio/pio.c ****  */
+ 724:../src/pio/pio.c **** void pio_set_pin_high(uint32_t ul_pin)
+ 725:../src/pio/pio.c **** {
+ 726:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 727:../src/pio/pio.c **** 
+ 728:../src/pio/pio.c **** 	/* Value to be driven on the I/O line: 1. */
+ 729:../src/pio/pio.c **** 	p_pio->PIO_SODR = 1 << (ul_pin & 0x1F);
+ 730:../src/pio/pio.c **** }
+ 731:../src/pio/pio.c **** 
+ 732:../src/pio/pio.c **** /**
+ 733:../src/pio/pio.c ****  * \brief Drive a GPIO pin to 0.
+ 734:../src/pio/pio.c ****  *
+ 735:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 736:../src/pio/pio.c ****  *
+ 737:../src/pio/pio.c ****  * \note The function \ref pio_configure_pin must be called before.
+ 738:../src/pio/pio.c ****  */
+ 739:../src/pio/pio.c **** void pio_set_pin_low(uint32_t ul_pin)
+ 740:../src/pio/pio.c **** {
+ 741:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 742:../src/pio/pio.c **** 
+ 743:../src/pio/pio.c **** 	/* Value to be driven on the I/O line: 0. */
+ 744:../src/pio/pio.c **** 	p_pio->PIO_CODR = 1 << (ul_pin & 0x1F);
+ 745:../src/pio/pio.c **** }
+ 746:../src/pio/pio.c **** 
+ 747:../src/pio/pio.c **** /**
+ 748:../src/pio/pio.c ****  * \brief Toggle a GPIO pin.
+ 749:../src/pio/pio.c ****  *
+ 750:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 751:../src/pio/pio.c ****  *
+ 752:../src/pio/pio.c ****  * \note The function \ref pio_configure_pin must be called before.
+ 753:../src/pio/pio.c ****  */
+ 754:../src/pio/pio.c **** void pio_toggle_pin(uint32_t ul_pin)
+ 755:../src/pio/pio.c **** {
+ 756:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 757:../src/pio/pio.c **** 
+ 758:../src/pio/pio.c **** 	if (p_pio->PIO_ODSR & (1 << (ul_pin & 0x1F))) {
+ 759:../src/pio/pio.c **** 		/* Value to be driven on the I/O line: 0. */
+ 760:../src/pio/pio.c **** 		p_pio->PIO_CODR = 1 << (ul_pin & 0x1F);
+ 761:../src/pio/pio.c **** 	} else {
+ 762:../src/pio/pio.c **** 		/* Value to be driven on the I/O line: 1. */
+ 763:../src/pio/pio.c **** 		p_pio->PIO_SODR = 1 << (ul_pin & 0x1F);
+ 764:../src/pio/pio.c **** 	}
+ 765:../src/pio/pio.c **** }
+ 766:../src/pio/pio.c **** 
+ 767:../src/pio/pio.c **** /**
+ 768:../src/pio/pio.c ****  * \brief Perform complete pin(s) configuration; general attributes and PIO init
+ 769:../src/pio/pio.c ****  * if necessary.
+ 770:../src/pio/pio.c ****  *
+ 771:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 772:../src/pio/pio.c ****  * \param ul_flags Pins attributes.
+ 773:../src/pio/pio.c ****  *
+ 774:../src/pio/pio.c ****  * \return Whether the pin(s) have been configured properly.
+ 775:../src/pio/pio.c ****  */
+ 776:../src/pio/pio.c **** uint32_t pio_configure_pin(uint32_t ul_pin, const uint32_t ul_flags)
+ 777:../src/pio/pio.c **** {
+ 778:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 779:../src/pio/pio.c **** 
+ 780:../src/pio/pio.c **** 	/* Configure pins */
+ 781:../src/pio/pio.c **** 	switch (ul_flags & PIO_TYPE_Msk) {
+ 782:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_A:
+ 783:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_A, (1 << (ul_pin & 0x1F)));
+ 784:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 785:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 786:../src/pio/pio.c **** 		break;
+ 787:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_B:
+ 788:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_B, (1 << (ul_pin & 0x1F)));
+ 789:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 790:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 791:../src/pio/pio.c **** 		break;
+ 792:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || 
+ 793:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_C:
+ 794:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_C, (1 << (ul_pin & 0x1F)));
+ 795:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 796:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 797:../src/pio/pio.c **** 		break;
+ 798:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_D:
+ 799:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_D, (1 << (ul_pin & 0x1F)));
+ 800:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 801:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 802:../src/pio/pio.c **** 		break;
+ 803:../src/pio/pio.c **** #endif
+ 804:../src/pio/pio.c **** 
+ 805:../src/pio/pio.c **** 	case PIO_TYPE_PIO_INPUT:
+ 806:../src/pio/pio.c **** 		pio_set_input(p_pio, (1 << (ul_pin & 0x1F)), ul_flags);
+ 807:../src/pio/pio.c **** 		break;
+ 808:../src/pio/pio.c **** 
+ 809:../src/pio/pio.c **** 	case PIO_TYPE_PIO_OUTPUT_0:
+ 810:../src/pio/pio.c **** 	case PIO_TYPE_PIO_OUTPUT_1:
+ 811:../src/pio/pio.c **** 		pio_set_output(p_pio, (1 << (ul_pin & 0x1F)),
+ 812:../src/pio/pio.c **** 				((ul_flags & PIO_TYPE_PIO_OUTPUT_1)
+ 813:../src/pio/pio.c **** 				== PIO_TYPE_PIO_OUTPUT_1) ? 1 : 0,
+ 814:../src/pio/pio.c **** 				(ul_flags & PIO_OPENDRAIN) ? 1 : 0,
+ 815:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP) ? 1 : 0);
+ 816:../src/pio/pio.c **** 		break;
+ 817:../src/pio/pio.c **** 
+ 818:../src/pio/pio.c **** 	default:
+ 819:../src/pio/pio.c **** 		return 0;
+ 820:../src/pio/pio.c **** 	}
+ 821:../src/pio/pio.c **** 
+ 822:../src/pio/pio.c **** 	return 1;
+ 823:../src/pio/pio.c **** }
+ 824:../src/pio/pio.c **** 
+ 825:../src/pio/pio.c **** /**
+ 826:../src/pio/pio.c ****  * \brief Drive a GPIO port to 1.
+ 827:../src/pio/pio.c ****  *
+ 828:../src/pio/pio.c ****  * \param p_pio Base address of the PIO port.
+ 829:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to toggle.
+ 830:../src/pio/pio.c ****  */
+ 831:../src/pio/pio.c **** void pio_set_pin_group_high(Pio *p_pio, uint32_t ul_mask)
+ 832:../src/pio/pio.c **** {
+ 999              		.loc 1 832 0
+ 1000              		.cfi_startproc
+ 1001              		@ args = 0, pretend = 0, frame = 0
+ 1002              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1003              		@ link register save eliminated.
+ 1004              	.LVL84:
+ 833:../src/pio/pio.c **** 	/* Value to be driven on the I/O line: 1. */
+ 834:../src/pio/pio.c **** 	p_pio->PIO_SODR = ul_mask;
+ 1005              		.loc 1 834 0
+ 1006 0000 0163     		str	r1, [r0, #48]
+ 1007 0002 7047     		bx	lr
+ 1008              		.cfi_endproc
+ 1009              	.LFE105:
+ 1011              		.section	.text.pio_set_pin_group_low,"ax",%progbits
+ 1012              		.align	2
+ 1013              		.global	pio_set_pin_group_low
+ 1014              		.thumb
+ 1015              		.thumb_func
+ 1017              	pio_set_pin_group_low:
+ 1018              	.LFB106:
+ 835:../src/pio/pio.c **** }
+ 836:../src/pio/pio.c **** 
+ 837:../src/pio/pio.c **** /**
+ 838:../src/pio/pio.c ****  * \brief Drive a GPIO port to 0.
+ 839:../src/pio/pio.c ****  *
+ 840:../src/pio/pio.c ****  * \param p_pio Base address of the PIO port.
+ 841:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to toggle.
+ 842:../src/pio/pio.c ****  */
+ 843:../src/pio/pio.c **** void pio_set_pin_group_low(Pio *p_pio, uint32_t ul_mask)
+ 844:../src/pio/pio.c **** {
+ 1019              		.loc 1 844 0
+ 1020              		.cfi_startproc
+ 1021              		@ args = 0, pretend = 0, frame = 0
+ 1022              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1023              		@ link register save eliminated.
+ 1024              	.LVL85:
+ 845:../src/pio/pio.c **** 	/* Value to be driven on the I/O line: 0. */
+ 846:../src/pio/pio.c **** 	p_pio->PIO_CODR = ul_mask;
+ 1025              		.loc 1 846 0
+ 1026 0000 4163     		str	r1, [r0, #52]
+ 1027 0002 7047     		bx	lr
+ 1028              		.cfi_endproc
+ 1029              	.LFE106:
+ 1031              		.section	.text.pio_toggle_pin_group,"ax",%progbits
+ 1032              		.align	2
+ 1033              		.global	pio_toggle_pin_group
+ 1034              		.thumb
+ 1035              		.thumb_func
+ 1037              	pio_toggle_pin_group:
+ 1038              	.LFB107:
+ 847:../src/pio/pio.c **** }
+ 848:../src/pio/pio.c **** 
+ 849:../src/pio/pio.c **** /**
+ 850:../src/pio/pio.c ****  * \brief Toggle a GPIO group.
+ 851:../src/pio/pio.c ****  *
+ 852:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 853:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 854:../src/pio/pio.c ****  */
+ 855:../src/pio/pio.c **** void pio_toggle_pin_group(Pio *p_pio, uint32_t ul_mask)
+ 856:../src/pio/pio.c **** {
+ 1039              		.loc 1 856 0
+ 1040              		.cfi_startproc
+ 1041              		@ args = 0, pretend = 0, frame = 0
+ 1042              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1043              		@ link register save eliminated.
+ 1044              	.LVL86:
+ 857:../src/pio/pio.c **** 	if (p_pio->PIO_ODSR & ul_mask) {
+ 1045              		.loc 1 857 0
+ 1046 0000 836B     		ldr	r3, [r0, #56]
+ 1047 0002 0B42     		tst	r3, r1
+ 1048 0004 01D0     		beq	.L85
+ 858:../src/pio/pio.c **** 		/* Value to be driven on the I/O line: 0. */
+ 859:../src/pio/pio.c **** 		p_pio->PIO_CODR = ul_mask;
+ 1049              		.loc 1 859 0
+ 1050 0006 4163     		str	r1, [r0, #52]
+ 1051 0008 7047     		bx	lr
+ 1052              	.L85:
+ 860:../src/pio/pio.c **** 	} else {
+ 861:../src/pio/pio.c **** 		/* Value to be driven on the I/O line: 1. */
+ 862:../src/pio/pio.c **** 		p_pio->PIO_SODR = ul_mask;
+ 1053              		.loc 1 862 0
+ 1054 000a 0163     		str	r1, [r0, #48]
+ 1055 000c 7047     		bx	lr
+ 1056              		.cfi_endproc
+ 1057              	.LFE107:
+ 1059 000e 00BF     		.section	.text.pio_configure_pin_group,"ax",%progbits
+ 1060              		.align	2
+ 1061              		.global	pio_configure_pin_group
+ 1062              		.thumb
+ 1063              		.thumb_func
+ 1065              	pio_configure_pin_group:
+ 1066              	.LFB108:
+ 863:../src/pio/pio.c **** 	}
+ 864:../src/pio/pio.c **** }
+ 865:../src/pio/pio.c **** 
+ 866:../src/pio/pio.c **** /**
+ 867:../src/pio/pio.c ****  * \brief Perform complete pin(s) configuration; general attributes and PIO init
+ 868:../src/pio/pio.c ****  * if necessary.
+ 869:../src/pio/pio.c ****  *
+ 870:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+ 871:../src/pio/pio.c ****  * \param ul_mask Bitmask of one or more pin(s) to configure.
+ 872:../src/pio/pio.c ****  * \param ul_flags Pin(s) attributes.
+ 873:../src/pio/pio.c ****  *
+ 874:../src/pio/pio.c ****  * \return Whether the pin(s) have been configured properly.
+ 875:../src/pio/pio.c ****  */
+ 876:../src/pio/pio.c **** uint32_t pio_configure_pin_group(Pio *p_pio,
+ 877:../src/pio/pio.c **** 		uint32_t ul_mask, const uint32_t ul_flags)
+ 878:../src/pio/pio.c **** {
+ 1067              		.loc 1 878 0
+ 1068              		.cfi_startproc
+ 1069              		@ args = 0, pretend = 0, frame = 0
+ 1070              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1071              	.LVL87:
+ 1072 0000 70B5     		push	{r4, r5, r6, lr}
+ 1073              		.cfi_def_cfa_offset 16
+ 1074              		.cfi_offset 4, -16
+ 1075              		.cfi_offset 5, -12
+ 1076              		.cfi_offset 6, -8
+ 1077              		.cfi_offset 14, -4
+ 1078 0002 82B0     		sub	sp, sp, #8
+ 1079              		.cfi_def_cfa_offset 24
+ 1080 0004 0546     		mov	r5, r0
+ 1081 0006 0E46     		mov	r6, r1
+ 1082 0008 1446     		mov	r4, r2
+ 879:../src/pio/pio.c **** 	/* Configure pins */
+ 880:../src/pio/pio.c **** 	switch (ul_flags & PIO_TYPE_Msk) {
+ 1083              		.loc 1 880 0
+ 1084 000a 02F0F043 		and	r3, r2, #2013265920
+ 1085 000e B3F1005F 		cmp	r3, #536870912
+ 1086 0012 3BD0     		beq	.L89
+ 1087 0014 09D8     		bhi	.L90
+ 1088 0016 B3F1805F 		cmp	r3, #268435456
+ 1089 001a 1DD0     		beq	.L91
+ 1090 001c B3F1C05F 		cmp	r3, #402653184
+ 1091 0020 27D0     		beq	.L92
+ 1092 0022 B3F1006F 		cmp	r3, #134217728
+ 1093 0026 54D1     		bne	.L96
+ 1094 0028 09E0     		b	.L93
+ 1095              	.L90:
+ 1096 002a B3F1405F 		cmp	r3, #805306368
+ 1097 002e 3ED0     		beq	.L94
+ 1098 0030 B3F1605F 		cmp	r3, #939524096
+ 1099 0034 3BD0     		beq	.L94
+ 1100 0036 B3F1205F 		cmp	r3, #671088640
+ 1101 003a 34D0     		beq	.L95
+ 1102 003c 49E0     		b	.L96
+ 1103              	.L93:
+ 881:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_A:
+ 882:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_A, ul_mask);
+ 1104              		.loc 1 882 0
+ 1105 003e 0A46     		mov	r2, r1
+ 1106              	.LVL88:
+ 1107 0040 4FF00061 		mov	r1, #134217728
+ 1108              	.LVL89:
+ 1109 0044 FFF7FEFF 		bl	pio_set_peripheral
+ 1110              	.LVL90:
+ 883:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 1111              		.loc 1 883 0
+ 1112 0048 04F00102 		and	r2, r4, #1
+ 1113 004c 3146     		mov	r1, r6
+ 1114 004e 2846     		mov	r0, r5
+ 1115 0050 FFF7FEFF 		bl	pio_pull_up
+ 1116              	.LVL91:
+ 884:../src/pio/pio.c **** 		break;
+ 885:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_B:
+ 886:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_B, ul_mask);
+ 887:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 888:../src/pio/pio.c **** 		break;
+ 889:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || 
+ 890:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_C:
+ 891:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_C, ul_mask);
+ 892:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 893:../src/pio/pio.c **** 		break;
+ 894:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_D:
+ 895:../src/pio/pio.c **** 		pio_set_peripheral(p_pio, PIO_PERIPH_D, ul_mask);
+ 896:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 897:../src/pio/pio.c **** 		break;
+ 898:../src/pio/pio.c **** #endif
+ 899:../src/pio/pio.c **** 
+ 900:../src/pio/pio.c **** 	case PIO_TYPE_PIO_INPUT:
+ 901:../src/pio/pio.c **** 		pio_set_input(p_pio, ul_mask, ul_flags);
+ 902:../src/pio/pio.c **** 		break;
+ 903:../src/pio/pio.c **** 
+ 904:../src/pio/pio.c **** 	case PIO_TYPE_PIO_OUTPUT_0:
+ 905:../src/pio/pio.c **** 	case PIO_TYPE_PIO_OUTPUT_1:
+ 906:../src/pio/pio.c **** 		pio_set_output(p_pio, ul_mask,
+ 907:../src/pio/pio.c **** 				((ul_flags & PIO_TYPE_PIO_OUTPUT_1)
+ 908:../src/pio/pio.c **** 				== PIO_TYPE_PIO_OUTPUT_1) ? 1 : 0,
+ 909:../src/pio/pio.c **** 				(ul_flags & PIO_OPENDRAIN) ? 1 : 0,
+ 910:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP) ? 1 : 0);
+ 911:../src/pio/pio.c **** 		break;
+ 912:../src/pio/pio.c **** 
+ 913:../src/pio/pio.c **** 	default:
+ 914:../src/pio/pio.c **** 		return 0;
+ 915:../src/pio/pio.c **** 	}
+ 916:../src/pio/pio.c **** 
+ 917:../src/pio/pio.c **** 	return 1;
+ 1117              		.loc 1 917 0
+ 1118 0054 0120     		movs	r0, #1
+ 884:../src/pio/pio.c **** 		break;
+ 1119              		.loc 1 884 0
+ 1120 0056 3DE0     		b	.L88
+ 1121              	.LVL92:
+ 1122              	.L91:
+ 886:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 1123              		.loc 1 886 0
+ 1124 0058 0A46     		mov	r2, r1
+ 1125              	.LVL93:
+ 1126 005a 4FF08051 		mov	r1, #268435456
+ 1127              	.LVL94:
+ 1128 005e FFF7FEFF 		bl	pio_set_peripheral
+ 1129              	.LVL95:
+ 887:../src/pio/pio.c **** 		break;
+ 1130              		.loc 1 887 0
+ 1131 0062 04F00102 		and	r2, r4, #1
+ 1132 0066 3146     		mov	r1, r6
+ 1133 0068 2846     		mov	r0, r5
+ 1134 006a FFF7FEFF 		bl	pio_pull_up
+ 1135              	.LVL96:
+ 1136              		.loc 1 917 0
+ 1137 006e 0120     		movs	r0, #1
+ 888:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || 
+ 1138              		.loc 1 888 0
+ 1139 0070 30E0     		b	.L88
+ 1140              	.LVL97:
+ 1141              	.L92:
+ 891:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 1142              		.loc 1 891 0
+ 1143 0072 0A46     		mov	r2, r1
+ 1144              	.LVL98:
+ 1145 0074 4FF0C051 		mov	r1, #402653184
+ 1146              	.LVL99:
+ 1147 0078 FFF7FEFF 		bl	pio_set_peripheral
+ 1148              	.LVL100:
+ 892:../src/pio/pio.c **** 		break;
+ 1149              		.loc 1 892 0
+ 1150 007c 04F00102 		and	r2, r4, #1
+ 1151 0080 3146     		mov	r1, r6
+ 1152 0082 2846     		mov	r0, r5
+ 1153 0084 FFF7FEFF 		bl	pio_pull_up
+ 1154              	.LVL101:
+ 1155              		.loc 1 917 0
+ 1156 0088 0120     		movs	r0, #1
+ 893:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_D:
+ 1157              		.loc 1 893 0
+ 1158 008a 23E0     		b	.L88
+ 1159              	.LVL102:
+ 1160              	.L89:
+ 895:../src/pio/pio.c **** 		pio_pull_up(p_pio, ul_mask, (ul_flags & PIO_PULLUP));
+ 1161              		.loc 1 895 0
+ 1162 008c 0A46     		mov	r2, r1
+ 1163              	.LVL103:
+ 1164 008e 4FF00051 		mov	r1, #536870912
+ 1165              	.LVL104:
+ 1166 0092 FFF7FEFF 		bl	pio_set_peripheral
+ 1167              	.LVL105:
+ 896:../src/pio/pio.c **** 		break;
+ 1168              		.loc 1 896 0
+ 1169 0096 04F00102 		and	r2, r4, #1
+ 1170 009a 3146     		mov	r1, r6
+ 1171 009c 2846     		mov	r0, r5
+ 1172 009e FFF7FEFF 		bl	pio_pull_up
+ 1173              	.LVL106:
+ 1174              		.loc 1 917 0
+ 1175 00a2 0120     		movs	r0, #1
+ 897:../src/pio/pio.c **** #endif
+ 1176              		.loc 1 897 0
+ 1177 00a4 16E0     		b	.L88
+ 1178              	.LVL107:
+ 1179              	.L95:
+ 901:../src/pio/pio.c **** 		break;
+ 1180              		.loc 1 901 0
+ 1181 00a6 FFF7FEFF 		bl	pio_set_input
+ 1182              	.LVL108:
+ 1183              		.loc 1 917 0
+ 1184 00aa 0120     		movs	r0, #1
+ 902:../src/pio/pio.c **** 
+ 1185              		.loc 1 902 0
+ 1186 00ac 12E0     		b	.L88
+ 1187              	.LVL109:
+ 1188              	.L94:
+ 907:../src/pio/pio.c **** 				== PIO_TYPE_PIO_OUTPUT_1) ? 1 : 0,
+ 1189              		.loc 1 907 0
+ 1190 00ae 04F06052 		and	r2, r4, #939524096
+ 1191              	.LVL110:
+ 910:../src/pio/pio.c **** 		break;
+ 1192              		.loc 1 910 0
+ 1193 00b2 04F00103 		and	r3, r4, #1
+ 906:../src/pio/pio.c **** 				((ul_flags & PIO_TYPE_PIO_OUTPUT_1)
+ 1194              		.loc 1 906 0
+ 1195 00b6 0093     		str	r3, [sp]
+ 1196 00b8 C4F38003 		ubfx	r3, r4, #2, #1
+ 1197 00bc B2F1605F 		cmp	r2, #939524096
+ 1198 00c0 14BF     		ite	ne
+ 1199 00c2 0022     		movne	r2, #0
+ 1200 00c4 0122     		moveq	r2, #1
+ 1201 00c6 3146     		mov	r1, r6
+ 1202              	.LVL111:
+ 1203 00c8 2846     		mov	r0, r5
+ 1204              	.LVL112:
+ 1205 00ca FFF7FEFF 		bl	pio_set_output
+ 1206              	.LVL113:
+ 1207              		.loc 1 917 0
+ 1208 00ce 0120     		movs	r0, #1
+ 911:../src/pio/pio.c **** 
+ 1209              		.loc 1 911 0
+ 1210 00d0 00E0     		b	.L88
+ 1211              	.LVL114:
+ 1212              	.L96:
+ 914:../src/pio/pio.c **** 	}
+ 1213              		.loc 1 914 0
+ 1214 00d2 0020     		movs	r0, #0
+ 1215              	.LVL115:
+ 1216              	.L88:
+ 918:../src/pio/pio.c **** }
+ 1217              		.loc 1 918 0
+ 1218 00d4 02B0     		add	sp, sp, #8
+ 1219              		.cfi_def_cfa_offset 16
+ 1220              		@ sp needed
+ 1221 00d6 70BD     		pop	{r4, r5, r6, pc}
+ 1222              		.cfi_endproc
+ 1223              	.LFE108:
+ 1225              		.section	.text.pio_get_pin_group,"ax",%progbits
+ 1226              		.align	2
+ 1227              		.global	pio_get_pin_group
+ 1228              		.thumb
+ 1229              		.thumb_func
+ 1231              	pio_get_pin_group:
+ 1232              	.LFB111:
+ 919:../src/pio/pio.c **** 
+ 920:../src/pio/pio.c **** /**
+ 921:../src/pio/pio.c ****  * \brief Enable interrupt for a GPIO pin.
+ 922:../src/pio/pio.c ****  *
+ 923:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 924:../src/pio/pio.c ****  *
+ 925:../src/pio/pio.c ****  * \note The function \ref gpio_configure_pin must be called before.
+ 926:../src/pio/pio.c ****  */
+ 927:../src/pio/pio.c **** void pio_enable_pin_interrupt(uint32_t ul_pin)
+ 928:../src/pio/pio.c **** {
+ 929:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 930:../src/pio/pio.c **** 
+ 931:../src/pio/pio.c **** 	p_pio->PIO_IER = 1 << (ul_pin & 0x1F);
+ 932:../src/pio/pio.c **** }
+ 933:../src/pio/pio.c **** 
+ 934:../src/pio/pio.c **** 
+ 935:../src/pio/pio.c **** /**
+ 936:../src/pio/pio.c ****  * \brief Disable interrupt for a GPIO pin.
+ 937:../src/pio/pio.c ****  *
+ 938:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 939:../src/pio/pio.c ****  *
+ 940:../src/pio/pio.c ****  * \note The function \ref gpio_configure_pin must be called before.
+ 941:../src/pio/pio.c ****  */
+ 942:../src/pio/pio.c **** void pio_disable_pin_interrupt(uint32_t ul_pin)
+ 943:../src/pio/pio.c **** {
+ 944:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 945:../src/pio/pio.c **** 
+ 946:../src/pio/pio.c **** 	p_pio->PIO_IDR = 1 << (ul_pin & 0x1F);
+ 947:../src/pio/pio.c **** }
+ 948:../src/pio/pio.c **** 
+ 949:../src/pio/pio.c **** 
+ 950:../src/pio/pio.c **** /**
+ 951:../src/pio/pio.c ****  * \brief Return GPIO port for a GPIO pin.
+ 952:../src/pio/pio.c ****  *
+ 953:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 954:../src/pio/pio.c ****  *
+ 955:../src/pio/pio.c ****  * \return Pointer to \ref Pio struct for GPIO port.
+ 956:../src/pio/pio.c ****  */
+ 957:../src/pio/pio.c **** Pio *pio_get_pin_group(uint32_t ul_pin)
+ 958:../src/pio/pio.c **** {
+ 1233              		.loc 1 958 0
+ 1234              		.cfi_startproc
+ 1235              		@ args = 0, pretend = 0, frame = 0
+ 1236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1237              		@ link register save eliminated.
+ 1238              	.LVL116:
+ 959:../src/pio/pio.c **** 	Pio *p_pio;
+ 960:../src/pio/pio.c **** 
+ 961:../src/pio/pio.c **** #if (SAM4C || SAM4CP)
+ 962:../src/pio/pio.c **** #  ifdef ID_PIOD
+ 963:../src/pio/pio.c **** 	if (ul_pin > PIO_PC9_IDX) {
+ 964:../src/pio/pio.c **** 		p_pio = PIOD;
+ 965:../src/pio/pio.c **** 	} else if (ul_pin > PIO_PB31_IDX) {
+ 966:../src/pio/pio.c **** #  else
+ 967:../src/pio/pio.c **** 	if  (ul_pin > PIO_PB31_IDX) {
+ 968:../src/pio/pio.c **** #  endif
+ 969:../src/pio/pio.c **** 		p_pio = PIOC;
+ 970:../src/pio/pio.c **** 	} else {
+ 971:../src/pio/pio.c **** 		p_pio = (Pio *)((uint32_t)PIOA + (PIO_DELTA * (ul_pin >> 5)));
+ 972:../src/pio/pio.c **** 	}
+ 973:../src/pio/pio.c **** #elif (SAM4CM)
+ 974:../src/pio/pio.c **** 	if (ul_pin > PIO_PB21_IDX) {
+ 975:../src/pio/pio.c **** 		p_pio = PIOC;
+ 976:../src/pio/pio.c **** 	} else {
+ 977:../src/pio/pio.c **** 		p_pio = (Pio *)((uint32_t)PIOA + (PIO_DELTA * (ul_pin >> 5)));
+ 978:../src/pio/pio.c **** 	}
+ 979:../src/pio/pio.c **** #else
+ 980:../src/pio/pio.c **** 	p_pio = (Pio *)((uint32_t)PIOA + (PIO_DELTA * (ul_pin >> 5)));
+ 1239              		.loc 1 980 0
+ 1240 0000 4009     		lsrs	r0, r0, #5
+ 1241              	.LVL117:
+ 1242 0002 00F50010 		add	r0, r0, #2097152
+ 1243 0006 00F20770 		addw	r0, r0, #1799
+ 1244              	.LVL118:
+ 981:../src/pio/pio.c **** #endif
+ 982:../src/pio/pio.c **** 	return p_pio;
+ 983:../src/pio/pio.c **** }
+ 1245              		.loc 1 983 0
+ 1246 000a 4002     		lsls	r0, r0, #9
+ 1247              	.LVL119:
+ 1248 000c 7047     		bx	lr
+ 1249              		.cfi_endproc
+ 1250              	.LFE111:
+ 1252 000e 00BF     		.section	.text.pio_get_pin_value,"ax",%progbits
+ 1253              		.align	2
+ 1254              		.global	pio_get_pin_value
+ 1255              		.thumb
+ 1256              		.thumb_func
+ 1258              	pio_get_pin_value:
+ 1259              	.LFB100:
+ 711:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1260              		.loc 1 711 0
+ 1261              		.cfi_startproc
+ 1262              		@ args = 0, pretend = 0, frame = 0
+ 1263              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1264              	.LVL120:
+ 1265 0000 10B5     		push	{r4, lr}
+ 1266              		.cfi_def_cfa_offset 8
+ 1267              		.cfi_offset 4, -8
+ 1268              		.cfi_offset 14, -4
+ 1269 0002 0446     		mov	r4, r0
+ 712:../src/pio/pio.c **** 
+ 1270              		.loc 1 712 0
+ 1271 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1272              	.LVL121:
+ 714:../src/pio/pio.c **** }
+ 1273              		.loc 1 714 0
+ 1274 0008 C36B     		ldr	r3, [r0, #60]
+ 1275 000a 04F01F00 		and	r0, r4, #31
+ 1276              	.LVL122:
+ 1277 000e 23FA00F0 		lsr	r0, r3, r0
+ 715:../src/pio/pio.c **** 
+ 1278              		.loc 1 715 0
+ 1279 0012 00F00100 		and	r0, r0, #1
+ 1280 0016 10BD     		pop	{r4, pc}
+ 1281              		.cfi_endproc
+ 1282              	.LFE100:
+ 1284              		.section	.text.pio_set_pin_high,"ax",%progbits
+ 1285              		.align	2
+ 1286              		.global	pio_set_pin_high
+ 1287              		.thumb
+ 1288              		.thumb_func
+ 1290              	pio_set_pin_high:
+ 1291              	.LFB101:
+ 725:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1292              		.loc 1 725 0
+ 1293              		.cfi_startproc
+ 1294              		@ args = 0, pretend = 0, frame = 0
+ 1295              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1296              	.LVL123:
+ 1297 0000 10B5     		push	{r4, lr}
+ 1298              		.cfi_def_cfa_offset 8
+ 1299              		.cfi_offset 4, -8
+ 1300              		.cfi_offset 14, -4
+ 1301 0002 0446     		mov	r4, r0
+ 726:../src/pio/pio.c **** 
+ 1302              		.loc 1 726 0
+ 1303 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1304              	.LVL124:
+ 729:../src/pio/pio.c **** }
+ 1305              		.loc 1 729 0
+ 1306 0008 04F01F04 		and	r4, r4, #31
+ 1307              	.LVL125:
+ 1308 000c 0123     		movs	r3, #1
+ 1309 000e A340     		lsls	r3, r3, r4
+ 1310 0010 0363     		str	r3, [r0, #48]
+ 1311 0012 10BD     		pop	{r4, pc}
+ 1312              		.cfi_endproc
+ 1313              	.LFE101:
+ 1315              		.section	.text.pio_set_pin_low,"ax",%progbits
+ 1316              		.align	2
+ 1317              		.global	pio_set_pin_low
+ 1318              		.thumb
+ 1319              		.thumb_func
+ 1321              	pio_set_pin_low:
+ 1322              	.LFB102:
+ 740:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1323              		.loc 1 740 0
+ 1324              		.cfi_startproc
+ 1325              		@ args = 0, pretend = 0, frame = 0
+ 1326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1327              	.LVL126:
+ 1328 0000 10B5     		push	{r4, lr}
+ 1329              		.cfi_def_cfa_offset 8
+ 1330              		.cfi_offset 4, -8
+ 1331              		.cfi_offset 14, -4
+ 1332 0002 0446     		mov	r4, r0
+ 741:../src/pio/pio.c **** 
+ 1333              		.loc 1 741 0
+ 1334 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1335              	.LVL127:
+ 744:../src/pio/pio.c **** }
+ 1336              		.loc 1 744 0
+ 1337 0008 04F01F04 		and	r4, r4, #31
+ 1338              	.LVL128:
+ 1339 000c 0123     		movs	r3, #1
+ 1340 000e A340     		lsls	r3, r3, r4
+ 1341 0010 4363     		str	r3, [r0, #52]
+ 1342 0012 10BD     		pop	{r4, pc}
+ 1343              		.cfi_endproc
+ 1344              	.LFE102:
+ 1346              		.section	.text.pio_toggle_pin,"ax",%progbits
+ 1347              		.align	2
+ 1348              		.global	pio_toggle_pin
+ 1349              		.thumb
+ 1350              		.thumb_func
+ 1352              	pio_toggle_pin:
+ 1353              	.LFB103:
+ 755:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1354              		.loc 1 755 0
+ 1355              		.cfi_startproc
+ 1356              		@ args = 0, pretend = 0, frame = 0
+ 1357              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1358              	.LVL129:
+ 1359 0000 10B5     		push	{r4, lr}
+ 1360              		.cfi_def_cfa_offset 8
+ 1361              		.cfi_offset 4, -8
+ 1362              		.cfi_offset 14, -4
+ 1363 0002 0446     		mov	r4, r0
+ 756:../src/pio/pio.c **** 
+ 1364              		.loc 1 756 0
+ 1365 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1366              	.LVL130:
+ 758:../src/pio/pio.c **** 		/* Value to be driven on the I/O line: 0. */
+ 1367              		.loc 1 758 0
+ 1368 0008 826B     		ldr	r2, [r0, #56]
+ 1369 000a 04F01F04 		and	r4, r4, #31
+ 1370              	.LVL131:
+ 1371 000e 0123     		movs	r3, #1
+ 1372 0010 A340     		lsls	r3, r3, r4
+ 1373 0012 1A42     		tst	r2, r3
+ 1374 0014 01D0     		beq	.L106
+ 760:../src/pio/pio.c **** 	} else {
+ 1375              		.loc 1 760 0
+ 1376 0016 4363     		str	r3, [r0, #52]
+ 1377 0018 10BD     		pop	{r4, pc}
+ 1378              	.L106:
+ 763:../src/pio/pio.c **** 	}
+ 1379              		.loc 1 763 0
+ 1380 001a 0363     		str	r3, [r0, #48]
+ 1381 001c 10BD     		pop	{r4, pc}
+ 1382              		.cfi_endproc
+ 1383              	.LFE103:
+ 1385 001e 00BF     		.section	.text.pio_configure_pin,"ax",%progbits
+ 1386              		.align	2
+ 1387              		.global	pio_configure_pin
+ 1388              		.thumb
+ 1389              		.thumb_func
+ 1391              	pio_configure_pin:
+ 1392              	.LFB104:
+ 777:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1393              		.loc 1 777 0
+ 1394              		.cfi_startproc
+ 1395              		@ args = 0, pretend = 0, frame = 0
+ 1396              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1397              	.LVL132:
+ 1398 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1399              		.cfi_def_cfa_offset 20
+ 1400              		.cfi_offset 4, -20
+ 1401              		.cfi_offset 5, -16
+ 1402              		.cfi_offset 6, -12
+ 1403              		.cfi_offset 7, -8
+ 1404              		.cfi_offset 14, -4
+ 1405 0002 83B0     		sub	sp, sp, #12
+ 1406              		.cfi_def_cfa_offset 32
+ 1407 0004 0446     		mov	r4, r0
+ 1408 0006 0D46     		mov	r5, r1
+ 778:../src/pio/pio.c **** 
+ 1409              		.loc 1 778 0
+ 1410 0008 FFF7FEFF 		bl	pio_get_pin_group
+ 1411              	.LVL133:
+ 1412 000c 0646     		mov	r6, r0
+ 1413              	.LVL134:
+ 781:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_A:
+ 1414              		.loc 1 781 0
+ 1415 000e 05F0F043 		and	r3, r5, #2013265920
+ 1416 0012 B3F1005F 		cmp	r3, #536870912
+ 1417 0016 4AD0     		beq	.L111
+ 1418 0018 09D8     		bhi	.L112
+ 1419 001a B3F1805F 		cmp	r3, #268435456
+ 1420 001e 22D0     		beq	.L113
+ 1421 0020 B3F1C05F 		cmp	r3, #402653184
+ 1422 0024 31D0     		beq	.L114
+ 1423 0026 B3F1006F 		cmp	r3, #134217728
+ 1424 002a 72D1     		bne	.L118
+ 1425 002c 09E0     		b	.L115
+ 1426              	.L112:
+ 1427 002e B3F1405F 		cmp	r3, #805306368
+ 1428 0032 58D0     		beq	.L116
+ 1429 0034 B3F1605F 		cmp	r3, #939524096
+ 1430 0038 55D0     		beq	.L116
+ 1431 003a B3F1205F 		cmp	r3, #671088640
+ 1432 003e 48D0     		beq	.L117
+ 1433 0040 67E0     		b	.L118
+ 1434              	.L115:
+ 783:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 1435              		.loc 1 783 0
+ 1436 0042 04F01F04 		and	r4, r4, #31
+ 1437              	.LVL135:
+ 1438 0046 0127     		movs	r7, #1
+ 1439 0048 07FA04F4 		lsl	r4, r7, r4
+ 1440 004c 2246     		mov	r2, r4
+ 1441 004e 4FF00061 		mov	r1, #134217728
+ 1442 0052 FFF7FEFF 		bl	pio_set_peripheral
+ 1443              	.LVL136:
+ 784:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 1444              		.loc 1 784 0
+ 1445 0056 05EA0702 		and	r2, r5, r7
+ 1446 005a 2146     		mov	r1, r4
+ 1447 005c 3046     		mov	r0, r6
+ 1448 005e FFF7FEFF 		bl	pio_pull_up
+ 1449              	.LVL137:
+ 822:../src/pio/pio.c **** }
+ 1450              		.loc 1 822 0
+ 1451 0062 3846     		mov	r0, r7
+ 786:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_B:
+ 1452              		.loc 1 786 0
+ 1453 0064 56E0     		b	.L110
+ 1454              	.LVL138:
+ 1455              	.L113:
+ 788:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 1456              		.loc 1 788 0
+ 1457 0066 04F01F04 		and	r4, r4, #31
+ 1458              	.LVL139:
+ 1459 006a 0127     		movs	r7, #1
+ 1460 006c 07FA04F4 		lsl	r4, r7, r4
+ 1461 0070 2246     		mov	r2, r4
+ 1462 0072 4FF08051 		mov	r1, #268435456
+ 1463 0076 FFF7FEFF 		bl	pio_set_peripheral
+ 1464              	.LVL140:
+ 789:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 1465              		.loc 1 789 0
+ 1466 007a 05EA0702 		and	r2, r5, r7
+ 1467 007e 2146     		mov	r1, r4
+ 1468 0080 3046     		mov	r0, r6
+ 1469 0082 FFF7FEFF 		bl	pio_pull_up
+ 1470              	.LVL141:
+ 822:../src/pio/pio.c **** }
+ 1471              		.loc 1 822 0
+ 1472 0086 3846     		mov	r0, r7
+ 791:../src/pio/pio.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || 
+ 1473              		.loc 1 791 0
+ 1474 0088 44E0     		b	.L110
+ 1475              	.LVL142:
+ 1476              	.L114:
+ 794:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 1477              		.loc 1 794 0
+ 1478 008a 04F01F04 		and	r4, r4, #31
+ 1479              	.LVL143:
+ 1480 008e 0127     		movs	r7, #1
+ 1481 0090 07FA04F4 		lsl	r4, r7, r4
+ 1482 0094 2246     		mov	r2, r4
+ 1483 0096 4FF0C051 		mov	r1, #402653184
+ 1484 009a FFF7FEFF 		bl	pio_set_peripheral
+ 1485              	.LVL144:
+ 795:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 1486              		.loc 1 795 0
+ 1487 009e 05EA0702 		and	r2, r5, r7
+ 1488 00a2 2146     		mov	r1, r4
+ 1489 00a4 3046     		mov	r0, r6
+ 1490 00a6 FFF7FEFF 		bl	pio_pull_up
+ 1491              	.LVL145:
+ 822:../src/pio/pio.c **** }
+ 1492              		.loc 1 822 0
+ 1493 00aa 3846     		mov	r0, r7
+ 797:../src/pio/pio.c **** 	case PIO_TYPE_PIO_PERIPH_D:
+ 1494              		.loc 1 797 0
+ 1495 00ac 32E0     		b	.L110
+ 1496              	.LVL146:
+ 1497              	.L111:
+ 799:../src/pio/pio.c **** 		pio_pull_up(p_pio, (1 << (ul_pin & 0x1F)),
+ 1498              		.loc 1 799 0
+ 1499 00ae 04F01F04 		and	r4, r4, #31
+ 1500              	.LVL147:
+ 1501 00b2 0127     		movs	r7, #1
+ 1502 00b4 07FA04F4 		lsl	r4, r7, r4
+ 1503 00b8 2246     		mov	r2, r4
+ 1504 00ba 4FF00051 		mov	r1, #536870912
+ 1505 00be FFF7FEFF 		bl	pio_set_peripheral
+ 1506              	.LVL148:
+ 800:../src/pio/pio.c **** 				(ul_flags & PIO_PULLUP));
+ 1507              		.loc 1 800 0
+ 1508 00c2 05EA0702 		and	r2, r5, r7
+ 1509 00c6 2146     		mov	r1, r4
+ 1510 00c8 3046     		mov	r0, r6
+ 1511 00ca FFF7FEFF 		bl	pio_pull_up
+ 1512              	.LVL149:
+ 822:../src/pio/pio.c **** }
+ 1513              		.loc 1 822 0
+ 1514 00ce 3846     		mov	r0, r7
+ 802:../src/pio/pio.c **** #endif
+ 1515              		.loc 1 802 0
+ 1516 00d0 20E0     		b	.L110
+ 1517              	.LVL150:
+ 1518              	.L117:
+ 806:../src/pio/pio.c **** 		break;
+ 1519              		.loc 1 806 0
+ 1520 00d2 04F01F01 		and	r1, r4, #31
+ 1521 00d6 0124     		movs	r4, #1
+ 1522              	.LVL151:
+ 1523 00d8 2A46     		mov	r2, r5
+ 1524 00da 04FA01F1 		lsl	r1, r4, r1
+ 1525 00de FFF7FEFF 		bl	pio_set_input
+ 1526              	.LVL152:
+ 822:../src/pio/pio.c **** }
+ 1527              		.loc 1 822 0
+ 1528 00e2 2046     		mov	r0, r4
+ 807:../src/pio/pio.c **** 
+ 1529              		.loc 1 807 0
+ 1530 00e4 16E0     		b	.L110
+ 1531              	.LVL153:
+ 1532              	.L116:
+ 811:../src/pio/pio.c **** 				((ul_flags & PIO_TYPE_PIO_OUTPUT_1)
+ 1533              		.loc 1 811 0
+ 1534 00e6 04F01F01 		and	r1, r4, #31
+ 1535 00ea 0124     		movs	r4, #1
+ 1536              	.LVL154:
+ 812:../src/pio/pio.c **** 				== PIO_TYPE_PIO_OUTPUT_1) ? 1 : 0,
+ 1537              		.loc 1 812 0
+ 1538 00ec 05F06052 		and	r2, r5, #939524096
+ 815:../src/pio/pio.c **** 		break;
+ 1539              		.loc 1 815 0
+ 1540 00f0 05EA0403 		and	r3, r5, r4
+ 811:../src/pio/pio.c **** 				((ul_flags & PIO_TYPE_PIO_OUTPUT_1)
+ 1541              		.loc 1 811 0
+ 1542 00f4 0093     		str	r3, [sp]
+ 1543 00f6 C5F38003 		ubfx	r3, r5, #2, #1
+ 1544 00fa B2F1605F 		cmp	r2, #939524096
+ 1545 00fe 14BF     		ite	ne
+ 1546 0100 0022     		movne	r2, #0
+ 1547 0102 0122     		moveq	r2, #1
+ 1548 0104 04FA01F1 		lsl	r1, r4, r1
+ 1549 0108 3046     		mov	r0, r6
+ 1550              	.LVL155:
+ 1551 010a FFF7FEFF 		bl	pio_set_output
+ 1552              	.LVL156:
+ 822:../src/pio/pio.c **** }
+ 1553              		.loc 1 822 0
+ 1554 010e 2046     		mov	r0, r4
+ 816:../src/pio/pio.c **** 
+ 1555              		.loc 1 816 0
+ 1556 0110 00E0     		b	.L110
+ 1557              	.LVL157:
+ 1558              	.L118:
+ 819:../src/pio/pio.c **** 	}
+ 1559              		.loc 1 819 0
+ 1560 0112 0020     		movs	r0, #0
+ 1561              	.LVL158:
+ 1562              	.L110:
+ 823:../src/pio/pio.c **** 
+ 1563              		.loc 1 823 0
+ 1564 0114 03B0     		add	sp, sp, #12
+ 1565              		.cfi_def_cfa_offset 20
+ 1566              		@ sp needed
+ 1567 0116 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1568              		.cfi_endproc
+ 1569              	.LFE104:
+ 1571              		.section	.text.pio_enable_pin_interrupt,"ax",%progbits
+ 1572              		.align	2
+ 1573              		.global	pio_enable_pin_interrupt
+ 1574              		.thumb
+ 1575              		.thumb_func
+ 1577              	pio_enable_pin_interrupt:
+ 1578              	.LFB109:
+ 928:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1579              		.loc 1 928 0
+ 1580              		.cfi_startproc
+ 1581              		@ args = 0, pretend = 0, frame = 0
+ 1582              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1583              	.LVL159:
+ 1584 0000 10B5     		push	{r4, lr}
+ 1585              		.cfi_def_cfa_offset 8
+ 1586              		.cfi_offset 4, -8
+ 1587              		.cfi_offset 14, -4
+ 1588 0002 0446     		mov	r4, r0
+ 929:../src/pio/pio.c **** 
+ 1589              		.loc 1 929 0
+ 1590 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1591              	.LVL160:
+ 931:../src/pio/pio.c **** }
+ 1592              		.loc 1 931 0
+ 1593 0008 04F01F04 		and	r4, r4, #31
+ 1594              	.LVL161:
+ 1595 000c 0123     		movs	r3, #1
+ 1596 000e A340     		lsls	r3, r3, r4
+ 1597 0010 0364     		str	r3, [r0, #64]
+ 1598 0012 10BD     		pop	{r4, pc}
+ 1599              		.cfi_endproc
+ 1600              	.LFE109:
+ 1602              		.section	.text.pio_disable_pin_interrupt,"ax",%progbits
+ 1603              		.align	2
+ 1604              		.global	pio_disable_pin_interrupt
+ 1605              		.thumb
+ 1606              		.thumb_func
+ 1608              	pio_disable_pin_interrupt:
+ 1609              	.LFB110:
+ 943:../src/pio/pio.c **** 	Pio *p_pio = pio_get_pin_group(ul_pin);
+ 1610              		.loc 1 943 0
+ 1611              		.cfi_startproc
+ 1612              		@ args = 0, pretend = 0, frame = 0
+ 1613              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1614              	.LVL162:
+ 1615 0000 10B5     		push	{r4, lr}
+ 1616              		.cfi_def_cfa_offset 8
+ 1617              		.cfi_offset 4, -8
+ 1618              		.cfi_offset 14, -4
+ 1619 0002 0446     		mov	r4, r0
+ 944:../src/pio/pio.c **** 
+ 1620              		.loc 1 944 0
+ 1621 0004 FFF7FEFF 		bl	pio_get_pin_group
+ 1622              	.LVL163:
+ 946:../src/pio/pio.c **** }
+ 1623              		.loc 1 946 0
+ 1624 0008 04F01F04 		and	r4, r4, #31
+ 1625              	.LVL164:
+ 1626 000c 0123     		movs	r3, #1
+ 1627 000e A340     		lsls	r3, r3, r4
+ 1628 0010 4364     		str	r3, [r0, #68]
+ 1629 0012 10BD     		pop	{r4, pc}
+ 1630              		.cfi_endproc
+ 1631              	.LFE110:
+ 1633              		.section	.text.pio_get_pin_group_id,"ax",%progbits
+ 1634              		.align	2
+ 1635              		.global	pio_get_pin_group_id
+ 1636              		.thumb
+ 1637              		.thumb_func
+ 1639              	pio_get_pin_group_id:
+ 1640              	.LFB112:
+ 984:../src/pio/pio.c **** 
+ 985:../src/pio/pio.c **** /**
+ 986:../src/pio/pio.c ****  * \brief Return GPIO port peripheral ID for a GPIO pin.
+ 987:../src/pio/pio.c ****  *
+ 988:../src/pio/pio.c ****  * \param ul_pin The pin index.
+ 989:../src/pio/pio.c ****  *
+ 990:../src/pio/pio.c ****  * \return GPIO port peripheral ID.
+ 991:../src/pio/pio.c ****  */
+ 992:../src/pio/pio.c **** uint32_t pio_get_pin_group_id(uint32_t ul_pin)
+ 993:../src/pio/pio.c **** {
+ 1641              		.loc 1 993 0
+ 1642              		.cfi_startproc
+ 1643              		@ args = 0, pretend = 0, frame = 0
+ 1644              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1645              		@ link register save eliminated.
+ 1646              	.LVL165:
+ 994:../src/pio/pio.c **** 	uint32_t ul_id;
+ 995:../src/pio/pio.c **** 
+ 996:../src/pio/pio.c **** #if (SAM4C || SAM4CP)
+ 997:../src/pio/pio.c **** #  ifdef ID_PIOD
+ 998:../src/pio/pio.c **** 	if (ul_pin > PIO_PC9_IDX) {
+ 999:../src/pio/pio.c **** 		ul_id = ID_PIOD;
+1000:../src/pio/pio.c **** 	} else if (ul_pin > PIO_PB31_IDX) {
+1001:../src/pio/pio.c **** #  else
+1002:../src/pio/pio.c **** 	if (ul_pin > PIO_PB31_IDX) {
+1003:../src/pio/pio.c **** #  endif
+1004:../src/pio/pio.c **** 		ul_id = ID_PIOC;
+1005:../src/pio/pio.c **** 	} else {
+1006:../src/pio/pio.c **** 		ul_id = ID_PIOA + (ul_pin >> 5);
+1007:../src/pio/pio.c **** 	}
+1008:../src/pio/pio.c **** #elif (SAM4CM)
+1009:../src/pio/pio.c **** 	if (ul_pin > PIO_PB21_IDX) {
+1010:../src/pio/pio.c **** 		ul_id = ID_PIOC;
+1011:../src/pio/pio.c **** 	} else {
+1012:../src/pio/pio.c **** 		ul_id = ID_PIOA + (ul_pin >> 5);
+1013:../src/pio/pio.c **** 	}
+1014:../src/pio/pio.c **** #elif (SAMV70 || SAMV71 || SAME70 || SAMS70)
+1015:../src/pio/pio.c **** 	if (ul_pin > PIO_PC31_IDX) {
+1016:../src/pio/pio.c **** 		if(ul_pin > PIO_PD31_IDX){
+1017:../src/pio/pio.c **** 			ul_id = ID_PIOE;
+1018:../src/pio/pio.c **** 			} else {
+1019:../src/pio/pio.c **** 			ul_id = ID_PIOD;
+1020:../src/pio/pio.c **** 		}
+1021:../src/pio/pio.c **** 	} else {
+1022:../src/pio/pio.c **** 		ul_id = ID_PIOA + (ul_pin >> 5);
+1023:../src/pio/pio.c **** 	}
+1024:../src/pio/pio.c **** #else
+1025:../src/pio/pio.c **** 	ul_id = ID_PIOA + (ul_pin >> 5);
+ 1647              		.loc 1 1025 0
+ 1648 0000 4009     		lsrs	r0, r0, #5
+ 1649              	.LVL166:
+1026:../src/pio/pio.c **** #endif
+1027:../src/pio/pio.c **** 	return ul_id;
+1028:../src/pio/pio.c **** }
+ 1650              		.loc 1 1028 0
+ 1651 0002 0B30     		adds	r0, r0, #11
+ 1652              	.LVL167:
+ 1653 0004 7047     		bx	lr
+ 1654              		.cfi_endproc
+ 1655              	.LFE112:
+ 1657 0006 00BF     		.section	.text.pio_get_pin_group_mask,"ax",%progbits
+ 1658              		.align	2
+ 1659              		.global	pio_get_pin_group_mask
+ 1660              		.thumb
+ 1661              		.thumb_func
+ 1663              	pio_get_pin_group_mask:
+ 1664              	.LFB113:
+1029:../src/pio/pio.c **** 
+1030:../src/pio/pio.c **** 
+1031:../src/pio/pio.c **** /**
+1032:../src/pio/pio.c ****  * \brief Return GPIO port pin mask for a GPIO pin.
+1033:../src/pio/pio.c ****  *
+1034:../src/pio/pio.c ****  * \param ul_pin The pin index.
+1035:../src/pio/pio.c ****  *
+1036:../src/pio/pio.c ****  * \return GPIO port pin mask.
+1037:../src/pio/pio.c ****  */
+1038:../src/pio/pio.c **** uint32_t pio_get_pin_group_mask(uint32_t ul_pin)
+1039:../src/pio/pio.c **** {
+ 1665              		.loc 1 1039 0
+ 1666              		.cfi_startproc
+ 1667              		@ args = 0, pretend = 0, frame = 0
+ 1668              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1669              		@ link register save eliminated.
+ 1670              	.LVL168:
+1040:../src/pio/pio.c **** 	uint32_t ul_mask = 1 << (ul_pin & 0x1F);
+ 1671              		.loc 1 1040 0
+ 1672 0000 00F01F00 		and	r0, r0, #31
+ 1673              	.LVL169:
+1041:../src/pio/pio.c **** 	return ul_mask;
+1042:../src/pio/pio.c **** }
+ 1674              		.loc 1 1042 0
+ 1675 0004 0123     		movs	r3, #1
+ 1676 0006 03FA00F0 		lsl	r0, r3, r0
+ 1677              	.LVL170:
+ 1678 000a 7047     		bx	lr
+ 1679              		.cfi_endproc
+ 1680              	.LFE113:
+ 1682              		.section	.text.pio_capture_set_mode,"ax",%progbits
+ 1683              		.align	2
+ 1684              		.global	pio_capture_set_mode
+ 1685              		.thumb
+ 1686              		.thumb_func
+ 1688              	pio_capture_set_mode:
+ 1689              	.LFB114:
+1043:../src/pio/pio.c **** 
+1044:../src/pio/pio.c **** #if (SAM3S || SAM4S || SAM4E || SAMV71 || SAMV70 || SAME70 || SAMS70)
+1045:../src/pio/pio.c **** /* Capture mode enable flag */
+1046:../src/pio/pio.c **** uint32_t pio_capture_enable_flag;
+1047:../src/pio/pio.c **** 
+1048:../src/pio/pio.c **** /**
+1049:../src/pio/pio.c ****  * \brief Configure PIO capture mode.
+1050:../src/pio/pio.c ****  * \note PIO capture mode will be disabled automatically.
+1051:../src/pio/pio.c ****  *
+1052:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1053:../src/pio/pio.c ****  * \param ul_mode Bitmask of one or more modes.
+1054:../src/pio/pio.c ****  */
+1055:../src/pio/pio.c **** void pio_capture_set_mode(Pio *p_pio, uint32_t ul_mode)
+1056:../src/pio/pio.c **** {
+ 1690              		.loc 1 1056 0
+ 1691              		.cfi_startproc
+ 1692              		@ args = 0, pretend = 0, frame = 0
+ 1693              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1694              		@ link register save eliminated.
+ 1695              	.LVL171:
+1057:../src/pio/pio.c **** 	ul_mode &= (~PIO_PCMR_PCEN); /* Disable PIO capture mode */
+ 1696              		.loc 1 1057 0
+ 1697 0000 21F00101 		bic	r1, r1, #1
+ 1698              	.LVL172:
+1058:../src/pio/pio.c **** 	p_pio->PIO_PCMR = ul_mode;
+ 1699              		.loc 1 1058 0
+ 1700 0004 C0F85011 		str	r1, [r0, #336]
+ 1701 0008 7047     		bx	lr
+ 1702              		.cfi_endproc
+ 1703              	.LFE114:
+ 1705 000a 00BF     		.section	.text.pio_capture_enable,"ax",%progbits
+ 1706              		.align	2
+ 1707              		.global	pio_capture_enable
+ 1708              		.thumb
+ 1709              		.thumb_func
+ 1711              	pio_capture_enable:
+ 1712              	.LFB115:
+1059:../src/pio/pio.c **** }
+1060:../src/pio/pio.c **** 
+1061:../src/pio/pio.c **** /**
+1062:../src/pio/pio.c ****  * \brief Enable PIO capture mode.
+1063:../src/pio/pio.c ****  *
+1064:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1065:../src/pio/pio.c ****  */
+1066:../src/pio/pio.c **** void pio_capture_enable(Pio *p_pio)
+1067:../src/pio/pio.c **** {
+ 1713              		.loc 1 1067 0
+ 1714              		.cfi_startproc
+ 1715              		@ args = 0, pretend = 0, frame = 0
+ 1716              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1717              		@ link register save eliminated.
+ 1718              	.LVL173:
+1068:../src/pio/pio.c **** 	p_pio->PIO_PCMR |= PIO_PCMR_PCEN;
+ 1719              		.loc 1 1068 0
+ 1720 0000 D0F85031 		ldr	r3, [r0, #336]
+ 1721 0004 43F00103 		orr	r3, r3, #1
+ 1722 0008 C0F85031 		str	r3, [r0, #336]
+1069:../src/pio/pio.c **** 	pio_capture_enable_flag = true;
+ 1723              		.loc 1 1069 0
+ 1724 000c 0122     		movs	r2, #1
+ 1725 000e 014B     		ldr	r3, .L128
+ 1726 0010 1A60     		str	r2, [r3]
+ 1727 0012 7047     		bx	lr
+ 1728              	.L129:
+ 1729              		.align	2
+ 1730              	.L128:
+ 1731 0014 00000000 		.word	pio_capture_enable_flag
+ 1732              		.cfi_endproc
+ 1733              	.LFE115:
+ 1735              		.section	.text.pio_capture_disable,"ax",%progbits
+ 1736              		.align	2
+ 1737              		.global	pio_capture_disable
+ 1738              		.thumb
+ 1739              		.thumb_func
+ 1741              	pio_capture_disable:
+ 1742              	.LFB116:
+1070:../src/pio/pio.c **** }
+1071:../src/pio/pio.c **** 
+1072:../src/pio/pio.c **** /**
+1073:../src/pio/pio.c ****  * \brief Disable PIO capture mode.
+1074:../src/pio/pio.c ****  *
+1075:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1076:../src/pio/pio.c ****  */
+1077:../src/pio/pio.c **** void pio_capture_disable(Pio *p_pio)
+1078:../src/pio/pio.c **** {
+ 1743              		.loc 1 1078 0
+ 1744              		.cfi_startproc
+ 1745              		@ args = 0, pretend = 0, frame = 0
+ 1746              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1747              		@ link register save eliminated.
+ 1748              	.LVL174:
+1079:../src/pio/pio.c **** 	p_pio->PIO_PCMR &= (~PIO_PCMR_PCEN);
+ 1749              		.loc 1 1079 0
+ 1750 0000 D0F85031 		ldr	r3, [r0, #336]
+ 1751 0004 23F00103 		bic	r3, r3, #1
+ 1752 0008 C0F85031 		str	r3, [r0, #336]
+1080:../src/pio/pio.c **** 	pio_capture_enable_flag = false;
+ 1753              		.loc 1 1080 0
+ 1754 000c 0022     		movs	r2, #0
+ 1755 000e 014B     		ldr	r3, .L131
+ 1756 0010 1A60     		str	r2, [r3]
+ 1757 0012 7047     		bx	lr
+ 1758              	.L132:
+ 1759              		.align	2
+ 1760              	.L131:
+ 1761 0014 00000000 		.word	pio_capture_enable_flag
+ 1762              		.cfi_endproc
+ 1763              	.LFE116:
+ 1765              		.section	.text.pio_capture_read,"ax",%progbits
+ 1766              		.align	2
+ 1767              		.global	pio_capture_read
+ 1768              		.thumb
+ 1769              		.thumb_func
+ 1771              	pio_capture_read:
+ 1772              	.LFB117:
+1081:../src/pio/pio.c **** }
+1082:../src/pio/pio.c **** 
+1083:../src/pio/pio.c **** /**
+1084:../src/pio/pio.c ****  * \brief Read from Capture Reception Holding Register.
+1085:../src/pio/pio.c ****  * \note Data presence should be tested before any read attempt.
+1086:../src/pio/pio.c ****  *
+1087:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1088:../src/pio/pio.c ****  * \param pul_data Pointer to store the data.
+1089:../src/pio/pio.c ****  *
+1090:../src/pio/pio.c ****  * \retval 0 Success.
+1091:../src/pio/pio.c ****  * \retval 1 I/O Failure, Capture data is not ready.
+1092:../src/pio/pio.c ****  */
+1093:../src/pio/pio.c **** uint32_t pio_capture_read(const Pio *p_pio, uint32_t *pul_data)
+1094:../src/pio/pio.c **** {
+ 1773              		.loc 1 1094 0
+ 1774              		.cfi_startproc
+ 1775              		@ args = 0, pretend = 0, frame = 0
+ 1776              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1777              		@ link register save eliminated.
+ 1778              	.LVL175:
+1095:../src/pio/pio.c **** 	/* Check if the data is ready */
+1096:../src/pio/pio.c **** 	if ((p_pio->PIO_PCISR & PIO_PCISR_DRDY) == 0) {
+ 1779              		.loc 1 1096 0
+ 1780 0000 D0F86031 		ldr	r3, [r0, #352]
+ 1781 0004 13F0010F 		tst	r3, #1
+ 1782 0008 04D0     		beq	.L135
+1097:../src/pio/pio.c **** 		return 1;
+1098:../src/pio/pio.c **** 	}
+1099:../src/pio/pio.c **** 
+1100:../src/pio/pio.c **** 	/* Read data */
+1101:../src/pio/pio.c **** 	*pul_data = p_pio->PIO_PCRHR;
+ 1783              		.loc 1 1101 0
+ 1784 000a D0F86431 		ldr	r3, [r0, #356]
+ 1785 000e 0B60     		str	r3, [r1]
+1102:../src/pio/pio.c **** 	return 0;
+ 1786              		.loc 1 1102 0
+ 1787 0010 0020     		movs	r0, #0
+ 1788              	.LVL176:
+ 1789 0012 7047     		bx	lr
+ 1790              	.LVL177:
+ 1791              	.L135:
+1097:../src/pio/pio.c **** 		return 1;
+ 1792              		.loc 1 1097 0
+ 1793 0014 0120     		movs	r0, #1
+ 1794              	.LVL178:
+1103:../src/pio/pio.c **** }
+ 1795              		.loc 1 1103 0
+ 1796 0016 7047     		bx	lr
+ 1797              		.cfi_endproc
+ 1798              	.LFE117:
+ 1800              		.section	.text.pio_capture_enable_interrupt,"ax",%progbits
+ 1801              		.align	2
+ 1802              		.global	pio_capture_enable_interrupt
+ 1803              		.thumb
+ 1804              		.thumb_func
+ 1806              	pio_capture_enable_interrupt:
+ 1807              	.LFB118:
+1104:../src/pio/pio.c **** 
+1105:../src/pio/pio.c **** /**
+1106:../src/pio/pio.c ****  * \brief Enable the given interrupt source of PIO capture. The status
+1107:../src/pio/pio.c ****  * register of the corresponding PIO capture controller is cleared prior
+1108:../src/pio/pio.c ****  * to enabling the interrupt.
+1109:../src/pio/pio.c ****  *
+1110:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1111:../src/pio/pio.c ****  * \param ul_mask Interrupt sources bit map.
+1112:../src/pio/pio.c ****  */
+1113:../src/pio/pio.c **** void pio_capture_enable_interrupt(Pio *p_pio, const uint32_t ul_mask)
+1114:../src/pio/pio.c **** {
+ 1808              		.loc 1 1114 0
+ 1809              		.cfi_startproc
+ 1810              		@ args = 0, pretend = 0, frame = 0
+ 1811              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1812              		@ link register save eliminated.
+ 1813              	.LVL179:
+1115:../src/pio/pio.c **** 	p_pio->PIO_PCISR;
+ 1814              		.loc 1 1115 0
+ 1815 0000 D0F86031 		ldr	r3, [r0, #352]
+1116:../src/pio/pio.c **** 	p_pio->PIO_PCIER = ul_mask;
+ 1816              		.loc 1 1116 0
+ 1817 0004 C0F85411 		str	r1, [r0, #340]
+ 1818 0008 7047     		bx	lr
+ 1819              		.cfi_endproc
+ 1820              	.LFE118:
+ 1822 000a 00BF     		.section	.text.pio_capture_disable_interrupt,"ax",%progbits
+ 1823              		.align	2
+ 1824              		.global	pio_capture_disable_interrupt
+ 1825              		.thumb
+ 1826              		.thumb_func
+ 1828              	pio_capture_disable_interrupt:
+ 1829              	.LFB119:
+1117:../src/pio/pio.c **** }
+1118:../src/pio/pio.c **** 
+1119:../src/pio/pio.c **** /**
+1120:../src/pio/pio.c ****  * \brief Disable a given interrupt source of PIO capture.
+1121:../src/pio/pio.c ****  *
+1122:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1123:../src/pio/pio.c ****  * \param ul_mask Interrupt sources bit map.
+1124:../src/pio/pio.c ****  */
+1125:../src/pio/pio.c **** void pio_capture_disable_interrupt(Pio *p_pio, const uint32_t ul_mask)
+1126:../src/pio/pio.c **** {
+ 1830              		.loc 1 1126 0
+ 1831              		.cfi_startproc
+ 1832              		@ args = 0, pretend = 0, frame = 0
+ 1833              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1834              		@ link register save eliminated.
+ 1835              	.LVL180:
+1127:../src/pio/pio.c **** 	p_pio->PIO_PCIDR = ul_mask;
+ 1836              		.loc 1 1127 0
+ 1837 0000 C0F85811 		str	r1, [r0, #344]
+ 1838 0004 7047     		bx	lr
+ 1839              		.cfi_endproc
+ 1840              	.LFE119:
+ 1842 0006 00BF     		.section	.text.pio_capture_get_interrupt_status,"ax",%progbits
+ 1843              		.align	2
+ 1844              		.global	pio_capture_get_interrupt_status
+ 1845              		.thumb
+ 1846              		.thumb_func
+ 1848              	pio_capture_get_interrupt_status:
+ 1849              	.LFB120:
+1128:../src/pio/pio.c **** }
+1129:../src/pio/pio.c **** 
+1130:../src/pio/pio.c **** /**
+1131:../src/pio/pio.c ****  * \brief Read PIO interrupt status of PIO capture.
+1132:../src/pio/pio.c ****  *
+1133:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1134:../src/pio/pio.c ****  *
+1135:../src/pio/pio.c ****  * \return The interrupt status mask value.
+1136:../src/pio/pio.c ****  */
+1137:../src/pio/pio.c **** uint32_t pio_capture_get_interrupt_status(const Pio *p_pio)
+1138:../src/pio/pio.c **** {
+ 1850              		.loc 1 1138 0
+ 1851              		.cfi_startproc
+ 1852              		@ args = 0, pretend = 0, frame = 0
+ 1853              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1854              		@ link register save eliminated.
+ 1855              	.LVL181:
+1139:../src/pio/pio.c **** 	return p_pio->PIO_PCISR;
+ 1856              		.loc 1 1139 0
+ 1857 0000 D0F86001 		ldr	r0, [r0, #352]
+ 1858              	.LVL182:
+1140:../src/pio/pio.c **** }
+ 1859              		.loc 1 1140 0
+ 1860 0004 7047     		bx	lr
+ 1861              		.cfi_endproc
+ 1862              	.LFE120:
+ 1864 0006 00BF     		.section	.text.pio_capture_get_interrupt_mask,"ax",%progbits
+ 1865              		.align	2
+ 1866              		.global	pio_capture_get_interrupt_mask
+ 1867              		.thumb
+ 1868              		.thumb_func
+ 1870              	pio_capture_get_interrupt_mask:
+ 1871              	.LFB121:
+1141:../src/pio/pio.c **** 
+1142:../src/pio/pio.c **** /**
+1143:../src/pio/pio.c ****  * \brief Read PIO interrupt mask of PIO capture.
+1144:../src/pio/pio.c ****  *
+1145:../src/pio/pio.c ****  * \param p_pio Pointer to a PIO instance.
+1146:../src/pio/pio.c ****  *
+1147:../src/pio/pio.c ****  * \return The interrupt mask value.
+1148:../src/pio/pio.c ****  */
+1149:../src/pio/pio.c **** uint32_t pio_capture_get_interrupt_mask(const Pio *p_pio)
+1150:../src/pio/pio.c **** {
+ 1872              		.loc 1 1150 0
+ 1873              		.cfi_startproc
+ 1874              		@ args = 0, pretend = 0, frame = 0
+ 1875              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1876              		@ link register save eliminated.
+ 1877              	.LVL183:
+1151:../src/pio/pio.c **** 	return p_pio->PIO_PCIMR;
+ 1878              		.loc 1 1151 0
+ 1879 0000 D0F85C01 		ldr	r0, [r0, #348]
+ 1880              	.LVL184:
+1152:../src/pio/pio.c **** }
+ 1881              		.loc 1 1152 0
+ 1882 0004 7047     		bx	lr
+ 1883              		.cfi_endproc
+ 1884              	.LFE121:
+ 1886 0006 00BF     		.section	.text.pio_capture_get_pdc_base,"ax",%progbits
+ 1887              		.align	2
+ 1888              		.global	pio_capture_get_pdc_base
+ 1889              		.thumb
+ 1890              		.thumb_func
+ 1892              	pio_capture_get_pdc_base:
+ 1893              	.LFB122:
+1153:../src/pio/pio.c **** #if !(SAMV71 || SAMV70 || SAME70 || SAMS70)
+1154:../src/pio/pio.c **** /**
+1155:../src/pio/pio.c ****  * \brief Get PDC registers base address.
+1156:../src/pio/pio.c ****  *
+1157:../src/pio/pio.c ****  * \param p_pio Pointer to an PIO peripheral.
+1158:../src/pio/pio.c ****  *
+1159:../src/pio/pio.c ****  * \return PIOA PDC register base address.
+1160:../src/pio/pio.c ****  */
+1161:../src/pio/pio.c **** Pdc *pio_capture_get_pdc_base(const Pio *p_pio)
+1162:../src/pio/pio.c **** {
+ 1894              		.loc 1 1162 0
+ 1895              		.cfi_startproc
+ 1896              		@ args = 0, pretend = 0, frame = 0
+ 1897              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1898              		@ link register save eliminated.
+ 1899              	.LVL185:
+1163:../src/pio/pio.c **** 	UNUSED(p_pio); /* Stop warning */
+1164:../src/pio/pio.c **** 	return PDC_PIOA;
+1165:../src/pio/pio.c **** }
+ 1900              		.loc 1 1165 0
+ 1901 0000 0048     		ldr	r0, .L141
+ 1902              	.LVL186:
+ 1903 0002 7047     		bx	lr
+ 1904              	.L142:
+ 1905              		.align	2
+ 1906              	.L141:
+ 1907 0004 680F0E40 		.word	1074663272
+ 1908              		.cfi_endproc
+ 1909              	.LFE122:
+ 1911              		.comm	pio_capture_enable_flag,4,4
+ 1912              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 1913              		.align	2
+ 1916              	cpu_irq_critical_section_counter:
+ 1917 0000 00000000 		.space	4
+ 1918              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 1921              	cpu_irq_prev_interrupt_state:
+ 1922 0000 00       		.space	1
+ 1923              		.text
+ 1924              	.Letext0:
+ 1925              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 1926              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 1927              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 1928              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pdc.h"
+ 1929              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pio.h"
+ 1930              		.file 7 "../src/pio/pio.h"
+ 1931              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 1932              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 pio.c
+     /tmp/ccKtg6Ha.s:20     .text.pio_pull_up:00000000 $t
+     /tmp/ccKtg6Ha.s:25     .text.pio_pull_up:00000000 pio_pull_up
+     /tmp/ccKtg6Ha.s:47     .text.pio_set_debounce_filter:00000000 $t
+     /tmp/ccKtg6Ha.s:52     .text.pio_set_debounce_filter:00000000 pio_set_debounce_filter
+     /tmp/ccKtg6Ha.s:75     .text.pio_set:00000000 $t
+     /tmp/ccKtg6Ha.s:80     .text.pio_set:00000000 pio_set
+     /tmp/ccKtg6Ha.s:95     .text.pio_clear:00000000 $t
+     /tmp/ccKtg6Ha.s:100    .text.pio_clear:00000000 pio_clear
+     /tmp/ccKtg6Ha.s:115    .text.pio_get:00000000 $t
+     /tmp/ccKtg6Ha.s:120    .text.pio_get:00000000 pio_get
+     /tmp/ccKtg6Ha.s:158    .text.pio_set_peripheral:00000000 $t
+     /tmp/ccKtg6Ha.s:163    .text.pio_set_peripheral:00000000 pio_set_peripheral
+     /tmp/ccKtg6Ha.s:306    .text.pio_get_output_data_status:00000000 $t
+     /tmp/ccKtg6Ha.s:311    .text.pio_get_output_data_status:00000000 pio_get_output_data_status
+     /tmp/ccKtg6Ha.s:333    .text.pio_set_multi_driver:00000000 $t
+     /tmp/ccKtg6Ha.s:338    .text.pio_set_multi_driver:00000000 pio_set_multi_driver
+     /tmp/ccKtg6Ha.s:359    .text.pio_get_multi_driver_status:00000000 $t
+     /tmp/ccKtg6Ha.s:364    .text.pio_get_multi_driver_status:00000000 pio_get_multi_driver_status
+     /tmp/ccKtg6Ha.s:381    .text.pio_pull_down:00000000 $t
+     /tmp/ccKtg6Ha.s:386    .text.pio_pull_down:00000000 pio_pull_down
+     /tmp/ccKtg6Ha.s:407    .text.pio_enable_output_write:00000000 $t
+     /tmp/ccKtg6Ha.s:412    .text.pio_enable_output_write:00000000 pio_enable_output_write
+     /tmp/ccKtg6Ha.s:427    .text.pio_disable_output_write:00000000 $t
+     /tmp/ccKtg6Ha.s:432    .text.pio_disable_output_write:00000000 pio_disable_output_write
+     /tmp/ccKtg6Ha.s:447    .text.pio_get_output_write_status:00000000 $t
+     /tmp/ccKtg6Ha.s:452    .text.pio_get_output_write_status:00000000 pio_get_output_write_status
+     /tmp/ccKtg6Ha.s:469    .text.pio_sync_output_write:00000000 $t
+     /tmp/ccKtg6Ha.s:474    .text.pio_sync_output_write:00000000 pio_sync_output_write
+     /tmp/ccKtg6Ha.s:489    .text.pio_set_schmitt_trigger:00000000 $t
+     /tmp/ccKtg6Ha.s:494    .text.pio_set_schmitt_trigger:00000000 pio_set_schmitt_trigger
+     /tmp/ccKtg6Ha.s:509    .text.pio_get_schmitt_trigger:00000000 $t
+     /tmp/ccKtg6Ha.s:514    .text.pio_get_schmitt_trigger:00000000 pio_get_schmitt_trigger
+     /tmp/ccKtg6Ha.s:531    .text.pio_configure_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:536    .text.pio_configure_interrupt:00000000 pio_configure_interrupt
+     /tmp/ccKtg6Ha.s:577    .text.pio_enable_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:582    .text.pio_enable_interrupt:00000000 pio_enable_interrupt
+     /tmp/ccKtg6Ha.s:599    .text.pio_disable_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:604    .text.pio_disable_interrupt:00000000 pio_disable_interrupt
+     /tmp/ccKtg6Ha.s:619    .text.pio_set_input:00000000 $t
+     /tmp/ccKtg6Ha.s:624    .text.pio_set_input:00000000 pio_set_input
+     /tmp/ccKtg6Ha.s:681    .text.pio_set_output:00000000 $t
+     /tmp/ccKtg6Ha.s:686    .text.pio_set_output:00000000 pio_set_output
+     /tmp/ccKtg6Ha.s:741    .text.pio_configure:00000000 $t
+     /tmp/ccKtg6Ha.s:746    .text.pio_configure:00000000 pio_configure
+     /tmp/ccKtg6Ha.s:852    .text.pio_get_interrupt_status:00000000 $t
+     /tmp/ccKtg6Ha.s:857    .text.pio_get_interrupt_status:00000000 pio_get_interrupt_status
+     /tmp/ccKtg6Ha.s:874    .text.pio_get_interrupt_mask:00000000 $t
+     /tmp/ccKtg6Ha.s:879    .text.pio_get_interrupt_mask:00000000 pio_get_interrupt_mask
+     /tmp/ccKtg6Ha.s:896    .text.pio_set_additional_interrupt_mode:00000000 $t
+     /tmp/ccKtg6Ha.s:901    .text.pio_set_additional_interrupt_mode:00000000 pio_set_additional_interrupt_mode
+     /tmp/ccKtg6Ha.s:942    .text.pio_set_writeprotect:00000000 $t
+     /tmp/ccKtg6Ha.s:947    .text.pio_set_writeprotect:00000000 pio_set_writeprotect
+     /tmp/ccKtg6Ha.s:965    .text.pio_set_writeprotect:00000010 $d
+     /tmp/ccKtg6Ha.s:970    .text.pio_get_writeprotect_status:00000000 $t
+     /tmp/ccKtg6Ha.s:975    .text.pio_get_writeprotect_status:00000000 pio_get_writeprotect_status
+     /tmp/ccKtg6Ha.s:992    .text.pio_set_pin_group_high:00000000 $t
+     /tmp/ccKtg6Ha.s:997    .text.pio_set_pin_group_high:00000000 pio_set_pin_group_high
+     /tmp/ccKtg6Ha.s:1012   .text.pio_set_pin_group_low:00000000 $t
+     /tmp/ccKtg6Ha.s:1017   .text.pio_set_pin_group_low:00000000 pio_set_pin_group_low
+     /tmp/ccKtg6Ha.s:1032   .text.pio_toggle_pin_group:00000000 $t
+     /tmp/ccKtg6Ha.s:1037   .text.pio_toggle_pin_group:00000000 pio_toggle_pin_group
+     /tmp/ccKtg6Ha.s:1060   .text.pio_configure_pin_group:00000000 $t
+     /tmp/ccKtg6Ha.s:1065   .text.pio_configure_pin_group:00000000 pio_configure_pin_group
+     /tmp/ccKtg6Ha.s:1226   .text.pio_get_pin_group:00000000 $t
+     /tmp/ccKtg6Ha.s:1231   .text.pio_get_pin_group:00000000 pio_get_pin_group
+     /tmp/ccKtg6Ha.s:1253   .text.pio_get_pin_value:00000000 $t
+     /tmp/ccKtg6Ha.s:1258   .text.pio_get_pin_value:00000000 pio_get_pin_value
+     /tmp/ccKtg6Ha.s:1285   .text.pio_set_pin_high:00000000 $t
+     /tmp/ccKtg6Ha.s:1290   .text.pio_set_pin_high:00000000 pio_set_pin_high
+     /tmp/ccKtg6Ha.s:1316   .text.pio_set_pin_low:00000000 $t
+     /tmp/ccKtg6Ha.s:1321   .text.pio_set_pin_low:00000000 pio_set_pin_low
+     /tmp/ccKtg6Ha.s:1347   .text.pio_toggle_pin:00000000 $t
+     /tmp/ccKtg6Ha.s:1352   .text.pio_toggle_pin:00000000 pio_toggle_pin
+     /tmp/ccKtg6Ha.s:1386   .text.pio_configure_pin:00000000 $t
+     /tmp/ccKtg6Ha.s:1391   .text.pio_configure_pin:00000000 pio_configure_pin
+     /tmp/ccKtg6Ha.s:1572   .text.pio_enable_pin_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:1577   .text.pio_enable_pin_interrupt:00000000 pio_enable_pin_interrupt
+     /tmp/ccKtg6Ha.s:1603   .text.pio_disable_pin_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:1608   .text.pio_disable_pin_interrupt:00000000 pio_disable_pin_interrupt
+     /tmp/ccKtg6Ha.s:1634   .text.pio_get_pin_group_id:00000000 $t
+     /tmp/ccKtg6Ha.s:1639   .text.pio_get_pin_group_id:00000000 pio_get_pin_group_id
+     /tmp/ccKtg6Ha.s:1658   .text.pio_get_pin_group_mask:00000000 $t
+     /tmp/ccKtg6Ha.s:1663   .text.pio_get_pin_group_mask:00000000 pio_get_pin_group_mask
+     /tmp/ccKtg6Ha.s:1683   .text.pio_capture_set_mode:00000000 $t
+     /tmp/ccKtg6Ha.s:1688   .text.pio_capture_set_mode:00000000 pio_capture_set_mode
+     /tmp/ccKtg6Ha.s:1706   .text.pio_capture_enable:00000000 $t
+     /tmp/ccKtg6Ha.s:1711   .text.pio_capture_enable:00000000 pio_capture_enable
+     /tmp/ccKtg6Ha.s:1731   .text.pio_capture_enable:00000014 $d
+                            *COM*:00000004 pio_capture_enable_flag
+     /tmp/ccKtg6Ha.s:1736   .text.pio_capture_disable:00000000 $t
+     /tmp/ccKtg6Ha.s:1741   .text.pio_capture_disable:00000000 pio_capture_disable
+     /tmp/ccKtg6Ha.s:1761   .text.pio_capture_disable:00000014 $d
+     /tmp/ccKtg6Ha.s:1766   .text.pio_capture_read:00000000 $t
+     /tmp/ccKtg6Ha.s:1771   .text.pio_capture_read:00000000 pio_capture_read
+     /tmp/ccKtg6Ha.s:1801   .text.pio_capture_enable_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:1806   .text.pio_capture_enable_interrupt:00000000 pio_capture_enable_interrupt
+     /tmp/ccKtg6Ha.s:1823   .text.pio_capture_disable_interrupt:00000000 $t
+     /tmp/ccKtg6Ha.s:1828   .text.pio_capture_disable_interrupt:00000000 pio_capture_disable_interrupt
+     /tmp/ccKtg6Ha.s:1843   .text.pio_capture_get_interrupt_status:00000000 $t
+     /tmp/ccKtg6Ha.s:1848   .text.pio_capture_get_interrupt_status:00000000 pio_capture_get_interrupt_status
+     /tmp/ccKtg6Ha.s:1865   .text.pio_capture_get_interrupt_mask:00000000 $t
+     /tmp/ccKtg6Ha.s:1870   .text.pio_capture_get_interrupt_mask:00000000 pio_capture_get_interrupt_mask
+     /tmp/ccKtg6Ha.s:1887   .text.pio_capture_get_pdc_base:00000000 $t
+     /tmp/ccKtg6Ha.s:1892   .text.pio_capture_get_pdc_base:00000000 pio_capture_get_pdc_base
+     /tmp/ccKtg6Ha.s:1907   .text.pio_capture_get_pdc_base:00000004 $d
+     /tmp/ccKtg6Ha.s:1913   .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccKtg6Ha.s:1916   .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccKtg6Ha.s:1921   .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccKtg6Ha.s:1922   .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.pio.h.57.53307dd851290ce6b9bd12b9af1b2e4a
+
+NO UNDEFINED SYMBOLS

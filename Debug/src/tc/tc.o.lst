@@ -1,0 +1,1514 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"tc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.tc_init,"ax",%progbits
+  20              		.align	2
+  21              		.global	tc_init
+  22              		.thumb
+  23              		.thumb_func
+  25              	tc_init:
+  26              	.LFB73:
+  27              		.file 1 "../src/tc/tc.c"
+   1:../src/tc/tc.c **** /**
+   2:../src/tc/tc.c ****  * \file
+   3:../src/tc/tc.c ****  *
+   4:../src/tc/tc.c ****  * \brief SAM Timer Counter (TC) driver.
+   5:../src/tc/tc.c ****  *
+   6:../src/tc/tc.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:../src/tc/tc.c ****  *
+   8:../src/tc/tc.c ****  * \asf_license_start
+   9:../src/tc/tc.c ****  *
+  10:../src/tc/tc.c ****  * \page License
+  11:../src/tc/tc.c ****  *
+  12:../src/tc/tc.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/tc/tc.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/tc/tc.c ****  *
+  15:../src/tc/tc.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/tc/tc.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/tc/tc.c ****  *
+  18:../src/tc/tc.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/tc/tc.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/tc/tc.c ****  *    and/or other materials provided with the distribution.
+  21:../src/tc/tc.c ****  *
+  22:../src/tc/tc.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/tc/tc.c ****  *    from this software without specific prior written permission.
+  24:../src/tc/tc.c ****  *
+  25:../src/tc/tc.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/tc/tc.c ****  *    Atmel microcontroller product.
+  27:../src/tc/tc.c ****  *
+  28:../src/tc/tc.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/tc/tc.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/tc/tc.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/tc/tc.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/tc/tc.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/tc/tc.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/tc/tc.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/tc/tc.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/tc/tc.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/tc/tc.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/tc/tc.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/tc/tc.c ****  *
+  40:../src/tc/tc.c ****  * \asf_license_stop
+  41:../src/tc/tc.c ****  *
+  42:../src/tc/tc.c ****  */
+  43:../src/tc/tc.c **** /*
+  44:../src/tc/tc.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/tc/tc.c ****  */
+  46:../src/tc/tc.c **** 
+  47:../src/tc/tc.c **** #include <assert.h>
+  48:../src/tc/tc.c **** #include "tc.h"
+  49:../src/tc/tc.c **** 
+  50:../src/tc/tc.c **** /// @cond
+  51:../src/tc/tc.c **** /**INDENT-OFF**/
+  52:../src/tc/tc.c **** #ifdef __cplusplus
+  53:../src/tc/tc.c **** extern "C" {
+  54:../src/tc/tc.c **** #endif
+  55:../src/tc/tc.c **** /**INDENT-ON**/
+  56:../src/tc/tc.c **** /// @endcond
+  57:../src/tc/tc.c **** 
+  58:../src/tc/tc.c **** #ifndef TC_WPMR_WPKEY_PASSWD
+  59:../src/tc/tc.c **** #define TC_WPMR_WPKEY_PASSWD TC_WPMR_WPKEY((uint32_t)0x54494D)
+  60:../src/tc/tc.c **** #endif
+  61:../src/tc/tc.c **** 
+  62:../src/tc/tc.c **** /**
+  63:../src/tc/tc.c ****  * \brief Configure TC for timer, waveform generation, or capture.
+  64:../src/tc/tc.c ****  *
+  65:../src/tc/tc.c ****  * \param[in,out] p_tc   Module hardware register base address pointer
+  66:../src/tc/tc.c ****  * \param[in] ul_channel Channel to configure
+  67:../src/tc/tc.c ****  * \param[in] ul_mode    Control mode register bitmask value to set
+  68:../src/tc/tc.c ****  *
+  69:../src/tc/tc.c ****  * \note For more information regarding <i>ul_mode</i> configuration refer to
+  70:../src/tc/tc.c ****  * the section entitled "Channel Mode Register: Capture Mode" and/or section
+  71:../src/tc/tc.c ****  * "Waveform Operating Mode" in the device-specific datasheet.
+  72:../src/tc/tc.c ****  *
+  73:../src/tc/tc.c ****  * \note If the TC is configured for waveform generation then the external event
+  74:../src/tc/tc.c ****  * selection (EEVT) should only be set to TC_CMR_EEVT_TIOB, or the
+  75:../src/tc/tc.c ****  * equivalent value of 0, if it really is the intention to use TIOB as an
+  76:../src/tc/tc.c ****  * external event trigger. This is because this setting forces TIOB to be
+  77:../src/tc/tc.c ****  * an input, even if the external event trigger has not been enabled with
+  78:../src/tc/tc.c ****  * TC_CMR_ENETRG, and thus prevents normal operation of TIOB.
+  79:../src/tc/tc.c ****  */
+  80:../src/tc/tc.c **** void tc_init(
+  81:../src/tc/tc.c **** 		Tc *p_tc,
+  82:../src/tc/tc.c **** 		uint32_t ul_channel,
+  83:../src/tc/tc.c **** 		uint32_t ul_mode)
+  84:../src/tc/tc.c **** {
+  28              		.loc 1 84 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  34 0000 10B4     		push	{r4}
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 4, -4
+  85:../src/tc/tc.c **** 	TcChannel *tc_channel;
+  86:../src/tc/tc.c **** 
+  87:../src/tc/tc.c **** 	/* Validate inputs. */
+  88:../src/tc/tc.c **** 	Assert(p_tc);
+  89:../src/tc/tc.c **** 	Assert(ul_channel <
+  90:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+  91:../src/tc/tc.c **** 	tc_channel = p_tc->TC_CHANNEL + ul_channel;
+  37              		.loc 1 91 0
+  38 0002 8901     		lsls	r1, r1, #6
+  39              	.LVL1:
+  40 0004 4318     		adds	r3, r0, r1
+  41              	.LVL2:
+  92:../src/tc/tc.c **** 
+  93:../src/tc/tc.c **** 	/*  Disable TC clock. */
+  94:../src/tc/tc.c **** 	tc_channel->TC_CCR = TC_CCR_CLKDIS;
+  42              		.loc 1 94 0
+  43 0006 0224     		movs	r4, #2
+  44 0008 4450     		str	r4, [r0, r1]
+  95:../src/tc/tc.c **** 
+  96:../src/tc/tc.c **** 	/*  Disable interrupts. */
+  97:../src/tc/tc.c **** 	tc_channel->TC_IDR = 0xFFFFFFFF;
+  45              		.loc 1 97 0
+  46 000a 4FF0FF31 		mov	r1, #-1
+  47 000e 9962     		str	r1, [r3, #40]
+  98:../src/tc/tc.c **** 
+  99:../src/tc/tc.c **** 	/*  Clear status register. */
+ 100:../src/tc/tc.c **** 	tc_channel->TC_SR;
+  48              		.loc 1 100 0
+  49 0010 196A     		ldr	r1, [r3, #32]
+ 101:../src/tc/tc.c **** 
+ 102:../src/tc/tc.c **** 	/*  Set mode. */
+ 103:../src/tc/tc.c **** 	tc_channel->TC_CMR = ul_mode;
+  50              		.loc 1 103 0
+  51 0012 5A60     		str	r2, [r3, #4]
+ 104:../src/tc/tc.c **** }
+  52              		.loc 1 104 0
+  53 0014 10BC     		pop	{r4}
+  54              		.cfi_restore 4
+  55              		.cfi_def_cfa_offset 0
+  56 0016 7047     		bx	lr
+  57              		.cfi_endproc
+  58              	.LFE73:
+  60              		.section	.text.tc_sync_trigger,"ax",%progbits
+  61              		.align	2
+  62              		.global	tc_sync_trigger
+  63              		.thumb
+  64              		.thumb_func
+  66              	tc_sync_trigger:
+  67              	.LFB74:
+ 105:../src/tc/tc.c **** 
+ 106:../src/tc/tc.c **** /**
+ 107:../src/tc/tc.c ****  * \brief Asserts a SYNC signal to generate a software trigger on
+ 108:../src/tc/tc.c ****  * all channels.
+ 109:../src/tc/tc.c ****  *
+ 110:../src/tc/tc.c ****  * \param[out] p_tc Module hardware register base address pointer
+ 111:../src/tc/tc.c ****  *
+ 112:../src/tc/tc.c ****  */
+ 113:../src/tc/tc.c **** void tc_sync_trigger(
+ 114:../src/tc/tc.c **** 		Tc *p_tc)
+ 115:../src/tc/tc.c **** {
+  68              		.loc 1 115 0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		@ link register save eliminated.
+  73              	.LVL3:
+ 116:../src/tc/tc.c **** 	/* Validate inputs. */
+ 117:../src/tc/tc.c **** 	Assert(p_tc);
+ 118:../src/tc/tc.c **** 	
+ 119:../src/tc/tc.c **** 	p_tc->TC_BCR = TC_BCR_SYNC;
+  74              		.loc 1 119 0
+  75 0000 0123     		movs	r3, #1
+  76 0002 C0F8C030 		str	r3, [r0, #192]
+  77 0006 7047     		bx	lr
+  78              		.cfi_endproc
+  79              	.LFE74:
+  81              		.section	.text.tc_set_block_mode,"ax",%progbits
+  82              		.align	2
+  83              		.global	tc_set_block_mode
+  84              		.thumb
+  85              		.thumb_func
+  87              	tc_set_block_mode:
+  88              	.LFB75:
+ 120:../src/tc/tc.c **** }
+ 121:../src/tc/tc.c **** 
+ 122:../src/tc/tc.c **** /**
+ 123:../src/tc/tc.c ****  * \brief Configure the TC Block mode.
+ 124:../src/tc/tc.c ****  *
+ 125:../src/tc/tc.c ****  * \note The function tc_init() must be called prior to this one.
+ 126:../src/tc/tc.c ****  *
+ 127:../src/tc/tc.c ****  * \param[out] p_tc        Module hardware register base address pointer
+ 128:../src/tc/tc.c ****  * \param[in] ul_blockmode Block mode register value to set
+ 129:../src/tc/tc.c ****  *
+ 130:../src/tc/tc.c ****  * \note For more information regarding <i>ul_blockmode</i> configuration refer to
+ 131:../src/tc/tc.c ****  * the section  entitled "TC Block Mode Register" in the device-specific datasheet.
+ 132:../src/tc/tc.c ****  */
+ 133:../src/tc/tc.c **** void tc_set_block_mode(
+ 134:../src/tc/tc.c **** 		Tc *p_tc,
+ 135:../src/tc/tc.c **** 		uint32_t ul_blockmode)
+ 136:../src/tc/tc.c **** {
+  89              		.loc 1 136 0
+  90              		.cfi_startproc
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+  93              		@ link register save eliminated.
+  94              	.LVL4:
+ 137:../src/tc/tc.c **** 	/* Validate inputs. */
+ 138:../src/tc/tc.c **** 	Assert(p_tc);
+ 139:../src/tc/tc.c **** 	
+ 140:../src/tc/tc.c **** 	p_tc->TC_BMR = ul_blockmode;
+  95              		.loc 1 140 0
+  96 0000 C0F8C410 		str	r1, [r0, #196]
+  97 0004 7047     		bx	lr
+  98              		.cfi_endproc
+  99              	.LFE75:
+ 101 0006 00BF     		.section	.text.tc_init_2bit_gray,"ax",%progbits
+ 102              		.align	2
+ 103              		.global	tc_init_2bit_gray
+ 104              		.thumb
+ 105              		.thumb_func
+ 107              	tc_init_2bit_gray:
+ 108              	.LFB76:
+ 141:../src/tc/tc.c **** }
+ 142:../src/tc/tc.c **** 
+ 143:../src/tc/tc.c **** #if (!SAM3U) || defined(__DOXYGEN__)
+ 144:../src/tc/tc.c **** 
+ 145:../src/tc/tc.c **** /**
+ 146:../src/tc/tc.c ****  * \brief Configure TC for 2-bit Gray Counter for Stepper Motor.
+ 147:../src/tc/tc.c ****  * \note The function tc_init() must be called prior to this one.
+ 148:../src/tc/tc.c ****  *
+ 149:../src/tc/tc.c ****  * \note This function is not available on SAM3U devices.
+ 150:../src/tc/tc.c ****  *
+ 151:../src/tc/tc.c ****  * \param[out] p_tc          Module hardware register base address pointer
+ 152:../src/tc/tc.c ****  * \param[in] ul_channel     Channel to configure
+ 153:../src/tc/tc.c ****  * \param[in] ul_steppermode Stepper motor mode register value to set
+ 154:../src/tc/tc.c ****  *
+ 155:../src/tc/tc.c ****  * \return 0 for OK.
+ 156:../src/tc/tc.c ****  */
+ 157:../src/tc/tc.c **** uint32_t tc_init_2bit_gray(
+ 158:../src/tc/tc.c **** 		Tc *p_tc,
+ 159:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 160:../src/tc/tc.c **** 		uint32_t ul_steppermode)
+ 161:../src/tc/tc.c **** {
+ 109              		.loc 1 161 0
+ 110              		.cfi_startproc
+ 111              		@ args = 0, pretend = 0, frame = 0
+ 112              		@ frame_needed = 0, uses_anonymous_args = 0
+ 113              		@ link register save eliminated.
+ 114              	.LVL5:
+ 162:../src/tc/tc.c **** 	/* Validate inputs. */
+ 163:../src/tc/tc.c **** 	Assert(p_tc);
+ 164:../src/tc/tc.c **** 	Assert(ul_channel <
+ 165:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 166:../src/tc/tc.c **** 
+ 167:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_SMMR = ul_steppermode;
+ 115              		.loc 1 167 0
+ 116 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 117              	.LVL6:
+ 118 0004 8A60     		str	r2, [r1, #8]
+ 168:../src/tc/tc.c **** 	return 0;
+ 169:../src/tc/tc.c **** }
+ 119              		.loc 1 169 0
+ 120 0006 0020     		movs	r0, #0
+ 121              	.LVL7:
+ 122 0008 7047     		bx	lr
+ 123              		.cfi_endproc
+ 124              	.LFE76:
+ 126 000a 00BF     		.section	.text.tc_start,"ax",%progbits
+ 127              		.align	2
+ 128              		.global	tc_start
+ 129              		.thumb
+ 130              		.thumb_func
+ 132              	tc_start:
+ 133              	.LFB77:
+ 170:../src/tc/tc.c **** 
+ 171:../src/tc/tc.c **** #endif /* (!SAM3U) || defined(__DOXYGEN__) */
+ 172:../src/tc/tc.c **** 
+ 173:../src/tc/tc.c **** /**
+ 174:../src/tc/tc.c ****  * \brief Start the TC clock on the specified channel.
+ 175:../src/tc/tc.c ****  *
+ 176:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 177:../src/tc/tc.c ****  * \param[in] ul_channel Channel to configure
+ 178:../src/tc/tc.c ****  */
+ 179:../src/tc/tc.c **** void tc_start(
+ 180:../src/tc/tc.c **** 		Tc *p_tc,
+ 181:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 182:../src/tc/tc.c **** {
+ 134              		.loc 1 182 0
+ 135              		.cfi_startproc
+ 136              		@ args = 0, pretend = 0, frame = 0
+ 137              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138              		@ link register save eliminated.
+ 139              	.LVL8:
+ 183:../src/tc/tc.c **** 	/* Validate inputs. */
+ 184:../src/tc/tc.c **** 	Assert(p_tc);
+ 185:../src/tc/tc.c **** 	Assert(ul_channel <
+ 186:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 187:../src/tc/tc.c **** 
+ 188:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG;
+ 140              		.loc 1 188 0
+ 141 0000 8901     		lsls	r1, r1, #6
+ 142              	.LVL9:
+ 143 0002 0523     		movs	r3, #5
+ 144 0004 4350     		str	r3, [r0, r1]
+ 145 0006 7047     		bx	lr
+ 146              		.cfi_endproc
+ 147              	.LFE77:
+ 149              		.section	.text.tc_stop,"ax",%progbits
+ 150              		.align	2
+ 151              		.global	tc_stop
+ 152              		.thumb
+ 153              		.thumb_func
+ 155              	tc_stop:
+ 156              	.LFB78:
+ 189:../src/tc/tc.c **** }
+ 190:../src/tc/tc.c **** 
+ 191:../src/tc/tc.c **** /**
+ 192:../src/tc/tc.c ****  * \brief Stop the TC clock on the specified channel.
+ 193:../src/tc/tc.c ****  *
+ 194:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 195:../src/tc/tc.c ****  * \param[in] ul_channel Channel to configure
+ 196:../src/tc/tc.c ****  */
+ 197:../src/tc/tc.c **** void tc_stop(
+ 198:../src/tc/tc.c **** 		Tc *p_tc,
+ 199:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 200:../src/tc/tc.c **** {
+ 157              		.loc 1 200 0
+ 158              		.cfi_startproc
+ 159              		@ args = 0, pretend = 0, frame = 0
+ 160              		@ frame_needed = 0, uses_anonymous_args = 0
+ 161              		@ link register save eliminated.
+ 162              	.LVL10:
+ 201:../src/tc/tc.c **** 	/* Validate inputs. */
+ 202:../src/tc/tc.c **** 	Assert(p_tc);
+ 203:../src/tc/tc.c **** 	Assert(ul_channel <
+ 204:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 205:../src/tc/tc.c **** 
+ 206:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_CCR = TC_CCR_CLKDIS;
+ 163              		.loc 1 206 0
+ 164 0000 8901     		lsls	r1, r1, #6
+ 165              	.LVL11:
+ 166 0002 0223     		movs	r3, #2
+ 167 0004 4350     		str	r3, [r0, r1]
+ 168 0006 7047     		bx	lr
+ 169              		.cfi_endproc
+ 170              	.LFE78:
+ 172              		.section	.text.tc_read_cv,"ax",%progbits
+ 173              		.align	2
+ 174              		.global	tc_read_cv
+ 175              		.thumb
+ 176              		.thumb_func
+ 178              	tc_read_cv:
+ 179              	.LFB79:
+ 207:../src/tc/tc.c **** }
+ 208:../src/tc/tc.c **** 
+ 209:../src/tc/tc.c **** /**
+ 210:../src/tc/tc.c ****  * \brief Read the counter value on the specified channel.
+ 211:../src/tc/tc.c ****  *
+ 212:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 213:../src/tc/tc.c ****  * \param[in] ul_channel Channel to read
+ 214:../src/tc/tc.c ****  *
+ 215:../src/tc/tc.c ****  * \return The counter value.
+ 216:../src/tc/tc.c ****  */
+ 217:../src/tc/tc.c **** uint32_t tc_read_cv(
+ 218:../src/tc/tc.c **** 		Tc *p_tc,
+ 219:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 220:../src/tc/tc.c **** {
+ 180              		.loc 1 220 0
+ 181              		.cfi_startproc
+ 182              		@ args = 0, pretend = 0, frame = 0
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184              		@ link register save eliminated.
+ 185              	.LVL12:
+ 221:../src/tc/tc.c **** 	/* Validate inputs. */
+ 222:../src/tc/tc.c **** 	Assert(p_tc);
+ 223:../src/tc/tc.c **** 	Assert(ul_channel <
+ 224:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 225:../src/tc/tc.c **** 
+ 226:../src/tc/tc.c **** 	return p_tc->TC_CHANNEL[ul_channel].TC_CV;
+ 186              		.loc 1 226 0
+ 187 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 188              	.LVL13:
+ 189 0004 0869     		ldr	r0, [r1, #16]
+ 190              	.LVL14:
+ 227:../src/tc/tc.c **** }
+ 191              		.loc 1 227 0
+ 192 0006 7047     		bx	lr
+ 193              		.cfi_endproc
+ 194              	.LFE79:
+ 196              		.section	.text.tc_read_ra,"ax",%progbits
+ 197              		.align	2
+ 198              		.global	tc_read_ra
+ 199              		.thumb
+ 200              		.thumb_func
+ 202              	tc_read_ra:
+ 203              	.LFB80:
+ 228:../src/tc/tc.c **** 
+ 229:../src/tc/tc.c **** /**
+ 230:../src/tc/tc.c ****  * \brief Read TC Register A (RA) on the specified channel.
+ 231:../src/tc/tc.c ****  *
+ 232:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 233:../src/tc/tc.c ****  * \param[in] ul_channel Channel to read
+ 234:../src/tc/tc.c ****  *
+ 235:../src/tc/tc.c ****  * \return The TC Register A (RA) value.
+ 236:../src/tc/tc.c ****  */
+ 237:../src/tc/tc.c **** uint32_t tc_read_ra(
+ 238:../src/tc/tc.c **** 		Tc *p_tc,
+ 239:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 240:../src/tc/tc.c **** {
+ 204              		.loc 1 240 0
+ 205              		.cfi_startproc
+ 206              		@ args = 0, pretend = 0, frame = 0
+ 207              		@ frame_needed = 0, uses_anonymous_args = 0
+ 208              		@ link register save eliminated.
+ 209              	.LVL15:
+ 241:../src/tc/tc.c **** 	/* Validate inputs. */
+ 242:../src/tc/tc.c **** 	Assert(p_tc);
+ 243:../src/tc/tc.c **** 	Assert(ul_channel <
+ 244:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 245:../src/tc/tc.c **** 
+ 246:../src/tc/tc.c **** 	return p_tc->TC_CHANNEL[ul_channel].TC_RA;
+ 210              		.loc 1 246 0
+ 211 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 212              	.LVL16:
+ 213 0004 4869     		ldr	r0, [r1, #20]
+ 214              	.LVL17:
+ 247:../src/tc/tc.c **** }
+ 215              		.loc 1 247 0
+ 216 0006 7047     		bx	lr
+ 217              		.cfi_endproc
+ 218              	.LFE80:
+ 220              		.section	.text.tc_read_rb,"ax",%progbits
+ 221              		.align	2
+ 222              		.global	tc_read_rb
+ 223              		.thumb
+ 224              		.thumb_func
+ 226              	tc_read_rb:
+ 227              	.LFB81:
+ 248:../src/tc/tc.c **** 
+ 249:../src/tc/tc.c **** /**
+ 250:../src/tc/tc.c ****  * \brief Read TC Register B (RB) on the specified channel.
+ 251:../src/tc/tc.c ****  *
+ 252:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 253:../src/tc/tc.c ****  * \param[in] ul_channel Channel to read
+ 254:../src/tc/tc.c ****  *
+ 255:../src/tc/tc.c ****  * \return The TC Register B (RB) value.
+ 256:../src/tc/tc.c ****  */
+ 257:../src/tc/tc.c **** uint32_t tc_read_rb(
+ 258:../src/tc/tc.c **** 		Tc *p_tc,
+ 259:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 260:../src/tc/tc.c **** {
+ 228              		.loc 1 260 0
+ 229              		.cfi_startproc
+ 230              		@ args = 0, pretend = 0, frame = 0
+ 231              		@ frame_needed = 0, uses_anonymous_args = 0
+ 232              		@ link register save eliminated.
+ 233              	.LVL18:
+ 261:../src/tc/tc.c **** 	/* Validate inputs. */
+ 262:../src/tc/tc.c **** 	Assert(p_tc);
+ 263:../src/tc/tc.c **** 	Assert(ul_channel <
+ 264:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 265:../src/tc/tc.c **** 
+ 266:../src/tc/tc.c **** 	return p_tc->TC_CHANNEL[ul_channel].TC_RB;
+ 234              		.loc 1 266 0
+ 235 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 236              	.LVL19:
+ 237 0004 8869     		ldr	r0, [r1, #24]
+ 238              	.LVL20:
+ 267:../src/tc/tc.c **** }
+ 239              		.loc 1 267 0
+ 240 0006 7047     		bx	lr
+ 241              		.cfi_endproc
+ 242              	.LFE81:
+ 244              		.section	.text.tc_read_rc,"ax",%progbits
+ 245              		.align	2
+ 246              		.global	tc_read_rc
+ 247              		.thumb
+ 248              		.thumb_func
+ 250              	tc_read_rc:
+ 251              	.LFB82:
+ 268:../src/tc/tc.c **** 
+ 269:../src/tc/tc.c **** /**
+ 270:../src/tc/tc.c ****  * \brief Read TC Register C (RC) on the specified channel.
+ 271:../src/tc/tc.c ****  *
+ 272:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 273:../src/tc/tc.c ****  * \param[in] ul_channel Channel to read
+ 274:../src/tc/tc.c ****  *
+ 275:../src/tc/tc.c ****  * \return The Register C (RC) value.
+ 276:../src/tc/tc.c ****  */
+ 277:../src/tc/tc.c **** uint32_t tc_read_rc(
+ 278:../src/tc/tc.c **** 		Tc *p_tc,
+ 279:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 280:../src/tc/tc.c **** {
+ 252              		.loc 1 280 0
+ 253              		.cfi_startproc
+ 254              		@ args = 0, pretend = 0, frame = 0
+ 255              		@ frame_needed = 0, uses_anonymous_args = 0
+ 256              		@ link register save eliminated.
+ 257              	.LVL21:
+ 281:../src/tc/tc.c **** 	/* Validate inputs. */
+ 282:../src/tc/tc.c **** 	Assert(p_tc);
+ 283:../src/tc/tc.c **** 	Assert(ul_channel <
+ 284:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 285:../src/tc/tc.c **** 
+ 286:../src/tc/tc.c **** 	return p_tc->TC_CHANNEL[ul_channel].TC_RC;
+ 258              		.loc 1 286 0
+ 259 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 260              	.LVL22:
+ 261 0004 C869     		ldr	r0, [r1, #28]
+ 262              	.LVL23:
+ 287:../src/tc/tc.c **** }
+ 263              		.loc 1 287 0
+ 264 0006 7047     		bx	lr
+ 265              		.cfi_endproc
+ 266              	.LFE82:
+ 268              		.section	.text.tc_write_ra,"ax",%progbits
+ 269              		.align	2
+ 270              		.global	tc_write_ra
+ 271              		.thumb
+ 272              		.thumb_func
+ 274              	tc_write_ra:
+ 275              	.LFB83:
+ 288:../src/tc/tc.c **** 
+ 289:../src/tc/tc.c **** /**
+ 290:../src/tc/tc.c ****  * \brief Write to TC Register A (RA) on the specified channel.
+ 291:../src/tc/tc.c ****  *
+ 292:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 293:../src/tc/tc.c ****  * \param[in] ul_channel Channel to write
+ 294:../src/tc/tc.c ****  * \param[in] ul_value   Value to write
+ 295:../src/tc/tc.c ****  */
+ 296:../src/tc/tc.c **** void tc_write_ra(
+ 297:../src/tc/tc.c **** 		Tc *p_tc,
+ 298:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 299:../src/tc/tc.c **** 		uint32_t ul_value)
+ 300:../src/tc/tc.c **** {
+ 276              		.loc 1 300 0
+ 277              		.cfi_startproc
+ 278              		@ args = 0, pretend = 0, frame = 0
+ 279              		@ frame_needed = 0, uses_anonymous_args = 0
+ 280              		@ link register save eliminated.
+ 281              	.LVL24:
+ 301:../src/tc/tc.c **** 	/* Validate inputs. */
+ 302:../src/tc/tc.c **** 	Assert(p_tc);
+ 303:../src/tc/tc.c **** 	Assert(ul_channel <
+ 304:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 305:../src/tc/tc.c **** 
+ 306:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_RA = ul_value;
+ 282              		.loc 1 306 0
+ 283 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 284              	.LVL25:
+ 285 0004 4A61     		str	r2, [r1, #20]
+ 286 0006 7047     		bx	lr
+ 287              		.cfi_endproc
+ 288              	.LFE83:
+ 290              		.section	.text.tc_write_rb,"ax",%progbits
+ 291              		.align	2
+ 292              		.global	tc_write_rb
+ 293              		.thumb
+ 294              		.thumb_func
+ 296              	tc_write_rb:
+ 297              	.LFB84:
+ 307:../src/tc/tc.c **** }
+ 308:../src/tc/tc.c **** 
+ 309:../src/tc/tc.c **** /**
+ 310:../src/tc/tc.c ****  * \brief Write to TC Register B (RB) on the specified channel.
+ 311:../src/tc/tc.c ****  *
+ 312:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 313:../src/tc/tc.c ****  * \param[in] ul_channel Channel to write
+ 314:../src/tc/tc.c ****  * \param[in] ul_value   Value to write
+ 315:../src/tc/tc.c ****  */
+ 316:../src/tc/tc.c **** void tc_write_rb(
+ 317:../src/tc/tc.c **** 		Tc *p_tc,
+ 318:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 319:../src/tc/tc.c **** 		uint32_t ul_value)
+ 320:../src/tc/tc.c **** {
+ 298              		.loc 1 320 0
+ 299              		.cfi_startproc
+ 300              		@ args = 0, pretend = 0, frame = 0
+ 301              		@ frame_needed = 0, uses_anonymous_args = 0
+ 302              		@ link register save eliminated.
+ 303              	.LVL26:
+ 321:../src/tc/tc.c **** 	/* Validate inputs. */
+ 322:../src/tc/tc.c **** 	Assert(p_tc);
+ 323:../src/tc/tc.c **** 	Assert(ul_channel <
+ 324:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 325:../src/tc/tc.c **** 
+ 326:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_RB = ul_value;
+ 304              		.loc 1 326 0
+ 305 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 306              	.LVL27:
+ 307 0004 8A61     		str	r2, [r1, #24]
+ 308 0006 7047     		bx	lr
+ 309              		.cfi_endproc
+ 310              	.LFE84:
+ 312              		.section	.text.tc_write_rc,"ax",%progbits
+ 313              		.align	2
+ 314              		.global	tc_write_rc
+ 315              		.thumb
+ 316              		.thumb_func
+ 318              	tc_write_rc:
+ 319              	.LFB85:
+ 327:../src/tc/tc.c **** }
+ 328:../src/tc/tc.c **** 
+ 329:../src/tc/tc.c **** /**
+ 330:../src/tc/tc.c ****  * \brief Write to TC Register C (RC) on the selected channel.
+ 331:../src/tc/tc.c ****  *
+ 332:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 333:../src/tc/tc.c ****  * \param[in] ul_channel Channel to write
+ 334:../src/tc/tc.c ****  * \param[in] ul_value   Value to write
+ 335:../src/tc/tc.c ****  */
+ 336:../src/tc/tc.c **** void tc_write_rc(
+ 337:../src/tc/tc.c **** 		Tc *p_tc,
+ 338:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 339:../src/tc/tc.c **** 		uint32_t ul_value)
+ 340:../src/tc/tc.c **** {
+ 320              		.loc 1 340 0
+ 321              		.cfi_startproc
+ 322              		@ args = 0, pretend = 0, frame = 0
+ 323              		@ frame_needed = 0, uses_anonymous_args = 0
+ 324              		@ link register save eliminated.
+ 325              	.LVL28:
+ 341:../src/tc/tc.c **** 	/* Validate inputs. */
+ 342:../src/tc/tc.c **** 	Assert(p_tc);
+ 343:../src/tc/tc.c **** 	Assert(ul_channel <
+ 344:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 345:../src/tc/tc.c **** 
+ 346:../src/tc/tc.c **** 	p_tc->TC_CHANNEL[ul_channel].TC_RC = ul_value;
+ 326              		.loc 1 346 0
+ 327 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 328              	.LVL29:
+ 329 0004 CA61     		str	r2, [r1, #28]
+ 330 0006 7047     		bx	lr
+ 331              		.cfi_endproc
+ 332              	.LFE85:
+ 334              		.section	.text.tc_enable_interrupt,"ax",%progbits
+ 335              		.align	2
+ 336              		.global	tc_enable_interrupt
+ 337              		.thumb
+ 338              		.thumb_func
+ 340              	tc_enable_interrupt:
+ 341              	.LFB86:
+ 347:../src/tc/tc.c **** }
+ 348:../src/tc/tc.c **** 
+ 349:../src/tc/tc.c **** /**
+ 350:../src/tc/tc.c ****  * \brief Enable the TC interrupts on the specified channel.
+ 351:../src/tc/tc.c ****  *
+ 352:../src/tc/tc.c ****  * \param[in,out] p_tc   Module hardware register base address pointer
+ 353:../src/tc/tc.c ****  * \param[in] ul_channel Channel to configure
+ 354:../src/tc/tc.c ****  * \param[in] ul_sources Bitmask of interrupt sources
+ 355:../src/tc/tc.c ****  *
+ 356:../src/tc/tc.c ****  * Where the input parameter <i>ul_sources</i> can be one or more of the following:
+ 357:../src/tc/tc.c ****  * <table>
+ 358:../src/tc/tc.c ****  * <tr>
+ 359:../src/tc/tc.c ****  *    <th>Parameter Value</th>
+ 360:../src/tc/tc.c ****  *    <th>Description</th>
+ 361:../src/tc/tc.c ****  * </tr>
+ 362:../src/tc/tc.c ****  *     <tr><td>TC_IER_COVFS</td><td>Enables the Counter Overflow Interrupt</td></tr>
+ 363:../src/tc/tc.c ****  *     <tr><td>TC_IER_LOVRS</td><td>Enables the Load Overrun Interrupt</td></tr>
+ 364:../src/tc/tc.c ****  *     <tr><td>TC_IER_CPAS</td><td>Enables the RA Compare Interrupt</td></tr>
+ 365:../src/tc/tc.c ****  *     <tr><td>TC_IER_CPBS</td><td>Enables the RB Compare Interrupt</td></tr>
+ 366:../src/tc/tc.c ****  *     <tr><td>TC_IER_CPCS</td><td>Enables the RC Compare Interrupt</td></tr>
+ 367:../src/tc/tc.c ****  *     <tr><td>TC_IER_LDRAS</td><td>Enables the RA Load Interrupt</td></tr>
+ 368:../src/tc/tc.c ****  *     <tr><td>TC_IER_LDRBS</td><td>Enables the RB Load Interrupt</td></tr>
+ 369:../src/tc/tc.c ****  *     <tr><td>TC_IER_ETRGS</td><td>Enables the External Trigger Interrupt</td></tr>
+ 370:../src/tc/tc.c ****  * </table>
+ 371:../src/tc/tc.c ****  */
+ 372:../src/tc/tc.c **** void tc_enable_interrupt(
+ 373:../src/tc/tc.c **** 		Tc *p_tc,
+ 374:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 375:../src/tc/tc.c **** 		uint32_t ul_sources)
+ 376:../src/tc/tc.c **** {
+ 342              		.loc 1 376 0
+ 343              		.cfi_startproc
+ 344              		@ args = 0, pretend = 0, frame = 0
+ 345              		@ frame_needed = 0, uses_anonymous_args = 0
+ 346              		@ link register save eliminated.
+ 347              	.LVL30:
+ 377:../src/tc/tc.c **** 	TcChannel *tc_channel;
+ 378:../src/tc/tc.c **** 
+ 379:../src/tc/tc.c **** 	/* Validate inputs. */
+ 380:../src/tc/tc.c **** 	Assert(p_tc);
+ 381:../src/tc/tc.c **** 	Assert(ul_channel <
+ 382:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 383:../src/tc/tc.c **** 	tc_channel = p_tc->TC_CHANNEL + ul_channel;
+ 348              		.loc 1 383 0
+ 349 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 350              	.LVL31:
+ 384:../src/tc/tc.c **** 	tc_channel->TC_IER = ul_sources;
+ 351              		.loc 1 384 0
+ 352 0004 4A62     		str	r2, [r1, #36]
+ 353 0006 7047     		bx	lr
+ 354              		.cfi_endproc
+ 355              	.LFE86:
+ 357              		.section	.text.tc_disable_interrupt,"ax",%progbits
+ 358              		.align	2
+ 359              		.global	tc_disable_interrupt
+ 360              		.thumb
+ 361              		.thumb_func
+ 363              	tc_disable_interrupt:
+ 364              	.LFB87:
+ 385:../src/tc/tc.c **** }
+ 386:../src/tc/tc.c **** 
+ 387:../src/tc/tc.c **** /**
+ 388:../src/tc/tc.c ****  * \brief Disable TC interrupts on the specified channel.
+ 389:../src/tc/tc.c ****  *
+ 390:../src/tc/tc.c ****  * \param[in,out] p_tc   Module hardware register base address pointer
+ 391:../src/tc/tc.c ****  * \param[in] ul_channel Channel to configure
+ 392:../src/tc/tc.c ****  * \param[in] ul_sources A bitmask of Interrupt sources
+ 393:../src/tc/tc.c ****  *
+ 394:../src/tc/tc.c ****  * Where the input parameter <i>ul_sources</i> can be one or more of the following:
+ 395:../src/tc/tc.c ****  * <table>
+ 396:../src/tc/tc.c ****  * <tr>
+ 397:../src/tc/tc.c ****  *    <th>Parameter Value</th>
+ 398:../src/tc/tc.c ****  *    <th>Description</th>
+ 399:../src/tc/tc.c ****  * </tr>
+ 400:../src/tc/tc.c ****  *     <tr><td>TC_IDR_COVFS</td><td>Disables the Counter Overflow Interrupt</td></tr>
+ 401:../src/tc/tc.c ****  *     <tr><td>TC_IDR_LOVRS</td><td>Disables the Load Overrun Interrupt</td></tr>
+ 402:../src/tc/tc.c ****  *     <tr><td>TC_IDR_CPAS</td><td>Disables the RA Compare Interrupt</td></tr>
+ 403:../src/tc/tc.c ****  *     <tr><td>TC_IDR_CPBS</td><td>Disables the RB Compare Interrupt</td></tr>
+ 404:../src/tc/tc.c ****  *     <tr><td>TC_IDR_CPCS</td><td>Disables the RC Compare Interrupt</td></tr>
+ 405:../src/tc/tc.c ****  *     <tr><td>TC_IDR_LDRAS</td><td>Disables the RA Load Interrupt</td></tr>
+ 406:../src/tc/tc.c ****  *     <tr><td>TC_IDR_LDRBS</td><td>Disables the RB Load Interrupt</td></tr>
+ 407:../src/tc/tc.c ****  *     <tr><td>TC_IDR_ETRGS</td><td>Disables the External Trigger Interrupt</td></tr>
+ 408:../src/tc/tc.c ****  * </table>
+ 409:../src/tc/tc.c ****  */
+ 410:../src/tc/tc.c **** void tc_disable_interrupt(
+ 411:../src/tc/tc.c **** 		Tc *p_tc,
+ 412:../src/tc/tc.c **** 		uint32_t ul_channel,
+ 413:../src/tc/tc.c **** 		uint32_t ul_sources)
+ 414:../src/tc/tc.c **** {
+ 365              		.loc 1 414 0
+ 366              		.cfi_startproc
+ 367              		@ args = 0, pretend = 0, frame = 0
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 369              		@ link register save eliminated.
+ 370              	.LVL32:
+ 415:../src/tc/tc.c **** 	TcChannel *tc_channel;
+ 416:../src/tc/tc.c **** 
+ 417:../src/tc/tc.c **** 	/* Validate inputs. */
+ 418:../src/tc/tc.c **** 	Assert(p_tc);
+ 419:../src/tc/tc.c **** 	Assert(ul_channel <
+ 420:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 421:../src/tc/tc.c **** 	tc_channel = p_tc->TC_CHANNEL + ul_channel;
+ 371              		.loc 1 421 0
+ 372 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 373              	.LVL33:
+ 422:../src/tc/tc.c **** 	tc_channel->TC_IDR = ul_sources;
+ 374              		.loc 1 422 0
+ 375 0004 8A62     		str	r2, [r1, #40]
+ 376 0006 7047     		bx	lr
+ 377              		.cfi_endproc
+ 378              	.LFE87:
+ 380              		.section	.text.tc_get_interrupt_mask,"ax",%progbits
+ 381              		.align	2
+ 382              		.global	tc_get_interrupt_mask
+ 383              		.thumb
+ 384              		.thumb_func
+ 386              	tc_get_interrupt_mask:
+ 387              	.LFB88:
+ 423:../src/tc/tc.c **** }
+ 424:../src/tc/tc.c **** 
+ 425:../src/tc/tc.c **** /**
+ 426:../src/tc/tc.c ****  * \brief Read the TC interrupt mask for the specified channel.
+ 427:../src/tc/tc.c ****  *
+ 428:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 429:../src/tc/tc.c ****  * \param[in] ul_channel Channel to read
+ 430:../src/tc/tc.c ****  *
+ 431:../src/tc/tc.c ****  * \return The TC interrupt mask value.
+ 432:../src/tc/tc.c ****  */
+ 433:../src/tc/tc.c **** uint32_t tc_get_interrupt_mask(
+ 434:../src/tc/tc.c **** 		Tc *p_tc,
+ 435:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 436:../src/tc/tc.c **** {
+ 388              		.loc 1 436 0
+ 389              		.cfi_startproc
+ 390              		@ args = 0, pretend = 0, frame = 0
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392              		@ link register save eliminated.
+ 393              	.LVL34:
+ 437:../src/tc/tc.c **** 	TcChannel *tc_channel;
+ 438:../src/tc/tc.c **** 
+ 439:../src/tc/tc.c **** 	/* Validate inputs. */
+ 440:../src/tc/tc.c **** 	Assert(p_tc);
+ 441:../src/tc/tc.c **** 	Assert(ul_channel <
+ 442:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 443:../src/tc/tc.c **** 	tc_channel = p_tc->TC_CHANNEL + ul_channel;
+ 394              		.loc 1 443 0
+ 395 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 396              	.LVL35:
+ 444:../src/tc/tc.c **** 	return tc_channel->TC_IMR;
+ 397              		.loc 1 444 0
+ 398 0004 C86A     		ldr	r0, [r1, #44]
+ 399              	.LVL36:
+ 445:../src/tc/tc.c **** }
+ 400              		.loc 1 445 0
+ 401 0006 7047     		bx	lr
+ 402              		.cfi_endproc
+ 403              	.LFE88:
+ 405              		.section	.text.tc_get_status,"ax",%progbits
+ 406              		.align	2
+ 407              		.global	tc_get_status
+ 408              		.thumb
+ 409              		.thumb_func
+ 411              	tc_get_status:
+ 412              	.LFB89:
+ 446:../src/tc/tc.c **** 
+ 447:../src/tc/tc.c **** /**
+ 448:../src/tc/tc.c ****  * \brief Get the current status for the specified TC channel.
+ 449:../src/tc/tc.c ****  *
+ 450:../src/tc/tc.c ****  * \param[in] p_tc       Module hardware register base address pointer
+ 451:../src/tc/tc.c ****  * \param[in] ul_channel Channel number
+ 452:../src/tc/tc.c ****  *
+ 453:../src/tc/tc.c ****  * \return The current TC status.
+ 454:../src/tc/tc.c ****  */
+ 455:../src/tc/tc.c **** uint32_t tc_get_status(
+ 456:../src/tc/tc.c **** 		Tc *p_tc,
+ 457:../src/tc/tc.c **** 		uint32_t ul_channel)
+ 458:../src/tc/tc.c **** {
+ 413              		.loc 1 458 0
+ 414              		.cfi_startproc
+ 415              		@ args = 0, pretend = 0, frame = 0
+ 416              		@ frame_needed = 0, uses_anonymous_args = 0
+ 417              		@ link register save eliminated.
+ 418              	.LVL37:
+ 459:../src/tc/tc.c **** 	TcChannel *tc_channel;
+ 460:../src/tc/tc.c **** 
+ 461:../src/tc/tc.c **** 	/* Validate inputs. */
+ 462:../src/tc/tc.c **** 	Assert(p_tc);
+ 463:../src/tc/tc.c **** 	Assert(ul_channel <
+ 464:../src/tc/tc.c **** 			(sizeof(p_tc->TC_CHANNEL) / sizeof(p_tc->TC_CHANNEL[0])));
+ 465:../src/tc/tc.c **** 			
+ 466:../src/tc/tc.c **** 	tc_channel = p_tc->TC_CHANNEL + ul_channel;
+ 419              		.loc 1 466 0
+ 420 0000 00EB8111 		add	r1, r0, r1, lsl #6
+ 421              	.LVL38:
+ 467:../src/tc/tc.c **** 	return tc_channel->TC_SR;
+ 422              		.loc 1 467 0
+ 423 0004 086A     		ldr	r0, [r1, #32]
+ 424              	.LVL39:
+ 468:../src/tc/tc.c **** }
+ 425              		.loc 1 468 0
+ 426 0006 7047     		bx	lr
+ 427              		.cfi_endproc
+ 428              	.LFE89:
+ 430              		.section	.text.tc_find_mck_divisor,"ax",%progbits
+ 431              		.align	2
+ 432              		.global	tc_find_mck_divisor
+ 433              		.thumb
+ 434              		.thumb_func
+ 436              	tc_find_mck_divisor:
+ 437              	.LFB90:
+ 469:../src/tc/tc.c **** 
+ 470:../src/tc/tc.c **** /* TC divisor used to find the lowest acceptable timer frequency */
+ 471:../src/tc/tc.c **** #define TC_DIV_FACTOR 65536
+ 472:../src/tc/tc.c **** 
+ 473:../src/tc/tc.c **** #if (!SAM4L) && !defined(__DOXYGEN__)
+ 474:../src/tc/tc.c **** 
+ 475:../src/tc/tc.c **** #ifndef FREQ_SLOW_CLOCK_EXT
+ 476:../src/tc/tc.c **** #define FREQ_SLOW_CLOCK_EXT 32768 /* External slow clock frequency (hz) */
+ 477:../src/tc/tc.c **** #endif
+ 478:../src/tc/tc.c **** 
+ 479:../src/tc/tc.c **** /**
+ 480:../src/tc/tc.c ****  * \brief Find the best MCK divisor.
+ 481:../src/tc/tc.c ****  *
+ 482:../src/tc/tc.c ****  * Finds the best MCK divisor given the timer frequency and MCK. The result
+ 483:../src/tc/tc.c ****  * is guaranteed to satisfy the following equation:
+ 484:../src/tc/tc.c ****  * \code (MCK / (DIV * 65536)) <= freq <= (MCK / DIV) \endcode
+ 485:../src/tc/tc.c ****  * With DIV being the lowest possible value, to maximize timing adjust resolution.
+ 486:../src/tc/tc.c ****  *
+ 487:../src/tc/tc.c ****  * \param[in] ul_freq     Desired timer frequency
+ 488:../src/tc/tc.c ****  * \param[in] ul_mck      Master clock frequency
+ 489:../src/tc/tc.c ****  * \param[out] p_uldiv    Divisor value
+ 490:../src/tc/tc.c ****  * \param[out] p_ultcclks TCCLKS field value for divisor
+ 491:../src/tc/tc.c ****  * \param[in] ul_boardmck Board clock frequency
+ 492:../src/tc/tc.c ****  *
+ 493:../src/tc/tc.c ****  * \return The divisor found status.
+ 494:../src/tc/tc.c ****  * \retval 0 No suitable divisor was found
+ 495:../src/tc/tc.c ****  * \retval 1 A divisor was found
+ 496:../src/tc/tc.c ****  */
+ 497:../src/tc/tc.c **** uint32_t tc_find_mck_divisor(
+ 498:../src/tc/tc.c **** 		uint32_t ul_freq,
+ 499:../src/tc/tc.c **** 		uint32_t ul_mck,
+ 500:../src/tc/tc.c **** 		uint32_t *p_uldiv,
+ 501:../src/tc/tc.c **** 		uint32_t *p_ultcclks,
+ 502:../src/tc/tc.c **** 		uint32_t ul_boardmck)
+ 503:../src/tc/tc.c **** {
+ 438              		.loc 1 503 0
+ 439              		.cfi_startproc
+ 440              		@ args = 4, pretend = 0, frame = 24
+ 441              		@ frame_needed = 0, uses_anonymous_args = 0
+ 442              		@ link register save eliminated.
+ 443              	.LVL40:
+ 444 0000 70B4     		push	{r4, r5, r6}
+ 445              		.cfi_def_cfa_offset 12
+ 446              		.cfi_offset 4, -12
+ 447              		.cfi_offset 5, -8
+ 448              		.cfi_offset 6, -4
+ 449 0002 87B0     		sub	sp, sp, #28
+ 450              		.cfi_def_cfa_offset 40
+ 504:../src/tc/tc.c **** 	const uint32_t divisors[5] = { 2, 8, 32, 128,
+ 451              		.loc 1 504 0
+ 452 0004 0224     		movs	r4, #2
+ 453 0006 0194     		str	r4, [sp, #4]
+ 454 0008 0824     		movs	r4, #8
+ 455 000a 0294     		str	r4, [sp, #8]
+ 456 000c 2024     		movs	r4, #32
+ 457 000e 0394     		str	r4, [sp, #12]
+ 458 0010 8024     		movs	r4, #128
+ 459 0012 0494     		str	r4, [sp, #16]
+ 505:../src/tc/tc.c **** 			ul_boardmck / FREQ_SLOW_CLOCK_EXT };
+ 460              		.loc 1 505 0
+ 461 0014 0A9C     		ldr	r4, [sp, #40]
+ 462 0016 E40B     		lsrs	r4, r4, #15
+ 504:../src/tc/tc.c **** 	const uint32_t divisors[5] = { 2, 8, 32, 128,
+ 463              		.loc 1 504 0
+ 464 0018 0594     		str	r4, [sp, #20]
+ 465              	.LVL41:
+ 506:../src/tc/tc.c **** 	uint32_t ul_index;
+ 507:../src/tc/tc.c **** 	uint32_t ul_high, ul_low;
+ 508:../src/tc/tc.c **** 
+ 509:../src/tc/tc.c **** 	/*  Satisfy frequency bound. */
+ 510:../src/tc/tc.c **** 	for (ul_index = 0;
+ 466              		.loc 1 510 0
+ 467 001a 0025     		movs	r5, #0
+ 468 001c 0CE0     		b	.L20
+ 469              	.LVL42:
+ 470              	.L23:
+ 511:../src/tc/tc.c **** 			ul_index < (sizeof(divisors) / sizeof(divisors[0]));
+ 512:../src/tc/tc.c **** 			ul_index++) {
+ 513:../src/tc/tc.c **** 		ul_high = ul_mck / divisors[ul_index];
+ 471              		.loc 1 513 0
+ 472 001e 06AC     		add	r4, sp, #24
+ 473 0020 04EB8504 		add	r4, r4, r5, lsl #2
+ 474 0024 54F8144C 		ldr	r4, [r4, #-20]
+ 475 0028 B1FBF4F4 		udiv	r4, r1, r4
+ 476              	.LVL43:
+ 514:../src/tc/tc.c **** 		ul_low  = ul_high / TC_DIV_FACTOR;
+ 477              		.loc 1 514 0
+ 478 002c 260C     		lsrs	r6, r4, #16
+ 479              	.LVL44:
+ 515:../src/tc/tc.c **** 		if (ul_freq > ul_high) {
+ 480              		.loc 1 515 0
+ 481 002e 8442     		cmp	r4, r0
+ 482 0030 11D3     		bcc	.L25
+ 516:../src/tc/tc.c **** 			return 0;
+ 517:../src/tc/tc.c **** 		} else if (ul_freq >= ul_low) {
+ 483              		.loc 1 517 0
+ 484 0032 8642     		cmp	r6, r0
+ 485 0034 02D9     		bls	.L22
+ 512:../src/tc/tc.c **** 		ul_high = ul_mck / divisors[ul_index];
+ 486              		.loc 1 512 0
+ 487 0036 0135     		adds	r5, r5, #1
+ 488              	.LVL45:
+ 489              	.L20:
+ 510:../src/tc/tc.c **** 			ul_index < (sizeof(divisors) / sizeof(divisors[0]));
+ 490              		.loc 1 510 0 discriminator 1
+ 491 0038 042D     		cmp	r5, #4
+ 492 003a F0D9     		bls	.L23
+ 493              	.L22:
+ 518:../src/tc/tc.c **** 			break;
+ 519:../src/tc/tc.c **** 		}
+ 520:../src/tc/tc.c **** 	}
+ 521:../src/tc/tc.c **** 	if (ul_index >= (sizeof(divisors) / sizeof(divisors[0]))) {
+ 494              		.loc 1 521 0
+ 495 003c 042D     		cmp	r5, #4
+ 496 003e 0CD8     		bhi	.L26
+ 522:../src/tc/tc.c **** 		return 0;
+ 523:../src/tc/tc.c **** 	}
+ 524:../src/tc/tc.c **** 
+ 525:../src/tc/tc.c **** 	/*  Store results. */
+ 526:../src/tc/tc.c **** 	if (p_uldiv) {
+ 497              		.loc 1 526 0
+ 498 0040 2AB1     		cbz	r2, .L24
+ 527:../src/tc/tc.c **** 		*p_uldiv = divisors[ul_index];
+ 499              		.loc 1 527 0
+ 500 0042 06A9     		add	r1, sp, #24
+ 501              	.LVL46:
+ 502 0044 01EB8501 		add	r1, r1, r5, lsl #2
+ 503 0048 51F8141C 		ldr	r1, [r1, #-20]
+ 504 004c 1160     		str	r1, [r2]
+ 505              	.L24:
+ 528:../src/tc/tc.c **** 	}
+ 529:../src/tc/tc.c **** 
+ 530:../src/tc/tc.c **** 	if (p_ultcclks) {
+ 506              		.loc 1 530 0
+ 507 004e 33B1     		cbz	r3, .L27
+ 531:../src/tc/tc.c **** 		*p_ultcclks = ul_index;
+ 508              		.loc 1 531 0
+ 509 0050 1D60     		str	r5, [r3]
+ 532:../src/tc/tc.c **** 	}
+ 533:../src/tc/tc.c **** 
+ 534:../src/tc/tc.c **** 	return 1;
+ 510              		.loc 1 534 0
+ 511 0052 0120     		movs	r0, #1
+ 512              	.LVL47:
+ 513 0054 04E0     		b	.L21
+ 514              	.LVL48:
+ 515              	.L25:
+ 516:../src/tc/tc.c **** 		} else if (ul_freq >= ul_low) {
+ 516              		.loc 1 516 0
+ 517 0056 0020     		movs	r0, #0
+ 518              	.LVL49:
+ 519 0058 02E0     		b	.L21
+ 520              	.LVL50:
+ 521              	.L26:
+ 522:../src/tc/tc.c **** 	}
+ 522              		.loc 1 522 0
+ 523 005a 0020     		movs	r0, #0
+ 524              	.LVL51:
+ 525 005c 00E0     		b	.L21
+ 526              	.LVL52:
+ 527              	.L27:
+ 528              		.loc 1 534 0
+ 529 005e 0120     		movs	r0, #1
+ 530              	.LVL53:
+ 531              	.L21:
+ 535:../src/tc/tc.c **** }
+ 532              		.loc 1 535 0
+ 533 0060 07B0     		add	sp, sp, #28
+ 534              		.cfi_def_cfa_offset 12
+ 535              		@ sp needed
+ 536 0062 70BC     		pop	{r4, r5, r6}
+ 537              		.cfi_restore 6
+ 538              		.cfi_restore 5
+ 539              		.cfi_restore 4
+ 540              		.cfi_def_cfa_offset 0
+ 541              	.LVL54:
+ 542 0064 7047     		bx	lr
+ 543              		.cfi_endproc
+ 544              	.LFE90:
+ 546 0066 00BF     		.section	.text.tc_enable_qdec_interrupt,"ax",%progbits
+ 547              		.align	2
+ 548              		.global	tc_enable_qdec_interrupt
+ 549              		.thumb
+ 550              		.thumb_func
+ 552              	tc_enable_qdec_interrupt:
+ 553              	.LFB91:
+ 536:../src/tc/tc.c **** 
+ 537:../src/tc/tc.c **** #endif /* (!SAM4L) */
+ 538:../src/tc/tc.c **** 
+ 539:../src/tc/tc.c **** #if (SAM4L) || defined(__DOXYGEN__)
+ 540:../src/tc/tc.c **** /**
+ 541:../src/tc/tc.c ****  * \brief Find the best PBA/MCK divisor.
+ 542:../src/tc/tc.c ****  *
+ 543:../src/tc/tc.c ****  * <b>For SAM4L devices:</b> Finds the best PBA divisor given the timer
+ 544:../src/tc/tc.c ****  * frequency and PBA clock. The result is guaranteed to satisfy the following equation:
+ 545:../src/tc/tc.c ****  * \code  (ul_pbaclk / (2* DIV * 65536)) <= freq <= (ul_pbaclk / (2* DIV)) \endcode
+ 546:../src/tc/tc.c ****  * with DIV being the lowest possible value, to maximize timing adjust resolution.
+ 547:../src/tc/tc.c ****  *
+ 548:../src/tc/tc.c ****  * <b>For non SAM4L devices:</b> Finds the best MCK divisor given the timer frequency
+ 549:../src/tc/tc.c ****  * and MCK. The result is guaranteed to satisfy the following equation:
+ 550:../src/tc/tc.c ****  * \code (MCK / (DIV * 65536)) <= freq <= (MCK / DIV) \endcode
+ 551:../src/tc/tc.c ****  * with DIV being the lowest possible value, to maximize timing adjust resolution.
+ 552:../src/tc/tc.c ****  *
+ 553:../src/tc/tc.c ****  * \param[in] ul_freq     Desired timer frequency
+ 554:../src/tc/tc.c ****  * \param[in] ul_mck      PBA clock frequency
+ 555:../src/tc/tc.c ****  * \param[out] p_uldiv    Divisor value
+ 556:../src/tc/tc.c ****  * \param[out] p_ultcclks TCCLKS field value for divisor
+ 557:../src/tc/tc.c ****  * \param[in] ul_boardmck Board clock frequency (set to 0 for SAM4L devices)
+ 558:../src/tc/tc.c ****  *
+ 559:../src/tc/tc.c ****  * \return The divisor found status.
+ 560:../src/tc/tc.c ****  * \retval 0 No suitable divisor was found
+ 561:../src/tc/tc.c ****  * \retval 1 A divisor was found
+ 562:../src/tc/tc.c ****  */
+ 563:../src/tc/tc.c **** uint32_t tc_find_mck_divisor(
+ 564:../src/tc/tc.c **** 		uint32_t ul_freq,
+ 565:../src/tc/tc.c **** 		uint32_t ul_mck,
+ 566:../src/tc/tc.c **** 		uint32_t *p_uldiv,
+ 567:../src/tc/tc.c **** 		uint32_t *p_ultcclks,
+ 568:../src/tc/tc.c **** 		uint32_t ul_boardmck)
+ 569:../src/tc/tc.c **** {
+ 570:../src/tc/tc.c **** 	const uint32_t divisors[5] = { 0, 2, 8, 32, 128};
+ 571:../src/tc/tc.c **** 	uint32_t ul_index;
+ 572:../src/tc/tc.c **** 	uint32_t ul_high, ul_low;
+ 573:../src/tc/tc.c **** 
+ 574:../src/tc/tc.c **** 	UNUSED(ul_boardmck);
+ 575:../src/tc/tc.c **** 
+ 576:../src/tc/tc.c **** 	/*  Satisfy frequency bound. */
+ 577:../src/tc/tc.c **** 	for (ul_index = 1;
+ 578:../src/tc/tc.c **** 			ul_index < (sizeof(divisors) / sizeof(divisors[0]));
+ 579:../src/tc/tc.c **** 			ul_index++) {
+ 580:../src/tc/tc.c **** 		ul_high = ul_mck / divisors[ul_index];
+ 581:../src/tc/tc.c **** 		ul_low  = ul_high / TC_DIV_FACTOR;
+ 582:../src/tc/tc.c **** 		if (ul_freq > ul_high) {
+ 583:../src/tc/tc.c **** 			return 0;
+ 584:../src/tc/tc.c **** 		} else if (ul_freq >= ul_low) {
+ 585:../src/tc/tc.c **** 			break;
+ 586:../src/tc/tc.c **** 		}
+ 587:../src/tc/tc.c **** 	}
+ 588:../src/tc/tc.c **** 	if (ul_index >= (sizeof(divisors) / sizeof(divisors[0]))) {
+ 589:../src/tc/tc.c **** 		return 0;
+ 590:../src/tc/tc.c **** 	}
+ 591:../src/tc/tc.c **** 
+ 592:../src/tc/tc.c **** 	/*  Store results. */
+ 593:../src/tc/tc.c **** 	if (p_uldiv) {
+ 594:../src/tc/tc.c **** 		*p_uldiv = divisors[ul_index];
+ 595:../src/tc/tc.c **** 	}
+ 596:../src/tc/tc.c **** 
+ 597:../src/tc/tc.c **** 	if (p_ultcclks) {
+ 598:../src/tc/tc.c **** 		*p_ultcclks = ul_index;
+ 599:../src/tc/tc.c **** 	}
+ 600:../src/tc/tc.c **** 
+ 601:../src/tc/tc.c **** 	return 1;
+ 602:../src/tc/tc.c **** }
+ 603:../src/tc/tc.c **** 
+ 604:../src/tc/tc.c **** #endif /* (SAM4L) || defined(__DOXYGEN__) */
+ 605:../src/tc/tc.c **** 
+ 606:../src/tc/tc.c **** #if (!SAM4L && !SAMG) || defined(__DOXYGEN__)
+ 607:../src/tc/tc.c **** 
+ 608:../src/tc/tc.c **** /**
+ 609:../src/tc/tc.c ****  * \brief Enable TC QDEC interrupts.
+ 610:../src/tc/tc.c ****  *
+ 611:../src/tc/tc.c ****  * \note This function is not available on SAM4L or SAMG devices.
+ 612:../src/tc/tc.c ****  *
+ 613:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 614:../src/tc/tc.c ****  * \param[in] ul_sources A bitmask of QDEC interrupts to be enabled
+ 615:../src/tc/tc.c ****  *
+ 616:../src/tc/tc.c ****  * Where the input parameter <i>ul_sources</i> can be one or more of the following:
+ 617:../src/tc/tc.c ****  * <table>
+ 618:../src/tc/tc.c ****  * <tr>
+ 619:../src/tc/tc.c ****  *    <th>Parameter Value</th>
+ 620:../src/tc/tc.c ****  *    <th>Description</th>
+ 621:../src/tc/tc.c ****  * </tr>
+ 622:../src/tc/tc.c ****  *     <tr><td>TC_QIER_IDX</td><td>Enable the rising edge detected on IDX input interrupt</td></tr>
+ 623:../src/tc/tc.c ****  *     <tr><td>TC_QIER_DIRCHG</td><td>Enable the change in rotation direction detected interrupt</t
+ 624:../src/tc/tc.c ****  *     <tr><td>TC_QIER_QERR</td><td>Enable the quadrature error detected on PHA/PHB interrupt</td><
+ 625:../src/tc/tc.c ****  * </table>
+ 626:../src/tc/tc.c ****  */
+ 627:../src/tc/tc.c **** void tc_enable_qdec_interrupt(
+ 628:../src/tc/tc.c **** 		Tc *p_tc,
+ 629:../src/tc/tc.c **** 		uint32_t ul_sources)
+ 630:../src/tc/tc.c **** {
+ 554              		.loc 1 630 0
+ 555              		.cfi_startproc
+ 556              		@ args = 0, pretend = 0, frame = 0
+ 557              		@ frame_needed = 0, uses_anonymous_args = 0
+ 558              		@ link register save eliminated.
+ 559              	.LVL55:
+ 631:../src/tc/tc.c **** 	/* Validate inputs. */
+ 632:../src/tc/tc.c **** 	Assert(p_tc);
+ 633:../src/tc/tc.c **** 	
+ 634:../src/tc/tc.c **** 	p_tc->TC_QIER = ul_sources;
+ 560              		.loc 1 634 0
+ 561 0000 C0F8C810 		str	r1, [r0, #200]
+ 562 0004 7047     		bx	lr
+ 563              		.cfi_endproc
+ 564              	.LFE91:
+ 566 0006 00BF     		.section	.text.tc_disable_qdec_interrupt,"ax",%progbits
+ 567              		.align	2
+ 568              		.global	tc_disable_qdec_interrupt
+ 569              		.thumb
+ 570              		.thumb_func
+ 572              	tc_disable_qdec_interrupt:
+ 573              	.LFB92:
+ 635:../src/tc/tc.c **** }
+ 636:../src/tc/tc.c **** 
+ 637:../src/tc/tc.c **** /**
+ 638:../src/tc/tc.c ****  * \brief Disable TC QDEC interrupts.
+ 639:../src/tc/tc.c ****  *
+ 640:../src/tc/tc.c ****  * \note This function is not available on SAM4L or SAMG devices.
+ 641:../src/tc/tc.c ****  *
+ 642:../src/tc/tc.c ****  * \param[out] p_tc      Module hardware register base address pointer
+ 643:../src/tc/tc.c ****  * \param[in] ul_sources A bitmask of QDEC interrupts to be disabled
+ 644:../src/tc/tc.c ****  *
+ 645:../src/tc/tc.c ****  * Where the input parameter <i>ul_sources</i> can be one or more of the following:
+ 646:../src/tc/tc.c ****  * <table>
+ 647:../src/tc/tc.c ****  * <tr>
+ 648:../src/tc/tc.c ****  *    <th>Parameter Value</th>
+ 649:../src/tc/tc.c ****  *    <th>Description</th>
+ 650:../src/tc/tc.c ****  * </tr>
+ 651:../src/tc/tc.c ****  *     <tr><td>TC_QIDR_IDX</td><td>Disable the rising edge detected on IDX input interrupt</td></tr
+ 652:../src/tc/tc.c ****  *     <tr><td>TC_QIDR_DIRCHG</td><td>Disable the change in rotation direction detected interrupt</
+ 653:../src/tc/tc.c ****  *     <tr><td>TC_QIDR_QERR</td><td>Disable the quadrature error detected on PHA/PHB interrupt</td>
+ 654:../src/tc/tc.c ****  * </table>
+ 655:../src/tc/tc.c ****  */
+ 656:../src/tc/tc.c **** void tc_disable_qdec_interrupt(
+ 657:../src/tc/tc.c **** 		Tc *p_tc,
+ 658:../src/tc/tc.c **** 		uint32_t ul_sources)
+ 659:../src/tc/tc.c **** {
+ 574              		.loc 1 659 0
+ 575              		.cfi_startproc
+ 576              		@ args = 0, pretend = 0, frame = 0
+ 577              		@ frame_needed = 0, uses_anonymous_args = 0
+ 578              		@ link register save eliminated.
+ 579              	.LVL56:
+ 660:../src/tc/tc.c **** 	/* Validate inputs. */
+ 661:../src/tc/tc.c **** 	Assert(p_tc);
+ 662:../src/tc/tc.c **** 	
+ 663:../src/tc/tc.c **** 	p_tc->TC_QIDR = ul_sources;
+ 580              		.loc 1 663 0
+ 581 0000 C0F8CC10 		str	r1, [r0, #204]
+ 582 0004 7047     		bx	lr
+ 583              		.cfi_endproc
+ 584              	.LFE92:
+ 586 0006 00BF     		.section	.text.tc_get_qdec_interrupt_mask,"ax",%progbits
+ 587              		.align	2
+ 588              		.global	tc_get_qdec_interrupt_mask
+ 589              		.thumb
+ 590              		.thumb_func
+ 592              	tc_get_qdec_interrupt_mask:
+ 593              	.LFB93:
+ 664:../src/tc/tc.c **** }
+ 665:../src/tc/tc.c **** 
+ 666:../src/tc/tc.c **** /**
+ 667:../src/tc/tc.c ****  * \brief Read TC QDEC interrupt mask.
+ 668:../src/tc/tc.c ****  *
+ 669:../src/tc/tc.c ****  * \note This function is not available on SAM4L or SAMG devices.
+ 670:../src/tc/tc.c ****  *
+ 671:../src/tc/tc.c ****  * \param[in] p_tc Module hardware register base address pointer
+ 672:../src/tc/tc.c ****  *
+ 673:../src/tc/tc.c ****  * \return The QDEC interrupt mask value.
+ 674:../src/tc/tc.c ****  */
+ 675:../src/tc/tc.c **** uint32_t tc_get_qdec_interrupt_mask(
+ 676:../src/tc/tc.c **** 		Tc *p_tc)
+ 677:../src/tc/tc.c **** {
+ 594              		.loc 1 677 0
+ 595              		.cfi_startproc
+ 596              		@ args = 0, pretend = 0, frame = 0
+ 597              		@ frame_needed = 0, uses_anonymous_args = 0
+ 598              		@ link register save eliminated.
+ 599              	.LVL57:
+ 678:../src/tc/tc.c **** 	/* Validate inputs. */
+ 679:../src/tc/tc.c **** 	Assert(p_tc);
+ 680:../src/tc/tc.c **** 	
+ 681:../src/tc/tc.c **** 	return p_tc->TC_QIMR;
+ 600              		.loc 1 681 0
+ 601 0000 D0F8D000 		ldr	r0, [r0, #208]
+ 602              	.LVL58:
+ 682:../src/tc/tc.c **** }
+ 603              		.loc 1 682 0
+ 604 0004 7047     		bx	lr
+ 605              		.cfi_endproc
+ 606              	.LFE93:
+ 608 0006 00BF     		.section	.text.tc_get_qdec_interrupt_status,"ax",%progbits
+ 609              		.align	2
+ 610              		.global	tc_get_qdec_interrupt_status
+ 611              		.thumb
+ 612              		.thumb_func
+ 614              	tc_get_qdec_interrupt_status:
+ 615              	.LFB94:
+ 683:../src/tc/tc.c **** 
+ 684:../src/tc/tc.c **** /**
+ 685:../src/tc/tc.c ****  * \brief Get current TC QDEC interrupt status.
+ 686:../src/tc/tc.c ****  *
+ 687:../src/tc/tc.c ****  * \note This function is not available on SAM4L or SAMG devices.
+ 688:../src/tc/tc.c ****  *
+ 689:../src/tc/tc.c ****  * \param[in] p_tc Module hardware register base address pointer
+ 690:../src/tc/tc.c ****  *
+ 691:../src/tc/tc.c ****  * \return The TC QDEC interrupt status.
+ 692:../src/tc/tc.c ****  */
+ 693:../src/tc/tc.c **** uint32_t tc_get_qdec_interrupt_status(
+ 694:../src/tc/tc.c **** 		Tc *p_tc)
+ 695:../src/tc/tc.c **** {
+ 616              		.loc 1 695 0
+ 617              		.cfi_startproc
+ 618              		@ args = 0, pretend = 0, frame = 0
+ 619              		@ frame_needed = 0, uses_anonymous_args = 0
+ 620              		@ link register save eliminated.
+ 621              	.LVL59:
+ 696:../src/tc/tc.c **** 	/* Validate inputs. */
+ 697:../src/tc/tc.c **** 	Assert(p_tc);
+ 698:../src/tc/tc.c **** 	
+ 699:../src/tc/tc.c **** 	return p_tc->TC_QISR;
+ 622              		.loc 1 699 0
+ 623 0000 D0F8D400 		ldr	r0, [r0, #212]
+ 624              	.LVL60:
+ 700:../src/tc/tc.c **** }
+ 625              		.loc 1 700 0
+ 626 0004 7047     		bx	lr
+ 627              		.cfi_endproc
+ 628              	.LFE94:
+ 630 0006 00BF     		.section	.text.tc_set_writeprotect,"ax",%progbits
+ 631              		.align	2
+ 632              		.global	tc_set_writeprotect
+ 633              		.thumb
+ 634              		.thumb_func
+ 636              	tc_set_writeprotect:
+ 637              	.LFB95:
+ 701:../src/tc/tc.c **** 
+ 702:../src/tc/tc.c **** #endif /* (!SAM4L && !SAMG) || defined(__DOXYGEN__) */
+ 703:../src/tc/tc.c **** 
+ 704:../src/tc/tc.c **** #if (!SAM3U) || defined(__DOXYGEN__)
+ 705:../src/tc/tc.c **** 
+ 706:../src/tc/tc.c **** /**
+ 707:../src/tc/tc.c ****  * \brief Enable or disable write protection of TC registers.
+ 708:../src/tc/tc.c ****  *
+ 709:../src/tc/tc.c ****  * \note This function is not available on SAM3U devices.
+ 710:../src/tc/tc.c ****  *
+ 711:../src/tc/tc.c ****  * \param[out] p_tc     Module hardware register base address pointer
+ 712:../src/tc/tc.c ****  * \param[in] ul_enable 1 to enable, 0 to disable
+ 713:../src/tc/tc.c ****  */
+ 714:../src/tc/tc.c **** void tc_set_writeprotect(
+ 715:../src/tc/tc.c **** 		Tc *p_tc,
+ 716:../src/tc/tc.c **** 		uint32_t ul_enable)
+ 717:../src/tc/tc.c **** {
+ 638              		.loc 1 717 0
+ 639              		.cfi_startproc
+ 640              		@ args = 0, pretend = 0, frame = 0
+ 641              		@ frame_needed = 0, uses_anonymous_args = 0
+ 642              		@ link register save eliminated.
+ 643              	.LVL61:
+ 718:../src/tc/tc.c **** 	/* Validate inputs. */
+ 719:../src/tc/tc.c **** 	Assert(p_tc);
+ 720:../src/tc/tc.c **** 	
+ 721:../src/tc/tc.c **** 	if (ul_enable) {
+ 644              		.loc 1 721 0
+ 645 0000 19B1     		cbz	r1, .L34
+ 722:../src/tc/tc.c **** 		p_tc->TC_WPMR = TC_WPMR_WPKEY_PASSWD | TC_WPMR_WPEN;
+ 646              		.loc 1 722 0
+ 647 0002 044B     		ldr	r3, .L36
+ 648 0004 C0F8E430 		str	r3, [r0, #228]
+ 649 0008 7047     		bx	lr
+ 650              	.L34:
+ 723:../src/tc/tc.c **** 	} else {
+ 724:../src/tc/tc.c **** 		p_tc->TC_WPMR = TC_WPMR_WPKEY_PASSWD;
+ 651              		.loc 1 724 0
+ 652 000a 034B     		ldr	r3, .L36+4
+ 653 000c C0F8E430 		str	r3, [r0, #228]
+ 654 0010 7047     		bx	lr
+ 655              	.L37:
+ 656 0012 00BF     		.align	2
+ 657              	.L36:
+ 658 0014 014D4954 		.word	1414089985
+ 659 0018 004D4954 		.word	1414089984
+ 660              		.cfi_endproc
+ 661              	.LFE95:
+ 663              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 664              		.align	2
+ 667              	cpu_irq_critical_section_counter:
+ 668 0000 00000000 		.space	4
+ 669              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 672              	cpu_irq_prev_interrupt_state:
+ 673 0000 00       		.space	1
+ 674              		.text
+ 675              	.Letext0:
+ 676              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 677              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 678              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 679              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_tc.h"
+ 680              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 681              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 tc.c
+     /tmp/cc64YuJ8.s:20     .text.tc_init:00000000 $t
+     /tmp/cc64YuJ8.s:25     .text.tc_init:00000000 tc_init
+     /tmp/cc64YuJ8.s:61     .text.tc_sync_trigger:00000000 $t
+     /tmp/cc64YuJ8.s:66     .text.tc_sync_trigger:00000000 tc_sync_trigger
+     /tmp/cc64YuJ8.s:82     .text.tc_set_block_mode:00000000 $t
+     /tmp/cc64YuJ8.s:87     .text.tc_set_block_mode:00000000 tc_set_block_mode
+     /tmp/cc64YuJ8.s:102    .text.tc_init_2bit_gray:00000000 $t
+     /tmp/cc64YuJ8.s:107    .text.tc_init_2bit_gray:00000000 tc_init_2bit_gray
+     /tmp/cc64YuJ8.s:127    .text.tc_start:00000000 $t
+     /tmp/cc64YuJ8.s:132    .text.tc_start:00000000 tc_start
+     /tmp/cc64YuJ8.s:150    .text.tc_stop:00000000 $t
+     /tmp/cc64YuJ8.s:155    .text.tc_stop:00000000 tc_stop
+     /tmp/cc64YuJ8.s:173    .text.tc_read_cv:00000000 $t
+     /tmp/cc64YuJ8.s:178    .text.tc_read_cv:00000000 tc_read_cv
+     /tmp/cc64YuJ8.s:197    .text.tc_read_ra:00000000 $t
+     /tmp/cc64YuJ8.s:202    .text.tc_read_ra:00000000 tc_read_ra
+     /tmp/cc64YuJ8.s:221    .text.tc_read_rb:00000000 $t
+     /tmp/cc64YuJ8.s:226    .text.tc_read_rb:00000000 tc_read_rb
+     /tmp/cc64YuJ8.s:245    .text.tc_read_rc:00000000 $t
+     /tmp/cc64YuJ8.s:250    .text.tc_read_rc:00000000 tc_read_rc
+     /tmp/cc64YuJ8.s:269    .text.tc_write_ra:00000000 $t
+     /tmp/cc64YuJ8.s:274    .text.tc_write_ra:00000000 tc_write_ra
+     /tmp/cc64YuJ8.s:291    .text.tc_write_rb:00000000 $t
+     /tmp/cc64YuJ8.s:296    .text.tc_write_rb:00000000 tc_write_rb
+     /tmp/cc64YuJ8.s:313    .text.tc_write_rc:00000000 $t
+     /tmp/cc64YuJ8.s:318    .text.tc_write_rc:00000000 tc_write_rc
+     /tmp/cc64YuJ8.s:335    .text.tc_enable_interrupt:00000000 $t
+     /tmp/cc64YuJ8.s:340    .text.tc_enable_interrupt:00000000 tc_enable_interrupt
+     /tmp/cc64YuJ8.s:358    .text.tc_disable_interrupt:00000000 $t
+     /tmp/cc64YuJ8.s:363    .text.tc_disable_interrupt:00000000 tc_disable_interrupt
+     /tmp/cc64YuJ8.s:381    .text.tc_get_interrupt_mask:00000000 $t
+     /tmp/cc64YuJ8.s:386    .text.tc_get_interrupt_mask:00000000 tc_get_interrupt_mask
+     /tmp/cc64YuJ8.s:406    .text.tc_get_status:00000000 $t
+     /tmp/cc64YuJ8.s:411    .text.tc_get_status:00000000 tc_get_status
+     /tmp/cc64YuJ8.s:431    .text.tc_find_mck_divisor:00000000 $t
+     /tmp/cc64YuJ8.s:436    .text.tc_find_mck_divisor:00000000 tc_find_mck_divisor
+     /tmp/cc64YuJ8.s:547    .text.tc_enable_qdec_interrupt:00000000 $t
+     /tmp/cc64YuJ8.s:552    .text.tc_enable_qdec_interrupt:00000000 tc_enable_qdec_interrupt
+     /tmp/cc64YuJ8.s:567    .text.tc_disable_qdec_interrupt:00000000 $t
+     /tmp/cc64YuJ8.s:572    .text.tc_disable_qdec_interrupt:00000000 tc_disable_qdec_interrupt
+     /tmp/cc64YuJ8.s:587    .text.tc_get_qdec_interrupt_mask:00000000 $t
+     /tmp/cc64YuJ8.s:592    .text.tc_get_qdec_interrupt_mask:00000000 tc_get_qdec_interrupt_mask
+     /tmp/cc64YuJ8.s:609    .text.tc_get_qdec_interrupt_status:00000000 $t
+     /tmp/cc64YuJ8.s:614    .text.tc_get_qdec_interrupt_status:00000000 tc_get_qdec_interrupt_status
+     /tmp/cc64YuJ8.s:631    .text.tc_set_writeprotect:00000000 $t
+     /tmp/cc64YuJ8.s:636    .text.tc_set_writeprotect:00000000 tc_set_writeprotect
+     /tmp/cc64YuJ8.s:658    .text.tc_set_writeprotect:00000014 $d
+     /tmp/cc64YuJ8.s:664    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/cc64YuJ8.s:667    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/cc64YuJ8.s:672    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/cc64YuJ8.s:673    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.assert.h.11.db24e541f16414db224bf986d21017e2
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4._default_types.h.6.35ee9e747940367bf2a634907d1c2382
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+
+NO UNDEFINED SYMBOLS

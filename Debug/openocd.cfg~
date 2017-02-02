@@ -1,0 +1,9 @@
+ 
+source [find interface/ftdi/olimex-arm-usb-ocd-h.cfg]
+adapter_khz 14000
+transport select jtag
+gdb_flash_program enable
+gdb_memory_map enable
+
+source [find target/at91sam3XXX.cfg]
+

@@ -1,0 +1,718 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"system_sam3s.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.ramfunc,"ax",%progbits
+  20              		.align	2
+  21              		.global	SystemInit
+  22              		.thumb
+  23              		.thumb_func
+  25              	SystemInit:
+  26              	.LFB73:
+  27              		.file 1 "../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c"
+   1:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /**
+   2:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \file
+   3:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+   4:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \brief Provides the low-level initialization functions that called 
+   5:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * on chip startup.
+   6:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+   7:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   8:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+   9:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \asf_license_start
+  10:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  11:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \page License
+  12:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  13:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * Redistribution and use in source and binary forms, with or without
+  14:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * modification, are permitted provided that the following conditions are met:
+  15:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  16:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  17:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *    this list of conditions and the following disclaimer.
+  18:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  19:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  20:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *    this list of conditions and the following disclaimer in the documentation
+  21:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *    and/or other materials provided with the distribution.
+  22:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  23:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  24:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *    from this software without specific prior written permission.
+  25:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  26:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * 4. This software may only be redistributed and used in connection with an
+  27:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *    Atmel microcontroller product.
+  28:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  29:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  30:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  31:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  32:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  33:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  34:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  35:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  36:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  37:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  38:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  39:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  40:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  41:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \asf_license_stop
+  42:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  *
+  43:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  */
+  44:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /*
+  45:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  46:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  */
+  47:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  48:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #include "system_sam3s.h"
+  49:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #include "sam3s.h"
+  50:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  51:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /* @cond 0 */
+  52:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /**INDENT-OFF**/
+  53:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #ifdef __cplusplus
+  54:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** extern "C" {
+  55:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #endif
+  56:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /**INDENT-ON**/
+  57:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /* @endcond */
+  58:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  59:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /* Clock settings (64MHz) */
+  60:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #define SYS_BOARD_OSCOUNT   (CKGR_MOR_MOSCXTST(0x8UL))
+  61:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #define SYS_BOARD_PLLAR     (CKGR_PLLAR_ONE \
+  62:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 							| CKGR_PLLAR_MULA(0x1fUL) \
+  63:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 							| CKGR_PLLAR_PLLACOUNT(0x3fUL) \
+  64:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 							| CKGR_PLLAR_DIVA(0x3UL))
+  65:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #define SYS_BOARD_MCKR      (PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK)
+  66:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  67:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** #define SYS_CKGR_MOR_KEY_VALUE	CKGR_MOR_KEY(0x37UL) /* Key to unlock MOR register */
+  68:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  69:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /* FIXME: should be generated by sock */
+  70:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** uint32_t SystemCoreClock = CHIP_FREQ_MAINCK_RC_4MHZ;
+  71:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  72:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /**
+  73:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * \brief Setup the microcontroller system.
+  74:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * Initialize the System and update the SystemFrequency variable.
+  75:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  */
+  76:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** __no_inline
+  77:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** RAMFUNC
+  78:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** void SystemInit(void)
+  79:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** {
+  28              		.loc 1 79 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  80:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Set FWS according to SYS_BOARD_MCKR configuration */
+  81:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	EFC->EEFC_FMR = EEFC_FMR_FWS(3);
+  33              		.loc 1 81 0
+  34 0000 4FF44072 		mov	r2, #768
+  35 0004 1F4B     		ldr	r3, .L9
+  36 0006 1A60     		str	r2, [r3]
+  82:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  83:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Initialize main oscillator */
+  84:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	if (!(PMC->CKGR_MOR & CKGR_MOR_MOSCSEL)) {
+  37              		.loc 1 84 0
+  38 0008 A3F5C063 		sub	r3, r3, #1536
+  39 000c 1B6A     		ldr	r3, [r3, #32]
+  40 000e 13F0807F 		tst	r3, #16777216
+  41 0012 07D1     		bne	.L2
+  85:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		PMC->CKGR_MOR = SYS_CKGR_MOR_KEY_VALUE | SYS_BOARD_OSCOUNT | 
+  42              		.loc 1 85 0
+  43 0014 1C4A     		ldr	r2, .L9+4
+  44 0016 1D4B     		ldr	r3, .L9+8
+  45 0018 1A62     		str	r2, [r3, #32]
+  46              	.L3:
+  86:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			                     CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN;
+  87:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		while (!(PMC->PMC_SR & PMC_SR_MOSCXTS)) {
+  47              		.loc 1 87 0 discriminator 1
+  48 001a 1C4B     		ldr	r3, .L9+8
+  49 001c 9B6E     		ldr	r3, [r3, #104]
+  50 001e 13F0010F 		tst	r3, #1
+  51 0022 FAD0     		beq	.L3
+  52              	.L2:
+  88:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		}
+  89:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+  90:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  91:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Switch to 3-20MHz Xtal oscillator */
+  92:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	PMC->CKGR_MOR = SYS_CKGR_MOR_KEY_VALUE | SYS_BOARD_OSCOUNT | 
+  53              		.loc 1 92 0
+  54 0024 1A4A     		ldr	r2, .L9+12
+  55 0026 194B     		ldr	r3, .L9+8
+  56 0028 1A62     		str	r2, [r3, #32]
+  57              	.L4:
+  93:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	                           CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN | CKGR_MOR_MOSCSEL;
+  94:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+  95:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	while (!(PMC->PMC_SR & PMC_SR_MOSCSELS)) {
+  58              		.loc 1 95 0 discriminator 1
+  59 002a 184B     		ldr	r3, .L9+8
+  60 002c 9B6E     		ldr	r3, [r3, #104]
+  61 002e 13F4803F 		tst	r3, #65536
+  62 0032 FAD0     		beq	.L4
+  96:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+  97:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		PMC->PMC_MCKR = (PMC->PMC_MCKR & ~(uint32_t)PMC_MCKR_CSS_Msk) | 
+  63              		.loc 1 97 0
+  64 0034 154A     		ldr	r2, .L9+8
+  65 0036 136B     		ldr	r3, [r2, #48]
+  66 0038 23F00303 		bic	r3, r3, #3
+  67 003c 43F00103 		orr	r3, r3, #1
+  68 0040 1363     		str	r3, [r2, #48]
+  69              	.L5:
+  98:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			                    PMC_MCKR_CSS_MAIN_CLK;
+  99:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		while (!(PMC->PMC_SR & PMC_SR_MCKRDY)) {
+  70              		.loc 1 99 0 discriminator 1
+  71 0042 124B     		ldr	r3, .L9+8
+  72 0044 9B6E     		ldr	r3, [r3, #104]
+  73 0046 13F0080F 		tst	r3, #8
+  74 004a FAD0     		beq	.L5
+ 100:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 101:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 102:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Initialize PLLA */
+ 103:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	PMC->CKGR_PLLAR = SYS_BOARD_PLLAR;
+  75              		.loc 1 103 0
+  76 004c 114A     		ldr	r2, .L9+16
+  77 004e 0F4B     		ldr	r3, .L9+8
+  78 0050 9A62     		str	r2, [r3, #40]
+  79              	.L6:
+ 104:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	while (!(PMC->PMC_SR & PMC_SR_LOCKA)) {
+  80              		.loc 1 104 0 discriminator 1
+  81 0052 0E4B     		ldr	r3, .L9+8
+  82 0054 9B6E     		ldr	r3, [r3, #104]
+  83 0056 13F0020F 		tst	r3, #2
+  84 005a FAD0     		beq	.L6
+ 105:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 106:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 107:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Switch to main clock */
+ 108:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	PMC->PMC_MCKR = (SYS_BOARD_MCKR & ~PMC_MCKR_CSS_Msk) | PMC_MCKR_CSS_MAIN_CLK;
+  85              		.loc 1 108 0
+  86 005c 1122     		movs	r2, #17
+  87 005e 0B4B     		ldr	r3, .L9+8
+  88 0060 1A63     		str	r2, [r3, #48]
+  89              	.L7:
+ 109:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	while (!(PMC->PMC_SR & PMC_SR_MCKRDY)) {
+  90              		.loc 1 109 0 discriminator 1
+  91 0062 0A4B     		ldr	r3, .L9+8
+  92 0064 9B6E     		ldr	r3, [r3, #104]
+  93 0066 13F0080F 		tst	r3, #8
+  94 006a FAD0     		beq	.L7
+ 110:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 111:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 112:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Switch to PLLA */
+ 113:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	PMC->PMC_MCKR = SYS_BOARD_MCKR;
+  95              		.loc 1 113 0
+  96 006c 1222     		movs	r2, #18
+  97 006e 074B     		ldr	r3, .L9+8
+  98 0070 1A63     		str	r2, [r3, #48]
+  99              	.L8:
+ 114:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	while (!(PMC->PMC_SR & PMC_SR_MCKRDY)) {
+ 100              		.loc 1 114 0 discriminator 1
+ 101 0072 064B     		ldr	r3, .L9+8
+ 102 0074 9B6E     		ldr	r3, [r3, #104]
+ 103 0076 13F0080F 		tst	r3, #8
+ 104 007a FAD0     		beq	.L8
+ 115:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 116:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 117:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	SystemCoreClock = CHIP_FREQ_CPU_MAX;
+ 105              		.loc 1 117 0
+ 106 007c 064A     		ldr	r2, .L9+20
+ 107 007e 074B     		ldr	r3, .L9+24
+ 108 0080 1A60     		str	r2, [r3]
+ 109 0082 7047     		bx	lr
+ 110              	.L10:
+ 111              		.align	2
+ 112              	.L9:
+ 113 0084 000A0E40 		.word	1074661888
+ 114 0088 09083700 		.word	3606537
+ 115 008c 00040E40 		.word	1074660352
+ 116 0090 09083701 		.word	20383753
+ 117 0094 033F1F20 		.word	538918659
+ 118 0098 0090D003 		.word	64000000
+ 119 009c 00000000 		.word	.LANCHOR0
+ 120              		.cfi_endproc
+ 121              	.LFE73:
+ 123              		.section	.text.SystemCoreClockUpdate,"ax",%progbits
+ 124              		.align	2
+ 125              		.global	SystemCoreClockUpdate
+ 126              		.thumb
+ 127              		.thumb_func
+ 129              	SystemCoreClockUpdate:
+ 130              	.LFB74:
+ 118:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** }
+ 119:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 120:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** void SystemCoreClockUpdate(void)
+ 121:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** {
+ 131              		.loc 1 121 0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		@ link register save eliminated.
+ 122:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Determine clock frequency according to clock register values */
+ 123:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	switch (PMC->PMC_MCKR & (uint32_t) PMC_MCKR_CSS_Msk) {
+ 136              		.loc 1 123 0
+ 137 0000 454B     		ldr	r3, .L28
+ 138 0002 1B6B     		ldr	r3, [r3, #48]
+ 139 0004 03F00303 		and	r3, r3, #3
+ 140 0008 032B     		cmp	r3, #3
+ 141 000a 6ED8     		bhi	.L12
+ 142 000c DFE803F0 		tbb	[pc, r3]
+ 143              	.L14:
+ 144 0010 02       		.byte	(.L13-.L14)/2
+ 145 0011 11       		.byte	(.L15-.L14)/2
+ 146 0012 2E       		.byte	(.L16-.L14)/2
+ 147 0013 2E       		.byte	(.L16-.L14)/2
+ 148              		.p2align 1
+ 149              	.L13:
+ 124:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	case PMC_MCKR_CSS_SLOW_CLK:	/* Slow clock */
+ 125:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		if (SUPC->SUPC_SR & SUPC_SR_OSCSEL) {
+ 150              		.loc 1 125 0
+ 151 0014 414B     		ldr	r3, .L28+4
+ 152 0016 5B69     		ldr	r3, [r3, #20]
+ 153 0018 13F0800F 		tst	r3, #128
+ 154 001c 04D0     		beq	.L17
+ 126:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_XTAL_32K;
+ 155              		.loc 1 126 0
+ 156 001e 4FF40042 		mov	r2, #32768
+ 157 0022 3F4B     		ldr	r3, .L28+8
+ 158 0024 1A60     		str	r2, [r3]
+ 159 0026 60E0     		b	.L12
+ 160              	.L17:
+ 127:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		} else {
+ 128:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_SLCK_RC;
+ 161              		.loc 1 128 0
+ 162 0028 4FF4FA42 		mov	r2, #32000
+ 163 002c 3C4B     		ldr	r3, .L28+8
+ 164 002e 1A60     		str	r2, [r3]
+ 165 0030 5BE0     		b	.L12
+ 166              	.L15:
+ 129:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		}
+ 130:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		break;
+ 131:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	case PMC_MCKR_CSS_MAIN_CLK:	/* Main clock */
+ 132:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		if (PMC->CKGR_MOR & CKGR_MOR_MOSCSEL) {
+ 167              		.loc 1 132 0
+ 168 0032 394B     		ldr	r3, .L28
+ 169 0034 1B6A     		ldr	r3, [r3, #32]
+ 170 0036 13F0807F 		tst	r3, #16777216
+ 171 003a 03D0     		beq	.L18
+ 133:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_XTAL_12M;
+ 172              		.loc 1 133 0
+ 173 003c 394A     		ldr	r2, .L28+12
+ 174 003e 384B     		ldr	r3, .L28+8
+ 175 0040 1A60     		str	r2, [r3]
+ 176 0042 52E0     		b	.L12
+ 177              	.L18:
+ 134:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		} else {
+ 135:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_MAINCK_RC_4MHZ;
+ 178              		.loc 1 135 0
+ 179 0044 384A     		ldr	r2, .L28+16
+ 180 0046 364B     		ldr	r3, .L28+8
+ 181 0048 1A60     		str	r2, [r3]
+ 136:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 137:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			switch (PMC->CKGR_MOR & CKGR_MOR_MOSCRCF_Msk) {
+ 182              		.loc 1 137 0
+ 183 004a 334B     		ldr	r3, .L28
+ 184 004c 1B6A     		ldr	r3, [r3, #32]
+ 185 004e 03F07003 		and	r3, r3, #112
+ 186 0052 102B     		cmp	r3, #16
+ 187 0054 02D0     		beq	.L19
+ 188 0056 202B     		cmp	r3, #32
+ 189 0058 04D0     		beq	.L20
+ 190 005a 46E0     		b	.L12
+ 191              	.L19:
+ 138:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_4_MHz:
+ 139:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 140:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_8_MHz:
+ 141:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				SystemCoreClock *= 2U;
+ 192              		.loc 1 141 0
+ 193 005c 334A     		ldr	r2, .L28+20
+ 194 005e 304B     		ldr	r3, .L28+8
+ 195 0060 1A60     		str	r2, [r3]
+ 142:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 196              		.loc 1 142 0
+ 197 0062 42E0     		b	.L12
+ 198              	.L20:
+ 143:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_12_MHz:
+ 144:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				SystemCoreClock *= 3U;
+ 199              		.loc 1 144 0
+ 200 0064 2F4A     		ldr	r2, .L28+12
+ 201 0066 2E4B     		ldr	r3, .L28+8
+ 202 0068 1A60     		str	r2, [r3]
+ 145:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 203              		.loc 1 145 0
+ 204 006a 3EE0     		b	.L12
+ 205              	.L16:
+ 146:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			default:
+ 147:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 148:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			}
+ 149:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		}
+ 150:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		break;
+ 151:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	case PMC_MCKR_CSS_PLLA_CLK:	/* PLLA clock */
+ 152:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	case PMC_MCKR_CSS_PLLB_CLK:	/* PLLB clock */
+ 153:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		if (PMC->CKGR_MOR & CKGR_MOR_MOSCSEL) {
+ 206              		.loc 1 153 0
+ 207 006c 2A4B     		ldr	r3, .L28
+ 208 006e 1B6A     		ldr	r3, [r3, #32]
+ 209 0070 13F0807F 		tst	r3, #16777216
+ 210 0074 03D0     		beq	.L21
+ 154:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_XTAL_12M;
+ 211              		.loc 1 154 0
+ 212 0076 2B4A     		ldr	r2, .L28+12
+ 213 0078 294B     		ldr	r3, .L28+8
+ 214 007a 1A60     		str	r2, [r3]
+ 215 007c 12E0     		b	.L22
+ 216              	.L21:
+ 155:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		} else {
+ 156:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock = CHIP_FREQ_MAINCK_RC_4MHZ;
+ 217              		.loc 1 156 0
+ 218 007e 2A4A     		ldr	r2, .L28+16
+ 219 0080 274B     		ldr	r3, .L28+8
+ 220 0082 1A60     		str	r2, [r3]
+ 157:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 158:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			switch (PMC->CKGR_MOR & CKGR_MOR_MOSCRCF_Msk) {
+ 221              		.loc 1 158 0
+ 222 0084 244B     		ldr	r3, .L28
+ 223 0086 1B6A     		ldr	r3, [r3, #32]
+ 224 0088 03F07003 		and	r3, r3, #112
+ 225 008c 102B     		cmp	r3, #16
+ 226 008e 02D0     		beq	.L23
+ 227 0090 202B     		cmp	r3, #32
+ 228 0092 04D0     		beq	.L24
+ 229 0094 06E0     		b	.L22
+ 230              	.L23:
+ 159:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_4_MHz:
+ 160:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 161:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_8_MHz:
+ 162:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				SystemCoreClock *= 2U;
+ 231              		.loc 1 162 0
+ 232 0096 254A     		ldr	r2, .L28+20
+ 233 0098 214B     		ldr	r3, .L28+8
+ 234 009a 1A60     		str	r2, [r3]
+ 163:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 235              		.loc 1 163 0
+ 236 009c 02E0     		b	.L22
+ 237              	.L24:
+ 164:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			case CKGR_MOR_MOSCRCF_12_MHz:
+ 165:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				SystemCoreClock *= 3U;
+ 238              		.loc 1 165 0
+ 239 009e 214A     		ldr	r2, .L28+12
+ 240 00a0 1F4B     		ldr	r3, .L28+8
+ 241 00a2 1A60     		str	r2, [r3]
+ 242              	.L22:
+ 166:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 167:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			default:
+ 168:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				break;
+ 169:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			}
+ 170:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		}
+ 171:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		if ((uint32_t) (PMC->PMC_MCKR & (uint32_t) PMC_MCKR_CSS_Msk) == PMC_MCKR_CSS_PLLA_CLK) {
+ 243              		.loc 1 171 0
+ 244 00a4 1C4B     		ldr	r3, .L28
+ 245 00a6 1B6B     		ldr	r3, [r3, #48]
+ 246 00a8 03F00303 		and	r3, r3, #3
+ 247 00ac 022B     		cmp	r3, #2
+ 248 00ae 0ED1     		bne	.L25
+ 172:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock *= ((((PMC->CKGR_PLLAR) & CKGR_PLLAR_MULA_Msk) >> 
+ 249              		.loc 1 172 0
+ 250 00b0 1948     		ldr	r0, .L28
+ 251 00b2 836A     		ldr	r3, [r0, #40]
+ 252 00b4 C3F30A41 		ubfx	r1, r3, #16, #11
+ 253 00b8 194A     		ldr	r2, .L28+8
+ 254 00ba 1368     		ldr	r3, [r2]
+ 255 00bc 01FB0333 		mla	r3, r1, r3, r3
+ 256 00c0 1360     		str	r3, [r2]
+ 173:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				                          CKGR_PLLAR_MULA_Pos) + 1U);
+ 174:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock /= ((((PMC->CKGR_PLLAR) & CKGR_PLLAR_DIVA_Msk) >> 
+ 257              		.loc 1 174 0
+ 258 00c2 816A     		ldr	r1, [r0, #40]
+ 259 00c4 C9B2     		uxtb	r1, r1
+ 260 00c6 B3FBF1F3 		udiv	r3, r3, r1
+ 261 00ca 1360     		str	r3, [r2]
+ 262 00cc 0DE0     		b	.L12
+ 263              	.L25:
+ 175:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				                          CKGR_PLLAR_DIVA_Pos));
+ 176:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		} else {
+ 177:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock *= ((((PMC->CKGR_PLLBR) & CKGR_PLLBR_MULB_Msk) >> 
+ 264              		.loc 1 177 0
+ 265 00ce 1248     		ldr	r0, .L28
+ 266 00d0 C36A     		ldr	r3, [r0, #44]
+ 267 00d2 C3F30A41 		ubfx	r1, r3, #16, #11
+ 268 00d6 124A     		ldr	r2, .L28+8
+ 269 00d8 1368     		ldr	r3, [r2]
+ 270 00da 01FB0333 		mla	r3, r1, r3, r3
+ 271 00de 1360     		str	r3, [r2]
+ 178:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				                           CKGR_PLLBR_MULB_Pos) + 1U);
+ 179:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 			SystemCoreClock /= ((((PMC->CKGR_PLLBR) & CKGR_PLLBR_DIVB_Msk) >> 
+ 272              		.loc 1 179 0
+ 273 00e0 C16A     		ldr	r1, [r0, #44]
+ 274 00e2 C9B2     		uxtb	r1, r1
+ 275 00e4 B3FBF1F3 		udiv	r3, r3, r1
+ 276 00e8 1360     		str	r3, [r2]
+ 277              	.L12:
+ 180:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 				                               CKGR_PLLBR_DIVB_Pos));
+ 181:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		}
+ 182:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		break;
+ 183:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	default:
+ 184:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		break;
+ 185:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 186:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 187:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	if ((PMC->PMC_MCKR & PMC_MCKR_PRES_Msk) == PMC_MCKR_PRES_CLK_3) {
+ 278              		.loc 1 187 0
+ 279 00ea 0B4B     		ldr	r3, .L28
+ 280 00ec 1B6B     		ldr	r3, [r3, #48]
+ 281 00ee 03F07003 		and	r3, r3, #112
+ 282 00f2 702B     		cmp	r3, #112
+ 283 00f4 07D1     		bne	.L26
+ 188:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		SystemCoreClock /= 3U;
+ 284              		.loc 1 188 0
+ 285 00f6 0A4A     		ldr	r2, .L28+8
+ 286 00f8 1368     		ldr	r3, [r2]
+ 287 00fa 0D49     		ldr	r1, .L28+24
+ 288 00fc A1FB0313 		umull	r1, r3, r1, r3
+ 289 0100 5B08     		lsrs	r3, r3, #1
+ 290 0102 1360     		str	r3, [r2]
+ 291 0104 7047     		bx	lr
+ 292              	.L26:
+ 189:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	} else {
+ 190:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		SystemCoreClock >>= ((PMC->PMC_MCKR & PMC_MCKR_PRES_Msk) >> PMC_MCKR_PRES_Pos);
+ 293              		.loc 1 190 0
+ 294 0106 044B     		ldr	r3, .L28
+ 295 0108 1B6B     		ldr	r3, [r3, #48]
+ 296 010a C3F30212 		ubfx	r2, r3, #4, #3
+ 297 010e 0449     		ldr	r1, .L28+8
+ 298 0110 0B68     		ldr	r3, [r1]
+ 299 0112 D340     		lsrs	r3, r3, r2
+ 300 0114 0B60     		str	r3, [r1]
+ 301 0116 7047     		bx	lr
+ 302              	.L29:
+ 303              		.align	2
+ 304              	.L28:
+ 305 0118 00040E40 		.word	1074660352
+ 306 011c 10140E40 		.word	1074664464
+ 307 0120 00000000 		.word	.LANCHOR0
+ 308 0124 001BB700 		.word	12000000
+ 309 0128 00093D00 		.word	4000000
+ 310 012c 00127A00 		.word	8000000
+ 311 0130 ABAAAAAA 		.word	-1431655765
+ 312              		.cfi_endproc
+ 313              	.LFE74:
+ 315              		.section	.ramfunc
+ 316              		.align	2
+ 317              		.global	system_init_flash
+ 318              		.thumb
+ 319              		.thumb_func
+ 321              	system_init_flash:
+ 322              	.LFB75:
+ 191:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	}
+ 192:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** }
+ 193:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 
+ 194:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** /** 
+ 195:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  * Initialize flash.
+ 196:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c ****  */
+ 197:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** __no_inline
+ 198:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** RAMFUNC
+ 199:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** void system_init_flash(uint32_t ul_clk)
+ 200:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** {
+ 323              		.loc 1 200 0
+ 324              		.cfi_startproc
+ 325              		@ args = 0, pretend = 0, frame = 0
+ 326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 327              		@ link register save eliminated.
+ 328              	.LVL0:
+ 201:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	/* Set FWS for embedded Flash access according to operating frequency */
+ 202:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	if (ul_clk < CHIP_FREQ_FWS_0) {
+ 329              		.loc 1 202 0
+ 330 00a0 0D4B     		ldr	r3, .L35
+ 331 00a2 9842     		cmp	r0, r3
+ 332 00a4 03D8     		bhi	.L31
+ 203:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		EFC->EEFC_FMR = EEFC_FMR_FWS(0);
+ 333              		.loc 1 203 0
+ 334 00a6 0022     		movs	r2, #0
+ 335 00a8 0C4B     		ldr	r3, .L35+4
+ 336 00aa 1A60     		str	r2, [r3]
+ 337 00ac 7047     		bx	lr
+ 338              	.L31:
+ 204:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	} else if (ul_clk < CHIP_FREQ_FWS_1) {
+ 339              		.loc 1 204 0
+ 340 00ae 0C4B     		ldr	r3, .L35+8
+ 341 00b0 9842     		cmp	r0, r3
+ 342 00b2 04D8     		bhi	.L33
+ 205:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		EFC->EEFC_FMR = EEFC_FMR_FWS(1);
+ 343              		.loc 1 205 0
+ 344 00b4 4FF48072 		mov	r2, #256
+ 345 00b8 084B     		ldr	r3, .L35+4
+ 346 00ba 1A60     		str	r2, [r3]
+ 347 00bc 7047     		bx	lr
+ 348              	.L33:
+ 206:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	} else if (ul_clk < CHIP_FREQ_FWS_2) {
+ 349              		.loc 1 206 0
+ 350 00be 094B     		ldr	r3, .L35+12
+ 351 00c0 9842     		cmp	r0, r3
+ 352 00c2 04D8     		bhi	.L34
+ 207:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		EFC->EEFC_FMR = EEFC_FMR_FWS(2);
+ 353              		.loc 1 207 0
+ 354 00c4 4FF40072 		mov	r2, #512
+ 355 00c8 044B     		ldr	r3, .L35+4
+ 356 00ca 1A60     		str	r2, [r3]
+ 357 00cc 7047     		bx	lr
+ 358              	.L34:
+ 208:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 	} else {
+ 209:../src/sam/utils/cmsis/sam3s/source/templates/system_sam3s.c **** 		EFC->EEFC_FMR = EEFC_FMR_FWS(3);
+ 359              		.loc 1 209 0
+ 360 00ce 4FF44072 		mov	r2, #768
+ 361 00d2 024B     		ldr	r3, .L35+4
+ 362 00d4 1A60     		str	r2, [r3]
+ 363 00d6 7047     		bx	lr
+ 364              	.L36:
+ 365              		.align	2
+ 366              	.L35:
+ 367 00d8 3F660301 		.word	16999999
+ 368 00dc 000A0E40 		.word	1074661888
+ 369 00e0 7FC3C901 		.word	29999999
+ 370 00e4 7FF93703 		.word	53999999
+ 371              		.cfi_endproc
+ 372              	.LFE75:
+ 374              		.global	SystemCoreClock
+ 375              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 376              		.align	2
+ 379              	cpu_irq_critical_section_counter:
+ 380 0000 00000000 		.space	4
+ 381              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 384              	cpu_irq_prev_interrupt_state:
+ 385 0000 00       		.space	1
+ 386              		.section	.data.SystemCoreClock,"aw",%progbits
+ 387              		.align	2
+ 388              		.set	.LANCHOR0,. + 0
+ 391              	SystemCoreClock:
+ 392 0000 00093D00 		.word	4000000
+ 393              		.text
+ 394              	.Letext0:
+ 395              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 396              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 397              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 398              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_efc.h"
+ 399              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pmc.h"
+ 400              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_supc.h"
+ 401              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 402              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 system_sam3s.c
+     /tmp/ccwdcaOb.s:20     .ramfunc:00000000 $t
+     /tmp/ccwdcaOb.s:25     .ramfunc:00000000 SystemInit
+     /tmp/ccwdcaOb.s:113    .ramfunc:00000084 $d
+     /tmp/ccwdcaOb.s:124    .text.SystemCoreClockUpdate:00000000 $t
+     /tmp/ccwdcaOb.s:129    .text.SystemCoreClockUpdate:00000000 SystemCoreClockUpdate
+     /tmp/ccwdcaOb.s:144    .text.SystemCoreClockUpdate:00000010 $d
+     /tmp/ccwdcaOb.s:148    .text.SystemCoreClockUpdate:00000014 $t
+     /tmp/ccwdcaOb.s:305    .text.SystemCoreClockUpdate:00000118 $d
+     /tmp/ccwdcaOb.s:316    .ramfunc:000000a0 $t
+     /tmp/ccwdcaOb.s:321    .ramfunc:000000a0 system_init_flash
+     /tmp/ccwdcaOb.s:367    .ramfunc:000000d8 $d
+     /tmp/ccwdcaOb.s:391    .data.SystemCoreClock:00000000 SystemCoreClock
+     /tmp/ccwdcaOb.s:376    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccwdcaOb.s:379    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccwdcaOb.s:384    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccwdcaOb.s:385    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccwdcaOb.s:387    .data.SystemCoreClock:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.sam3s4b.h.46.80dd3d8d0ef17774332fb96e32fe70c8
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.87.7318b5cea98f92eae635f227bdfd3e60
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+
+NO UNDEFINED SYMBOLS

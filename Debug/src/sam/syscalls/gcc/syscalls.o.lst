@@ -1,0 +1,454 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"syscalls.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._sbrk,"ax",%progbits
+  20              		.align	2
+  21              		.global	_sbrk
+  22              		.thumb
+  23              		.thumb_func
+  25              	_sbrk:
+  26              	.LFB0:
+  27              		.file 1 "../src/sam/syscalls/gcc/syscalls.c"
+   1:../src/sam/syscalls/gcc/syscalls.c **** /**
+   2:../src/sam/syscalls/gcc/syscalls.c ****  * \file
+   3:../src/sam/syscalls/gcc/syscalls.c ****  *
+   4:../src/sam/syscalls/gcc/syscalls.c ****  * \brief Syscalls for SAM (GCC).
+   5:../src/sam/syscalls/gcc/syscalls.c ****  *
+   6:../src/sam/syscalls/gcc/syscalls.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:../src/sam/syscalls/gcc/syscalls.c ****  *
+   8:../src/sam/syscalls/gcc/syscalls.c ****  * \asf_license_start
+   9:../src/sam/syscalls/gcc/syscalls.c ****  *
+  10:../src/sam/syscalls/gcc/syscalls.c ****  * \page License
+  11:../src/sam/syscalls/gcc/syscalls.c ****  *
+  12:../src/sam/syscalls/gcc/syscalls.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/sam/syscalls/gcc/syscalls.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/sam/syscalls/gcc/syscalls.c ****  *
+  15:../src/sam/syscalls/gcc/syscalls.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/sam/syscalls/gcc/syscalls.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/sam/syscalls/gcc/syscalls.c ****  *
+  18:../src/sam/syscalls/gcc/syscalls.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/sam/syscalls/gcc/syscalls.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/sam/syscalls/gcc/syscalls.c ****  *    and/or other materials provided with the distribution.
+  21:../src/sam/syscalls/gcc/syscalls.c ****  *
+  22:../src/sam/syscalls/gcc/syscalls.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/sam/syscalls/gcc/syscalls.c ****  *    from this software without specific prior written permission.
+  24:../src/sam/syscalls/gcc/syscalls.c ****  *
+  25:../src/sam/syscalls/gcc/syscalls.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/sam/syscalls/gcc/syscalls.c ****  *    Atmel microcontroller product.
+  27:../src/sam/syscalls/gcc/syscalls.c ****  *
+  28:../src/sam/syscalls/gcc/syscalls.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/sam/syscalls/gcc/syscalls.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/sam/syscalls/gcc/syscalls.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/sam/syscalls/gcc/syscalls.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/sam/syscalls/gcc/syscalls.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/sam/syscalls/gcc/syscalls.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/sam/syscalls/gcc/syscalls.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/sam/syscalls/gcc/syscalls.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/sam/syscalls/gcc/syscalls.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/sam/syscalls/gcc/syscalls.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/sam/syscalls/gcc/syscalls.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/sam/syscalls/gcc/syscalls.c ****  *
+  40:../src/sam/syscalls/gcc/syscalls.c ****  * \asf_license_stop
+  41:../src/sam/syscalls/gcc/syscalls.c ****  *
+  42:../src/sam/syscalls/gcc/syscalls.c ****  */
+  43:../src/sam/syscalls/gcc/syscalls.c **** /*
+  44:../src/sam/syscalls/gcc/syscalls.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/sam/syscalls/gcc/syscalls.c ****  */
+  46:../src/sam/syscalls/gcc/syscalls.c **** 
+  47:../src/sam/syscalls/gcc/syscalls.c **** #include <stdio.h>
+  48:../src/sam/syscalls/gcc/syscalls.c **** #include <stdarg.h>
+  49:../src/sam/syscalls/gcc/syscalls.c **** #include <sys/types.h>
+  50:../src/sam/syscalls/gcc/syscalls.c **** #include <sys/stat.h>
+  51:../src/sam/syscalls/gcc/syscalls.c **** 
+  52:../src/sam/syscalls/gcc/syscalls.c **** /// @cond 0
+  53:../src/sam/syscalls/gcc/syscalls.c **** /**INDENT-OFF**/
+  54:../src/sam/syscalls/gcc/syscalls.c **** #ifdef __cplusplus
+  55:../src/sam/syscalls/gcc/syscalls.c **** extern "C" {
+  56:../src/sam/syscalls/gcc/syscalls.c **** #endif
+  57:../src/sam/syscalls/gcc/syscalls.c **** /**INDENT-ON**/
+  58:../src/sam/syscalls/gcc/syscalls.c **** /// @endcond
+  59:../src/sam/syscalls/gcc/syscalls.c **** 
+  60:../src/sam/syscalls/gcc/syscalls.c **** #undef errno
+  61:../src/sam/syscalls/gcc/syscalls.c **** extern int errno;
+  62:../src/sam/syscalls/gcc/syscalls.c **** extern int _end;
+  63:../src/sam/syscalls/gcc/syscalls.c **** extern int __ram_end__;
+  64:../src/sam/syscalls/gcc/syscalls.c **** 
+  65:../src/sam/syscalls/gcc/syscalls.c **** extern caddr_t _sbrk(int incr);
+  66:../src/sam/syscalls/gcc/syscalls.c **** extern int link(char *old, char *new);
+  67:../src/sam/syscalls/gcc/syscalls.c **** extern int _close(int file);
+  68:../src/sam/syscalls/gcc/syscalls.c **** extern int _fstat(int file, struct stat *st);
+  69:../src/sam/syscalls/gcc/syscalls.c **** extern int _isatty(int file);
+  70:../src/sam/syscalls/gcc/syscalls.c **** extern int _lseek(int file, int ptr, int dir);
+  71:../src/sam/syscalls/gcc/syscalls.c **** extern void _exit(int status);
+  72:../src/sam/syscalls/gcc/syscalls.c **** extern void _kill(int pid, int sig);
+  73:../src/sam/syscalls/gcc/syscalls.c **** extern int _getpid(void);
+  74:../src/sam/syscalls/gcc/syscalls.c **** 
+  75:../src/sam/syscalls/gcc/syscalls.c **** extern caddr_t _sbrk(int incr)
+  76:../src/sam/syscalls/gcc/syscalls.c **** {
+  28              		.loc 1 76 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  77:../src/sam/syscalls/gcc/syscalls.c **** 	static unsigned char *heap = NULL;
+  78:../src/sam/syscalls/gcc/syscalls.c **** 	unsigned char *prev_heap;
+  79:../src/sam/syscalls/gcc/syscalls.c **** 	int ramend = (int)&__ram_end__;
+  80:../src/sam/syscalls/gcc/syscalls.c **** 
+  81:../src/sam/syscalls/gcc/syscalls.c **** 	if (heap == NULL) {
+  34              		.loc 1 81 0
+  35 0000 094B     		ldr	r3, .L5
+  36 0002 1B68     		ldr	r3, [r3]
+  37 0004 13B9     		cbnz	r3, .L2
+  82:../src/sam/syscalls/gcc/syscalls.c **** 		heap = (unsigned char *)&_end;
+  38              		.loc 1 82 0
+  39 0006 094A     		ldr	r2, .L5+4
+  40 0008 074B     		ldr	r3, .L5
+  41 000a 1A60     		str	r2, [r3]
+  42              	.L2:
+  83:../src/sam/syscalls/gcc/syscalls.c **** 	}
+  84:../src/sam/syscalls/gcc/syscalls.c **** 	prev_heap = heap;
+  43              		.loc 1 84 0
+  44 000c 064B     		ldr	r3, .L5
+  45 000e 1B68     		ldr	r3, [r3]
+  46              	.LVL1:
+  85:../src/sam/syscalls/gcc/syscalls.c **** 
+  86:../src/sam/syscalls/gcc/syscalls.c **** 	if (((int)prev_heap + incr) > ramend) {
+  47              		.loc 1 86 0
+  48 0010 1A18     		adds	r2, r3, r0
+  49 0012 0749     		ldr	r1, .L5+8
+  50 0014 9142     		cmp	r1, r2
+  51 0016 04DB     		blt	.L4
+  87:../src/sam/syscalls/gcc/syscalls.c **** 		return (caddr_t) -1;	
+  88:../src/sam/syscalls/gcc/syscalls.c **** 	}
+  89:../src/sam/syscalls/gcc/syscalls.c **** 
+  90:../src/sam/syscalls/gcc/syscalls.c **** 	heap += incr;
+  52              		.loc 1 90 0
+  53 0018 1046     		mov	r0, r2
+  54              	.LVL2:
+  55 001a 034A     		ldr	r2, .L5
+  56 001c 1060     		str	r0, [r2]
+  91:../src/sam/syscalls/gcc/syscalls.c **** 
+  92:../src/sam/syscalls/gcc/syscalls.c **** 	return (caddr_t) prev_heap;
+  57              		.loc 1 92 0
+  58 001e 1846     		mov	r0, r3
+  59 0020 7047     		bx	lr
+  60              	.LVL3:
+  61              	.L4:
+  87:../src/sam/syscalls/gcc/syscalls.c **** 		return (caddr_t) -1;	
+  62              		.loc 1 87 0
+  63 0022 4FF0FF30 		mov	r0, #-1
+  64              	.LVL4:
+  93:../src/sam/syscalls/gcc/syscalls.c **** }
+  65              		.loc 1 93 0
+  66 0026 7047     		bx	lr
+  67              	.L6:
+  68              		.align	2
+  69              	.L5:
+  70 0028 00000000 		.word	.LANCHOR0
+  71 002c 00000000 		.word	_end
+  72 0030 00000000 		.word	__ram_end__
+  73              		.cfi_endproc
+  74              	.LFE0:
+  76              		.section	.text.link,"ax",%progbits
+  77              		.align	2
+  78              		.global	link
+  79              		.thumb
+  80              		.thumb_func
+  82              	link:
+  83              	.LFB1:
+  94:../src/sam/syscalls/gcc/syscalls.c **** 
+  95:../src/sam/syscalls/gcc/syscalls.c **** extern int link(char *old, char *new)
+  96:../src/sam/syscalls/gcc/syscalls.c **** {
+  84              		.loc 1 96 0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 0
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+  88              		@ link register save eliminated.
+  89              	.LVL5:
+  97:../src/sam/syscalls/gcc/syscalls.c **** 	return -1;
+  98:../src/sam/syscalls/gcc/syscalls.c **** }
+  90              		.loc 1 98 0
+  91 0000 4FF0FF30 		mov	r0, #-1
+  92              	.LVL6:
+  93 0004 7047     		bx	lr
+  94              		.cfi_endproc
+  95              	.LFE1:
+  97 0006 00BF     		.section	.text._close,"ax",%progbits
+  98              		.align	2
+  99              		.global	_close
+ 100              		.thumb
+ 101              		.thumb_func
+ 103              	_close:
+ 104              	.LFB2:
+  99:../src/sam/syscalls/gcc/syscalls.c **** 
+ 100:../src/sam/syscalls/gcc/syscalls.c **** extern int _close(int file)
+ 101:../src/sam/syscalls/gcc/syscalls.c **** {
+ 105              		.loc 1 101 0
+ 106              		.cfi_startproc
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109              		@ link register save eliminated.
+ 110              	.LVL7:
+ 102:../src/sam/syscalls/gcc/syscalls.c **** 	return -1;
+ 103:../src/sam/syscalls/gcc/syscalls.c **** }
+ 111              		.loc 1 103 0
+ 112 0000 4FF0FF30 		mov	r0, #-1
+ 113              	.LVL8:
+ 114 0004 7047     		bx	lr
+ 115              		.cfi_endproc
+ 116              	.LFE2:
+ 118 0006 00BF     		.section	.text._fstat,"ax",%progbits
+ 119              		.align	2
+ 120              		.global	_fstat
+ 121              		.thumb
+ 122              		.thumb_func
+ 124              	_fstat:
+ 125              	.LFB3:
+ 104:../src/sam/syscalls/gcc/syscalls.c **** 
+ 105:../src/sam/syscalls/gcc/syscalls.c **** extern int _fstat(int file, struct stat *st)
+ 106:../src/sam/syscalls/gcc/syscalls.c **** {
+ 126              		.loc 1 106 0
+ 127              		.cfi_startproc
+ 128              		@ args = 0, pretend = 0, frame = 0
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              		@ link register save eliminated.
+ 131              	.LVL9:
+ 107:../src/sam/syscalls/gcc/syscalls.c **** 	st->st_mode = S_IFCHR;
+ 132              		.loc 1 107 0
+ 133 0000 4FF40053 		mov	r3, #8192
+ 134 0004 4B60     		str	r3, [r1, #4]
+ 108:../src/sam/syscalls/gcc/syscalls.c **** 
+ 109:../src/sam/syscalls/gcc/syscalls.c **** 	return 0;
+ 110:../src/sam/syscalls/gcc/syscalls.c **** }
+ 135              		.loc 1 110 0
+ 136 0006 0020     		movs	r0, #0
+ 137              	.LVL10:
+ 138 0008 7047     		bx	lr
+ 139              		.cfi_endproc
+ 140              	.LFE3:
+ 142              		.section	.text._isatty,"ax",%progbits
+ 143              		.align	2
+ 144              		.global	_isatty
+ 145              		.thumb
+ 146              		.thumb_func
+ 148              	_isatty:
+ 149              	.LFB4:
+ 111:../src/sam/syscalls/gcc/syscalls.c **** 
+ 112:../src/sam/syscalls/gcc/syscalls.c **** extern int _isatty(int file)
+ 113:../src/sam/syscalls/gcc/syscalls.c **** {
+ 150              		.loc 1 113 0
+ 151              		.cfi_startproc
+ 152              		@ args = 0, pretend = 0, frame = 0
+ 153              		@ frame_needed = 0, uses_anonymous_args = 0
+ 154              		@ link register save eliminated.
+ 155              	.LVL11:
+ 114:../src/sam/syscalls/gcc/syscalls.c **** 	return 1;
+ 115:../src/sam/syscalls/gcc/syscalls.c **** }
+ 156              		.loc 1 115 0
+ 157 0000 0120     		movs	r0, #1
+ 158              	.LVL12:
+ 159 0002 7047     		bx	lr
+ 160              		.cfi_endproc
+ 161              	.LFE4:
+ 163              		.section	.text._lseek,"ax",%progbits
+ 164              		.align	2
+ 165              		.global	_lseek
+ 166              		.thumb
+ 167              		.thumb_func
+ 169              	_lseek:
+ 170              	.LFB5:
+ 116:../src/sam/syscalls/gcc/syscalls.c **** 
+ 117:../src/sam/syscalls/gcc/syscalls.c **** extern int _lseek(int file, int ptr, int dir)
+ 118:../src/sam/syscalls/gcc/syscalls.c **** {
+ 171              		.loc 1 118 0
+ 172              		.cfi_startproc
+ 173              		@ args = 0, pretend = 0, frame = 0
+ 174              		@ frame_needed = 0, uses_anonymous_args = 0
+ 175              		@ link register save eliminated.
+ 176              	.LVL13:
+ 119:../src/sam/syscalls/gcc/syscalls.c **** 	return 0;
+ 120:../src/sam/syscalls/gcc/syscalls.c **** }
+ 177              		.loc 1 120 0
+ 178 0000 0020     		movs	r0, #0
+ 179              	.LVL14:
+ 180 0002 7047     		bx	lr
+ 181              		.cfi_endproc
+ 182              	.LFE5:
+ 184              		.section	.text._exit,"ax",%progbits
+ 185              		.align	2
+ 186              		.global	_exit
+ 187              		.thumb
+ 188              		.thumb_func
+ 190              	_exit:
+ 191              	.LFB6:
+ 121:../src/sam/syscalls/gcc/syscalls.c **** 
+ 122:../src/sam/syscalls/gcc/syscalls.c **** extern void _exit(int status)
+ 123:../src/sam/syscalls/gcc/syscalls.c **** {
+ 192              		.loc 1 123 0
+ 193              		.cfi_startproc
+ 194              		@ Volatile: function does not return.
+ 195              		@ args = 0, pretend = 0, frame = 0
+ 196              		@ frame_needed = 0, uses_anonymous_args = 0
+ 197              	.LVL15:
+ 198 0000 08B5     		push	{r3, lr}
+ 199              		.cfi_def_cfa_offset 8
+ 200              		.cfi_offset 3, -8
+ 201              		.cfi_offset 14, -4
+ 124:../src/sam/syscalls/gcc/syscalls.c **** 	printf("Exiting with status %d.\n", status);
+ 202              		.loc 1 124 0
+ 203 0002 0146     		mov	r1, r0
+ 204 0004 0148     		ldr	r0, .L15
+ 205              	.LVL16:
+ 206 0006 FFF7FEFF 		bl	iprintf
+ 207              	.LVL17:
+ 208              	.L13:
+ 209 000a FEE7     		b	.L13
+ 210              	.L16:
+ 211              		.align	2
+ 212              	.L15:
+ 213 000c 00000000 		.word	.LC0
+ 214              		.cfi_endproc
+ 215              	.LFE6:
+ 217              		.section	.text._kill,"ax",%progbits
+ 218              		.align	2
+ 219              		.global	_kill
+ 220              		.thumb
+ 221              		.thumb_func
+ 223              	_kill:
+ 224              	.LFB7:
+ 125:../src/sam/syscalls/gcc/syscalls.c **** 
+ 126:../src/sam/syscalls/gcc/syscalls.c **** 	for (;;);
+ 127:../src/sam/syscalls/gcc/syscalls.c **** }
+ 128:../src/sam/syscalls/gcc/syscalls.c **** 
+ 129:../src/sam/syscalls/gcc/syscalls.c **** extern void _kill(int pid, int sig)
+ 130:../src/sam/syscalls/gcc/syscalls.c **** {
+ 225              		.loc 1 130 0
+ 226              		.cfi_startproc
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 229              		@ link register save eliminated.
+ 230              	.LVL18:
+ 231 0000 7047     		bx	lr
+ 232              		.cfi_endproc
+ 233              	.LFE7:
+ 235 0002 00BF     		.section	.text._getpid,"ax",%progbits
+ 236              		.align	2
+ 237              		.global	_getpid
+ 238              		.thumb
+ 239              		.thumb_func
+ 241              	_getpid:
+ 242              	.LFB8:
+ 131:../src/sam/syscalls/gcc/syscalls.c **** 	return;
+ 132:../src/sam/syscalls/gcc/syscalls.c **** }
+ 133:../src/sam/syscalls/gcc/syscalls.c **** 
+ 134:../src/sam/syscalls/gcc/syscalls.c **** extern int _getpid(void)
+ 135:../src/sam/syscalls/gcc/syscalls.c **** {
+ 243              		.loc 1 135 0
+ 244              		.cfi_startproc
+ 245              		@ args = 0, pretend = 0, frame = 0
+ 246              		@ frame_needed = 0, uses_anonymous_args = 0
+ 247              		@ link register save eliminated.
+ 136:../src/sam/syscalls/gcc/syscalls.c **** 	return -1;
+ 137:../src/sam/syscalls/gcc/syscalls.c **** }
+ 248              		.loc 1 137 0
+ 249 0000 4FF0FF30 		mov	r0, #-1
+ 250 0004 7047     		bx	lr
+ 251              		.cfi_endproc
+ 252              	.LFE8:
+ 254 0006 00BF     		.section	.bss.heap.5322,"aw",%nobits
+ 255              		.align	2
+ 256              		.set	.LANCHOR0,. + 0
+ 259              	heap.5322:
+ 260 0000 00000000 		.space	4
+ 261              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 262              		.align	2
+ 263              	.LC0:
+ 264 0000 45786974 		.ascii	"Exiting with status %d.\012\000"
+ 264      696E6720 
+ 264      77697468 
+ 264      20737461 
+ 264      74757320 
+ 265              		.text
+ 266              	.Letext0:
+ 267              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_types.h"
+ 268              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_timeval.h"
+ 269              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/types.h"
+ 270              		.file 5 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/stat.h"
+ 271              		.file 6 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/stdio.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 syscalls.c
+     /tmp/ccJzq2ps.s:20     .text._sbrk:00000000 $t
+     /tmp/ccJzq2ps.s:25     .text._sbrk:00000000 _sbrk
+     /tmp/ccJzq2ps.s:70     .text._sbrk:00000028 $d
+     /tmp/ccJzq2ps.s:77     .text.link:00000000 $t
+     /tmp/ccJzq2ps.s:82     .text.link:00000000 link
+     /tmp/ccJzq2ps.s:98     .text._close:00000000 $t
+     /tmp/ccJzq2ps.s:103    .text._close:00000000 _close
+     /tmp/ccJzq2ps.s:119    .text._fstat:00000000 $t
+     /tmp/ccJzq2ps.s:124    .text._fstat:00000000 _fstat
+     /tmp/ccJzq2ps.s:143    .text._isatty:00000000 $t
+     /tmp/ccJzq2ps.s:148    .text._isatty:00000000 _isatty
+     /tmp/ccJzq2ps.s:164    .text._lseek:00000000 $t
+     /tmp/ccJzq2ps.s:169    .text._lseek:00000000 _lseek
+     /tmp/ccJzq2ps.s:185    .text._exit:00000000 $t
+     /tmp/ccJzq2ps.s:190    .text._exit:00000000 _exit
+     /tmp/ccJzq2ps.s:213    .text._exit:0000000c $d
+     /tmp/ccJzq2ps.s:218    .text._kill:00000000 $t
+     /tmp/ccJzq2ps.s:223    .text._kill:00000000 _kill
+     /tmp/ccJzq2ps.s:236    .text._getpid:00000000 $t
+     /tmp/ccJzq2ps.s:241    .text._getpid:00000000 _getpid
+     /tmp/ccJzq2ps.s:255    .bss.heap.5322:00000000 $d
+     /tmp/ccJzq2ps.s:259    .bss.heap.5322:00000000 heap.5322
+     /tmp/ccJzq2ps.s:262    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.35ee9e747940367bf2a634907d1c2382
+                           .group:00000000 wm4.stddef.h.187.2ff233552538c6ff9b8575ca8ea52cb3
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stddef.h.39.ec95e8feac892e292b69dc7ae75b0d64
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdarg.h.31.48e922dd0aaedfb616aafd8a7b7a4949
+                           .group:00000000 wm4.time.h.8.2930fe070f4a8096b07db9159698c8e3
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.24.5725fd05d3ef142ac6de6c387107641f
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+
+UNDEFINED SYMBOLS
+_end
+__ram_end__
+iprintf

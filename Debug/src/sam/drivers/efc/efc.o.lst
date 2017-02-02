@@ -1,0 +1,2225 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"efc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.efc_get_flash_access_mode,"ax",%progbits
+  20              		.align	2
+  21              		.global	efc_get_flash_access_mode
+  22              		.thumb
+  23              		.thumb_func
+  25              	efc_get_flash_access_mode:
+  26              	.LFB77:
+  27              		.file 1 "../src/sam/drivers/efc/efc.c"
+   1:../src/sam/drivers/efc/efc.c **** /**
+   2:../src/sam/drivers/efc/efc.c ****  * \file
+   3:../src/sam/drivers/efc/efc.c ****  *
+   4:../src/sam/drivers/efc/efc.c ****  * \brief Enhanced Embedded Flash Controller (EEFC) driver for SAM.
+   5:../src/sam/drivers/efc/efc.c ****  *
+   6:../src/sam/drivers/efc/efc.c ****  * Copyright (c) 2011-2016 Atmel Corporation. All rights reserved.
+   7:../src/sam/drivers/efc/efc.c ****  *
+   8:../src/sam/drivers/efc/efc.c ****  * \asf_license_start
+   9:../src/sam/drivers/efc/efc.c ****  *
+  10:../src/sam/drivers/efc/efc.c ****  * \page License
+  11:../src/sam/drivers/efc/efc.c ****  *
+  12:../src/sam/drivers/efc/efc.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/sam/drivers/efc/efc.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/sam/drivers/efc/efc.c ****  *
+  15:../src/sam/drivers/efc/efc.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/sam/drivers/efc/efc.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/sam/drivers/efc/efc.c ****  *
+  18:../src/sam/drivers/efc/efc.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/sam/drivers/efc/efc.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/sam/drivers/efc/efc.c ****  *    and/or other materials provided with the distribution.
+  21:../src/sam/drivers/efc/efc.c ****  *
+  22:../src/sam/drivers/efc/efc.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/sam/drivers/efc/efc.c ****  *    from this software without specific prior written permission.
+  24:../src/sam/drivers/efc/efc.c ****  *
+  25:../src/sam/drivers/efc/efc.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/sam/drivers/efc/efc.c ****  *    Atmel microcontroller product.
+  27:../src/sam/drivers/efc/efc.c ****  *
+  28:../src/sam/drivers/efc/efc.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/sam/drivers/efc/efc.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/sam/drivers/efc/efc.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/sam/drivers/efc/efc.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/sam/drivers/efc/efc.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/sam/drivers/efc/efc.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/sam/drivers/efc/efc.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/sam/drivers/efc/efc.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/sam/drivers/efc/efc.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/sam/drivers/efc/efc.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/sam/drivers/efc/efc.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/sam/drivers/efc/efc.c ****  *
+  40:../src/sam/drivers/efc/efc.c ****  * \asf_license_stop
+  41:../src/sam/drivers/efc/efc.c ****  *
+  42:../src/sam/drivers/efc/efc.c ****  */
+  43:../src/sam/drivers/efc/efc.c **** /*
+  44:../src/sam/drivers/efc/efc.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/sam/drivers/efc/efc.c ****  */
+  46:../src/sam/drivers/efc/efc.c **** 
+  47:../src/sam/drivers/efc/efc.c **** #include "efc.h"
+  48:../src/sam/drivers/efc/efc.c **** 
+  49:../src/sam/drivers/efc/efc.c **** /// @cond 0
+  50:../src/sam/drivers/efc/efc.c **** /**INDENT-OFF**/
+  51:../src/sam/drivers/efc/efc.c **** #ifdef __cplusplus
+  52:../src/sam/drivers/efc/efc.c **** extern "C" {
+  53:../src/sam/drivers/efc/efc.c **** #endif
+  54:../src/sam/drivers/efc/efc.c **** /**INDENT-ON**/
+  55:../src/sam/drivers/efc/efc.c **** /// @endcond
+  56:../src/sam/drivers/efc/efc.c **** 
+  57:../src/sam/drivers/efc/efc.c **** /**
+  58:../src/sam/drivers/efc/efc.c ****  * \defgroup sam_drivers_efc_group Enhanced Embedded Flash Controller (EEFC)
+  59:../src/sam/drivers/efc/efc.c ****  *
+  60:../src/sam/drivers/efc/efc.c ****  * The Enhanced Embedded Flash Controller ensures the interface of the Flash
+  61:../src/sam/drivers/efc/efc.c ****  * block with the 32-bit internal bus.
+  62:../src/sam/drivers/efc/efc.c ****  *
+  63:../src/sam/drivers/efc/efc.c ****  * @{
+  64:../src/sam/drivers/efc/efc.c ****  */
+  65:../src/sam/drivers/efc/efc.c **** 
+  66:../src/sam/drivers/efc/efc.c **** /* Address definition for read operation */
+  67:../src/sam/drivers/efc/efc.c **** #if (SAM3XA || SAM3U4 || SAM4SD16 || SAM4SD32)
+  68:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR0    IFLASH0_ADDR
+  69:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR1    IFLASH1_ADDR
+  70:../src/sam/drivers/efc/efc.c **** #elif (SAM3S || SAM3N || SAM4E || SAM4N || SAMG || SAMV71 || SAMV70 || SAMS70 || SAME70)
+  71:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR     IFLASH_ADDR
+  72:../src/sam/drivers/efc/efc.c **** #elif (SAM4C || SAM4CP || SAM4CM)
+  73:../src/sam/drivers/efc/efc.c **** #if (SAM4C32 || SAM4CMS32 || SAM4CMP32)
+  74:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR0    IFLASH0_CNC_ADDR
+  75:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR1    IFLASH1_CNC_ADDR
+  76:../src/sam/drivers/efc/efc.c **** #else
+  77:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR     IFLASH_CNC_ADDR
+  78:../src/sam/drivers/efc/efc.c **** #endif
+  79:../src/sam/drivers/efc/efc.c **** #elif (SAM3U || SAM4S)
+  80:../src/sam/drivers/efc/efc.c **** # define READ_BUFF_ADDR     IFLASH0_ADDR
+  81:../src/sam/drivers/efc/efc.c **** #else
+  82:../src/sam/drivers/efc/efc.c **** # warning Only reading unique ID for sam3/4 is implemented.
+  83:../src/sam/drivers/efc/efc.c **** #endif
+  84:../src/sam/drivers/efc/efc.c **** 
+  85:../src/sam/drivers/efc/efc.c **** /* Flash Writing Protection Key */
+  86:../src/sam/drivers/efc/efc.c **** #define FWP_KEY    0x5Au
+  87:../src/sam/drivers/efc/efc.c **** 
+  88:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM)
+  89:../src/sam/drivers/efc/efc.c **** #define EEFC_FCR_FCMD(value) \
+  90:../src/sam/drivers/efc/efc.c **** 	((EEFC_FCR_FCMD_Msk & ((value) << EEFC_FCR_FCMD_Pos)))
+  91:../src/sam/drivers/efc/efc.c **** #define EEFC_ERROR_FLAGS  (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE | EEFC_FSR_FLERR)
+  92:../src/sam/drivers/efc/efc.c **** #elif (SAMV71 || SAMV70 || SAMS70 || SAME70)
+  93:../src/sam/drivers/efc/efc.c **** #define EEFC_ERROR_FLAGS  (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE | EEFC_FSR_FLERR \
+  94:../src/sam/drivers/efc/efc.c **** 	| EEFC_FSR_UECCELSB | EEFC_FSR_MECCELSB | EEFC_FSR_UECCEMSB | EEFC_FSR_MECCEMSB)
+  95:../src/sam/drivers/efc/efc.c **** #else
+  96:../src/sam/drivers/efc/efc.c **** #define EEFC_ERROR_FLAGS  (EEFC_FSR_FLOCKE | EEFC_FSR_FCMDE)
+  97:../src/sam/drivers/efc/efc.c **** #endif
+  98:../src/sam/drivers/efc/efc.c **** 
+  99:../src/sam/drivers/efc/efc.c **** #ifndef EEFC_FCR_FKEY_PASSWD
+ 100:../src/sam/drivers/efc/efc.c **** #define EEFC_FCR_FKEY_PASSWD EEFC_FCR_FKEY(FWP_KEY)
+ 101:../src/sam/drivers/efc/efc.c **** #endif
+ 102:../src/sam/drivers/efc/efc.c **** 
+ 103:../src/sam/drivers/efc/efc.c **** 
+ 104:../src/sam/drivers/efc/efc.c **** /*
+ 105:../src/sam/drivers/efc/efc.c ****  * Local function declaration.
+ 106:../src/sam/drivers/efc/efc.c ****  * Because they are RAM functions, they need 'extern' declaration.
+ 107:../src/sam/drivers/efc/efc.c ****  */
+ 108:../src/sam/drivers/efc/efc.c **** extern void efc_write_fmr(Efc *p_efc, uint32_t ul_fmr);
+ 109:../src/sam/drivers/efc/efc.c **** extern uint32_t efc_perform_fcr(Efc *p_efc, uint32_t ul_fcr);
+ 110:../src/sam/drivers/efc/efc.c **** 
+ 111:../src/sam/drivers/efc/efc.c **** /**
+ 112:../src/sam/drivers/efc/efc.c ****  * \brief Initialize the EFC controller.
+ 113:../src/sam/drivers/efc/efc.c ****  *
+ 114:../src/sam/drivers/efc/efc.c ****  * \param ul_access_mode 0 for 128-bit, EEFC_FMR_FAM for 64-bit.
+ 115:../src/sam/drivers/efc/efc.c ****  * \param ul_fws The number of wait states in cycle (no shift).
+ 116:../src/sam/drivers/efc/efc.c ****  *
+ 117:../src/sam/drivers/efc/efc.c ****  * \return 0 if successful.
+ 118:../src/sam/drivers/efc/efc.c ****  */
+ 119:../src/sam/drivers/efc/efc.c **** uint32_t efc_init(Efc *p_efc, uint32_t ul_access_mode, uint32_t ul_fws)
+ 120:../src/sam/drivers/efc/efc.c **** {
+ 121:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 122:../src/sam/drivers/efc/efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 123:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_access_mode | EEFC_FMR_FWS(ul_fws) | EEFC_FMR_CLOE);
+ 124:../src/sam/drivers/efc/efc.c **** #else
+ 125:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_access_mode | EEFC_FMR_FWS(ul_fws));
+ 126:../src/sam/drivers/efc/efc.c **** #endif
+ 127:../src/sam/drivers/efc/efc.c **** 	return EFC_RC_OK;
+ 128:../src/sam/drivers/efc/efc.c **** }
+ 129:../src/sam/drivers/efc/efc.c **** 
+ 130:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 131:../src/sam/drivers/efc/efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 132:../src/sam/drivers/efc/efc.c **** /**
+ 133:../src/sam/drivers/efc/efc.c ****  * \brief Enable code loop optimization.
+ 134:../src/sam/drivers/efc/efc.c ****  *
+ 135:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 136:../src/sam/drivers/efc/efc.c ****  */
+ 137:../src/sam/drivers/efc/efc.c **** void efc_enable_cloe(Efc *p_efc)
+ 138:../src/sam/drivers/efc/efc.c **** {
+ 139:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 140:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr | EEFC_FMR_CLOE);
+ 141:../src/sam/drivers/efc/efc.c **** }
+ 142:../src/sam/drivers/efc/efc.c **** 
+ 143:../src/sam/drivers/efc/efc.c **** /**
+ 144:../src/sam/drivers/efc/efc.c ****  * \brief Disable code loop optimization.
+ 145:../src/sam/drivers/efc/efc.c ****  *
+ 146:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 147:../src/sam/drivers/efc/efc.c ****  */
+ 148:../src/sam/drivers/efc/efc.c **** void efc_disable_cloe(Efc *p_efc)
+ 149:../src/sam/drivers/efc/efc.c **** {
+ 150:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 151:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr & (~EEFC_FMR_CLOE));
+ 152:../src/sam/drivers/efc/efc.c **** }
+ 153:../src/sam/drivers/efc/efc.c **** #endif
+ 154:../src/sam/drivers/efc/efc.c **** 
+ 155:../src/sam/drivers/efc/efc.c **** 
+ 156:../src/sam/drivers/efc/efc.c **** 
+ 157:../src/sam/drivers/efc/efc.c **** /**
+ 158:../src/sam/drivers/efc/efc.c ****  * \brief Enable the flash ready interrupt.
+ 159:../src/sam/drivers/efc/efc.c ****  *
+ 160:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 161:../src/sam/drivers/efc/efc.c ****  */
+ 162:../src/sam/drivers/efc/efc.c **** void efc_enable_frdy_interrupt(Efc *p_efc)
+ 163:../src/sam/drivers/efc/efc.c **** {
+ 164:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 165:../src/sam/drivers/efc/efc.c **** 
+ 166:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr | EEFC_FMR_FRDY);
+ 167:../src/sam/drivers/efc/efc.c **** }
+ 168:../src/sam/drivers/efc/efc.c **** 
+ 169:../src/sam/drivers/efc/efc.c **** /**
+ 170:../src/sam/drivers/efc/efc.c ****  * \brief Disable the flash ready interrupt.
+ 171:../src/sam/drivers/efc/efc.c ****  *
+ 172:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 173:../src/sam/drivers/efc/efc.c ****  */
+ 174:../src/sam/drivers/efc/efc.c **** void efc_disable_frdy_interrupt(Efc *p_efc)
+ 175:../src/sam/drivers/efc/efc.c **** {
+ 176:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 177:../src/sam/drivers/efc/efc.c **** 
+ 178:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr & (~EEFC_FMR_FRDY));
+ 179:../src/sam/drivers/efc/efc.c **** }
+ 180:../src/sam/drivers/efc/efc.c **** 
+ 181:../src/sam/drivers/efc/efc.c **** #if (SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 182:../src/sam/drivers/efc/efc.c **** /**
+ 183:../src/sam/drivers/efc/efc.c ****  * \brief Enable the write protection.
+ 184:../src/sam/drivers/efc/efc.c ****  *
+ 185:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 186:../src/sam/drivers/efc/efc.c ****  */
+ 187:../src/sam/drivers/efc/efc.c **** void efc_enable_write_protection(Efc *p_efc)
+ 188:../src/sam/drivers/efc/efc.c **** {
+ 189:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_WPMR = EEFC_WPMR_WPKEY_PASSWD | EEFC_WPMR_WPEN;
+ 190:../src/sam/drivers/efc/efc.c **** }
+ 191:../src/sam/drivers/efc/efc.c **** 
+ 192:../src/sam/drivers/efc/efc.c **** /**
+ 193:../src/sam/drivers/efc/efc.c ****  * \brief Disable the write protection.
+ 194:../src/sam/drivers/efc/efc.c ****  *
+ 195:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 196:../src/sam/drivers/efc/efc.c ****  */
+ 197:../src/sam/drivers/efc/efc.c **** void efc_disable_write_protection(Efc *p_efc)
+ 198:../src/sam/drivers/efc/efc.c **** {
+ 199:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_WPMR = EEFC_WPMR_WPKEY_PASSWD;
+ 200:../src/sam/drivers/efc/efc.c **** }
+ 201:../src/sam/drivers/efc/efc.c **** #else
+ 202:../src/sam/drivers/efc/efc.c **** /**
+ 203:../src/sam/drivers/efc/efc.c ****  * \brief Set flash access mode.
+ 204:../src/sam/drivers/efc/efc.c ****  *
+ 205:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 206:../src/sam/drivers/efc/efc.c ****  * \param ul_mode 0 for 128-bit, EEFC_FMR_FAM for 64-bit.
+ 207:../src/sam/drivers/efc/efc.c ****  */
+ 208:../src/sam/drivers/efc/efc.c **** void efc_set_flash_access_mode(Efc *p_efc, uint32_t ul_mode)
+ 209:../src/sam/drivers/efc/efc.c **** {
+ 210:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR & (~EEFC_FMR_FAM);
+ 211:../src/sam/drivers/efc/efc.c **** 
+ 212:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr | ul_mode);
+ 213:../src/sam/drivers/efc/efc.c **** }
+ 214:../src/sam/drivers/efc/efc.c **** 
+ 215:../src/sam/drivers/efc/efc.c **** /**
+ 216:../src/sam/drivers/efc/efc.c ****  * \brief Get flash access mode.
+ 217:../src/sam/drivers/efc/efc.c ****  *
+ 218:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 219:../src/sam/drivers/efc/efc.c ****  *
+ 220:../src/sam/drivers/efc/efc.c ****  * \return 0 for 128-bit or EEFC_FMR_FAM for 64-bit.
+ 221:../src/sam/drivers/efc/efc.c ****  */
+ 222:../src/sam/drivers/efc/efc.c **** uint32_t efc_get_flash_access_mode(Efc *p_efc)
+ 223:../src/sam/drivers/efc/efc.c **** {
+  28              		.loc 1 223 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+ 224:../src/sam/drivers/efc/efc.c **** 	return (p_efc->EEFC_FMR & EEFC_FMR_FAM);
+  34              		.loc 1 224 0
+  35 0000 0068     		ldr	r0, [r0]
+  36              	.LVL1:
+ 225:../src/sam/drivers/efc/efc.c **** }
+  37              		.loc 1 225 0
+  38 0002 00F08070 		and	r0, r0, #16777216
+  39 0006 7047     		bx	lr
+  40              		.cfi_endproc
+  41              	.LFE77:
+  43              		.section	.text.efc_get_wait_state,"ax",%progbits
+  44              		.align	2
+  45              		.global	efc_get_wait_state
+  46              		.thumb
+  47              		.thumb_func
+  49              	efc_get_wait_state:
+  50              	.LFB79:
+ 226:../src/sam/drivers/efc/efc.c **** #endif
+ 227:../src/sam/drivers/efc/efc.c **** 
+ 228:../src/sam/drivers/efc/efc.c **** /**
+ 229:../src/sam/drivers/efc/efc.c ****  * \brief Set flash wait state.
+ 230:../src/sam/drivers/efc/efc.c ****  *
+ 231:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 232:../src/sam/drivers/efc/efc.c ****  * \param ul_fws The number of wait states in cycle (no shift).
+ 233:../src/sam/drivers/efc/efc.c ****  */
+ 234:../src/sam/drivers/efc/efc.c **** void efc_set_wait_state(Efc *p_efc, uint32_t ul_fws)
+ 235:../src/sam/drivers/efc/efc.c **** {
+ 236:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR & (~EEFC_FMR_FWS_Msk);
+ 237:../src/sam/drivers/efc/efc.c **** 
+ 238:../src/sam/drivers/efc/efc.c **** 	efc_write_fmr(p_efc, ul_fmr | EEFC_FMR_FWS(ul_fws));
+ 239:../src/sam/drivers/efc/efc.c **** }
+ 240:../src/sam/drivers/efc/efc.c **** 
+ 241:../src/sam/drivers/efc/efc.c **** /**
+ 242:../src/sam/drivers/efc/efc.c ****  * \brief Get flash wait state.
+ 243:../src/sam/drivers/efc/efc.c ****  *
+ 244:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 245:../src/sam/drivers/efc/efc.c ****  *
+ 246:../src/sam/drivers/efc/efc.c ****  * \return The number of wait states in cycle (no shift).
+ 247:../src/sam/drivers/efc/efc.c ****  */
+ 248:../src/sam/drivers/efc/efc.c **** uint32_t efc_get_wait_state(Efc *p_efc)
+ 249:../src/sam/drivers/efc/efc.c **** {
+  51              		.loc 1 249 0
+  52              		.cfi_startproc
+  53              		@ args = 0, pretend = 0, frame = 0
+  54              		@ frame_needed = 0, uses_anonymous_args = 0
+  55              		@ link register save eliminated.
+  56              	.LVL2:
+ 250:../src/sam/drivers/efc/efc.c **** 	return ((p_efc->EEFC_FMR & EEFC_FMR_FWS_Msk) >> EEFC_FMR_FWS_Pos);
+  57              		.loc 1 250 0
+  58 0000 0068     		ldr	r0, [r0]
+  59              	.LVL3:
+ 251:../src/sam/drivers/efc/efc.c **** }
+  60              		.loc 1 251 0
+  61 0002 C0F30320 		ubfx	r0, r0, #8, #4
+  62 0006 7047     		bx	lr
+  63              		.cfi_endproc
+  64              	.LFE79:
+  66              		.section	.text.efc_get_status,"ax",%progbits
+  67              		.align	2
+  68              		.global	efc_get_status
+  69              		.thumb
+  70              		.thumb_func
+  72              	efc_get_status:
+  73              	.LFB81:
+ 252:../src/sam/drivers/efc/efc.c **** 
+ 253:../src/sam/drivers/efc/efc.c **** /**
+ 254:../src/sam/drivers/efc/efc.c ****  * \brief Perform the given command and wait until its completion (or an error).
+ 255:../src/sam/drivers/efc/efc.c ****  *
+ 256:../src/sam/drivers/efc/efc.c ****  * \note Unique ID commands are not supported, use efc_perform_read_sequence.
+ 257:../src/sam/drivers/efc/efc.c ****  *
+ 258:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 259:../src/sam/drivers/efc/efc.c ****  * \param ul_command Command to perform.
+ 260:../src/sam/drivers/efc/efc.c ****  * \param ul_argument Optional command argument.
+ 261:../src/sam/drivers/efc/efc.c ****  *
+ 262:../src/sam/drivers/efc/efc.c ****  * \note This function will automatically choose to use IAP function.
+ 263:../src/sam/drivers/efc/efc.c ****  *
+ 264:../src/sam/drivers/efc/efc.c ****  * \return 0 if successful, otherwise returns an error code.
+ 265:../src/sam/drivers/efc/efc.c ****  */
+ 266:../src/sam/drivers/efc/efc.c **** uint32_t efc_perform_command(Efc *p_efc, uint32_t ul_command,
+ 267:../src/sam/drivers/efc/efc.c **** 		uint32_t ul_argument)
+ 268:../src/sam/drivers/efc/efc.c **** {
+ 269:../src/sam/drivers/efc/efc.c **** 	uint32_t result;
+ 270:../src/sam/drivers/efc/efc.c **** 	irqflags_t flags;
+ 271:../src/sam/drivers/efc/efc.c **** 
+ 272:../src/sam/drivers/efc/efc.c **** 	/* Unique ID commands are not supported. */
+ 273:../src/sam/drivers/efc/efc.c **** 	if (ul_command == EFC_FCMD_STUI || ul_command == EFC_FCMD_SPUI) {
+ 274:../src/sam/drivers/efc/efc.c **** 		return EFC_RC_NOT_SUPPORT;
+ 275:../src/sam/drivers/efc/efc.c **** 	}
+ 276:../src/sam/drivers/efc/efc.c **** 
+ 277:../src/sam/drivers/efc/efc.c **** 	flags = cpu_irq_save();
+ 278:../src/sam/drivers/efc/efc.c **** 	/* Use RAM Function. */
+ 279:../src/sam/drivers/efc/efc.c **** 	result = efc_perform_fcr(p_efc,
+ 280:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FARG(ul_argument) |
+ 281:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_command));
+ 282:../src/sam/drivers/efc/efc.c **** 	cpu_irq_restore(flags);
+ 283:../src/sam/drivers/efc/efc.c **** 	return result;
+ 284:../src/sam/drivers/efc/efc.c **** }
+ 285:../src/sam/drivers/efc/efc.c **** 
+ 286:../src/sam/drivers/efc/efc.c **** /**
+ 287:../src/sam/drivers/efc/efc.c ****  * \brief Get the current status of the EEFC.
+ 288:../src/sam/drivers/efc/efc.c ****  *
+ 289:../src/sam/drivers/efc/efc.c ****  * \note This function clears the value of some status bits (FLOCKE, FCMDE).
+ 290:../src/sam/drivers/efc/efc.c ****  *
+ 291:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 292:../src/sam/drivers/efc/efc.c ****  *
+ 293:../src/sam/drivers/efc/efc.c ****  * \return The current status.
+ 294:../src/sam/drivers/efc/efc.c ****  */
+ 295:../src/sam/drivers/efc/efc.c **** uint32_t efc_get_status(Efc *p_efc)
+ 296:../src/sam/drivers/efc/efc.c **** {
+  74              		.loc 1 296 0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  78              		@ link register save eliminated.
+  79              	.LVL4:
+ 297:../src/sam/drivers/efc/efc.c **** 	return p_efc->EEFC_FSR;
+  80              		.loc 1 297 0
+  81 0000 8068     		ldr	r0, [r0, #8]
+  82              	.LVL5:
+ 298:../src/sam/drivers/efc/efc.c **** }
+  83              		.loc 1 298 0
+  84 0002 7047     		bx	lr
+  85              		.cfi_endproc
+  86              	.LFE81:
+  88              		.section	.text.efc_get_result,"ax",%progbits
+  89              		.align	2
+  90              		.global	efc_get_result
+  91              		.thumb
+  92              		.thumb_func
+  94              	efc_get_result:
+  95              	.LFB82:
+ 299:../src/sam/drivers/efc/efc.c **** 
+ 300:../src/sam/drivers/efc/efc.c **** /**
+ 301:../src/sam/drivers/efc/efc.c ****  * \brief Get the result of the last executed command.
+ 302:../src/sam/drivers/efc/efc.c ****  *
+ 303:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 304:../src/sam/drivers/efc/efc.c ****  *
+ 305:../src/sam/drivers/efc/efc.c ****  * \return The result of the last executed command.
+ 306:../src/sam/drivers/efc/efc.c ****  */
+ 307:../src/sam/drivers/efc/efc.c **** uint32_t efc_get_result(Efc *p_efc)
+ 308:../src/sam/drivers/efc/efc.c **** {
+  96              		.loc 1 308 0
+  97              		.cfi_startproc
+  98              		@ args = 0, pretend = 0, frame = 0
+  99              		@ frame_needed = 0, uses_anonymous_args = 0
+ 100              		@ link register save eliminated.
+ 101              	.LVL6:
+ 309:../src/sam/drivers/efc/efc.c **** 	return p_efc->EEFC_FRR;
+ 102              		.loc 1 309 0
+ 103 0000 C068     		ldr	r0, [r0, #12]
+ 104              	.LVL7:
+ 310:../src/sam/drivers/efc/efc.c **** }
+ 105              		.loc 1 310 0
+ 106 0002 7047     		bx	lr
+ 107              		.cfi_endproc
+ 108              	.LFE82:
+ 110              		.section	.ramfunc,"ax",%progbits
+ 111              		.align	2
+ 112              		.global	efc_perform_read_sequence
+ 113              		.thumb
+ 114              		.thumb_func
+ 116              	efc_perform_read_sequence:
+ 117              	.LFB83:
+ 311:../src/sam/drivers/efc/efc.c **** 
+ 312:../src/sam/drivers/efc/efc.c **** /**
+ 313:../src/sam/drivers/efc/efc.c ****  * \brief Perform read sequence. Supported sequences are read Unique ID and
+ 314:../src/sam/drivers/efc/efc.c ****  * read User Signature
+ 315:../src/sam/drivers/efc/efc.c ****  *
+ 316:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 317:../src/sam/drivers/efc/efc.c ****  * \param ul_cmd_st Start command to perform.
+ 318:../src/sam/drivers/efc/efc.c ****  * \param ul_cmd_sp Stop command to perform.
+ 319:../src/sam/drivers/efc/efc.c ****  * \param p_ul_buf Pointer to an data buffer.
+ 320:../src/sam/drivers/efc/efc.c ****  * \param ul_size Buffer size.
+ 321:../src/sam/drivers/efc/efc.c ****  *
+ 322:../src/sam/drivers/efc/efc.c ****  * \return 0 if successful, otherwise returns an error code.
+ 323:../src/sam/drivers/efc/efc.c ****  */
+ 324:../src/sam/drivers/efc/efc.c **** __no_inline
+ 325:../src/sam/drivers/efc/efc.c **** RAMFUNC
+ 326:../src/sam/drivers/efc/efc.c **** uint32_t efc_perform_read_sequence(Efc *p_efc,
+ 327:../src/sam/drivers/efc/efc.c **** 		uint32_t ul_cmd_st, uint32_t ul_cmd_sp,
+ 328:../src/sam/drivers/efc/efc.c **** 		uint32_t *p_ul_buf, uint32_t ul_size)
+ 329:../src/sam/drivers/efc/efc.c **** {
+ 118              		.loc 1 329 0
+ 119              		.cfi_startproc
+ 120              		@ args = 4, pretend = 0, frame = 8
+ 121              		@ frame_needed = 0, uses_anonymous_args = 0
+ 122              		@ link register save eliminated.
+ 123              	.LVL8:
+ 124 0000 70B4     		push	{r4, r5, r6}
+ 125              		.cfi_def_cfa_offset 12
+ 126              		.cfi_offset 4, -12
+ 127              		.cfi_offset 5, -8
+ 128              		.cfi_offset 6, -4
+ 129 0002 83B0     		sub	sp, sp, #12
+ 130              		.cfi_def_cfa_offset 24
+ 131 0004 069D     		ldr	r5, [sp, #24]
+ 132              	.LVL9:
+ 330:../src/sam/drivers/efc/efc.c **** 	volatile uint32_t ul_status;
+ 331:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_cnt;
+ 332:../src/sam/drivers/efc/efc.c **** 
+ 333:../src/sam/drivers/efc/efc.c **** #if (SAM3U4 || SAM3XA || SAM4SD16 || SAM4SD32 || SAM4C32 || SAM4CMS32|| SAM4CMP32)
+ 334:../src/sam/drivers/efc/efc.c **** 	uint32_t *p_ul_data =
+ 335:../src/sam/drivers/efc/efc.c **** 			(uint32_t *) ((p_efc == EFC0) ?
+ 336:../src/sam/drivers/efc/efc.c **** 			READ_BUFF_ADDR0 : READ_BUFF_ADDR1);
+ 337:../src/sam/drivers/efc/efc.c **** #elif (SAM3S || SAM4S || SAM3N || SAM3U || SAM4E || SAM4N || SAM4C || SAMG || \
+ 338:../src/sam/drivers/efc/efc.c **** 	   SAM4CP || SAM4CM || SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 339:../src/sam/drivers/efc/efc.c **** 	uint32_t *p_ul_data = (uint32_t *) READ_BUFF_ADDR;
+ 340:../src/sam/drivers/efc/efc.c **** #else
+ 341:../src/sam/drivers/efc/efc.c **** 	return EFC_RC_NOT_SUPPORT;
+ 342:../src/sam/drivers/efc/efc.c **** #endif
+ 343:../src/sam/drivers/efc/efc.c **** 
+ 344:../src/sam/drivers/efc/efc.c **** 	if (p_ul_buf == NULL) {
+ 133              		.loc 1 344 0
+ 134 0006 4BB3     		cbz	r3, .L11
+ 135 0008 0446     		mov	r4, r0
+ 136 000a 1E46     		mov	r6, r3
+ 345:../src/sam/drivers/efc/efc.c **** 		return EFC_RC_INVALID;
+ 346:../src/sam/drivers/efc/efc.c **** 	}
+ 347:../src/sam/drivers/efc/efc.c **** 
+ 348:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FMR |= (0x1u << 16);
+ 137              		.loc 1 348 0
+ 138 000c 0368     		ldr	r3, [r0]
+ 139              	.LVL10:
+ 140 000e 43F48033 		orr	r3, r3, #65536
+ 141 0012 0360     		str	r3, [r0]
+ 349:../src/sam/drivers/efc/efc.c **** 
+ 350:../src/sam/drivers/efc/efc.c **** 	/* Send the Start Read command */
+ 351:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 352:../src/sam/drivers/efc/efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 353:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FCR = EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FARG(0)
+ 354:../src/sam/drivers/efc/efc.c **** 			| EEFC_FCR_FCMD(ul_cmd_st);
+ 355:../src/sam/drivers/efc/efc.c **** #else
+ 356:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FCR = EEFC_FCR_FKEY(FWP_KEY) | EEFC_FCR_FARG(0)
+ 357:../src/sam/drivers/efc/efc.c **** 			| EEFC_FCR_FCMD(ul_cmd_st);
+ 142              		.loc 1 357 0
+ 143 0014 C9B2     		uxtb	r1, r1
+ 144              	.LVL11:
+ 145 0016 41F0B441 		orr	r1, r1, #1509949440
+ 356:../src/sam/drivers/efc/efc.c **** 			| EEFC_FCR_FCMD(ul_cmd_st);
+ 146              		.loc 1 356 0
+ 147 001a 4160     		str	r1, [r0, #4]
+ 148              	.LVL12:
+ 149              	.L7:
+ 358:../src/sam/drivers/efc/efc.c **** #endif
+ 359:../src/sam/drivers/efc/efc.c **** 	/* Wait for the FRDY bit in the Flash Programming Status Register
+ 360:../src/sam/drivers/efc/efc.c **** 	 * (EEFC_FSR) falls.
+ 361:../src/sam/drivers/efc/efc.c **** 	 */
+ 362:../src/sam/drivers/efc/efc.c **** 	do {
+ 363:../src/sam/drivers/efc/efc.c **** 		ul_status = p_efc->EEFC_FSR;
+ 150              		.loc 1 363 0 discriminator 1
+ 151 001c A368     		ldr	r3, [r4, #8]
+ 152 001e 0193     		str	r3, [sp, #4]
+ 364:../src/sam/drivers/efc/efc.c **** 	} while ((ul_status & EEFC_FSR_FRDY) == EEFC_FSR_FRDY);
+ 153              		.loc 1 364 0 discriminator 1
+ 154 0020 019B     		ldr	r3, [sp, #4]
+ 155 0022 13F00100 		ands	r0, r3, #1
+ 156 0026 F9D1     		bne	.L7
+ 157 0028 0023     		movs	r3, #0
+ 158 002a 06E0     		b	.L8
+ 159              	.LVL13:
+ 160              	.L9:
+ 365:../src/sam/drivers/efc/efc.c **** 
+ 366:../src/sam/drivers/efc/efc.c **** 	/* The data is located in the first address of the Flash
+ 367:../src/sam/drivers/efc/efc.c **** 	 * memory mapping.
+ 368:../src/sam/drivers/efc/efc.c **** 	 */
+ 369:../src/sam/drivers/efc/efc.c **** 	for (ul_cnt = 0; ul_cnt < ul_size; ul_cnt++) {
+ 370:../src/sam/drivers/efc/efc.c **** 		p_ul_buf[ul_cnt] = p_ul_data[ul_cnt];
+ 161              		.loc 1 370 0 discriminator 3
+ 162 002c 9900     		lsls	r1, r3, #2
+ 163 002e 01F58001 		add	r1, r1, #4194304
+ 164 0032 0968     		ldr	r1, [r1]
+ 165 0034 46F82310 		str	r1, [r6, r3, lsl #2]
+ 369:../src/sam/drivers/efc/efc.c **** 		p_ul_buf[ul_cnt] = p_ul_data[ul_cnt];
+ 166              		.loc 1 369 0 discriminator 3
+ 167 0038 0133     		adds	r3, r3, #1
+ 168              	.LVL14:
+ 169              	.L8:
+ 369:../src/sam/drivers/efc/efc.c **** 		p_ul_buf[ul_cnt] = p_ul_data[ul_cnt];
+ 170              		.loc 1 369 0 is_stmt 0 discriminator 1
+ 171 003a AB42     		cmp	r3, r5
+ 172 003c F6D3     		bcc	.L9
+ 371:../src/sam/drivers/efc/efc.c **** 	}
+ 372:../src/sam/drivers/efc/efc.c **** 
+ 373:../src/sam/drivers/efc/efc.c **** 	/* To stop the read mode */
+ 374:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FCR =
+ 375:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 376:../src/sam/drivers/efc/efc.c **** 	 SAMV71 || SAMV70 || SAMS70 || SAME70)
+ 377:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FARG(0) |
+ 378:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_cmd_sp);
+ 379:../src/sam/drivers/efc/efc.c **** #else
+ 380:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FKEY(FWP_KEY) | EEFC_FCR_FARG(0) |
+ 381:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_cmd_sp);
+ 173              		.loc 1 381 0 is_stmt 1
+ 174 003e D2B2     		uxtb	r2, r2
+ 175              	.LVL15:
+ 380:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_cmd_sp);
+ 176              		.loc 1 380 0
+ 177 0040 42F0B442 		orr	r2, r2, #1509949440
+ 374:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 178              		.loc 1 374 0
+ 179 0044 6260     		str	r2, [r4, #4]
+ 180              	.LVL16:
+ 181              	.L10:
+ 382:../src/sam/drivers/efc/efc.c **** #endif
+ 383:../src/sam/drivers/efc/efc.c **** 	/* Wait for the FRDY bit in the Flash Programming Status Register (EEFC_FSR)
+ 384:../src/sam/drivers/efc/efc.c **** 	 * rises.
+ 385:../src/sam/drivers/efc/efc.c **** 	 */
+ 386:../src/sam/drivers/efc/efc.c **** 	do {
+ 387:../src/sam/drivers/efc/efc.c **** 		ul_status = p_efc->EEFC_FSR;
+ 182              		.loc 1 387 0 discriminator 1
+ 183 0046 A368     		ldr	r3, [r4, #8]
+ 184 0048 0193     		str	r3, [sp, #4]
+ 388:../src/sam/drivers/efc/efc.c **** 	} while ((ul_status & EEFC_FSR_FRDY) != EEFC_FSR_FRDY);
+ 185              		.loc 1 388 0 discriminator 1
+ 186 004a 019B     		ldr	r3, [sp, #4]
+ 187 004c 13F0010F 		tst	r3, #1
+ 188 0050 F9D0     		beq	.L10
+ 389:../src/sam/drivers/efc/efc.c **** 
+ 390:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FMR &= ~(0x1u << 16);
+ 189              		.loc 1 390 0
+ 190 0052 2368     		ldr	r3, [r4]
+ 191 0054 23F48033 		bic	r3, r3, #65536
+ 192 0058 2360     		str	r3, [r4]
+ 391:../src/sam/drivers/efc/efc.c **** 
+ 392:../src/sam/drivers/efc/efc.c **** 	return EFC_RC_OK;
+ 193              		.loc 1 392 0
+ 194 005a 00E0     		b	.L6
+ 195              	.LVL17:
+ 196              	.L11:
+ 345:../src/sam/drivers/efc/efc.c **** 	}
+ 197              		.loc 1 345 0
+ 198 005c 0220     		movs	r0, #2
+ 199              	.LVL18:
+ 200              	.L6:
+ 393:../src/sam/drivers/efc/efc.c **** }
+ 201              		.loc 1 393 0
+ 202 005e 03B0     		add	sp, sp, #12
+ 203              		.cfi_def_cfa_offset 12
+ 204              		@ sp needed
+ 205 0060 70BC     		pop	{r4, r5, r6}
+ 206              		.cfi_restore 6
+ 207              		.cfi_restore 5
+ 208              		.cfi_restore 4
+ 209              		.cfi_def_cfa_offset 0
+ 210              	.LVL19:
+ 211 0062 7047     		bx	lr
+ 212              		.cfi_endproc
+ 213              	.LFE83:
+ 215              		.align	2
+ 216              		.global	efc_write_fmr
+ 217              		.thumb
+ 218              		.thumb_func
+ 220              	efc_write_fmr:
+ 221              	.LFB84:
+ 394:../src/sam/drivers/efc/efc.c **** 
+ 395:../src/sam/drivers/efc/efc.c **** /**
+ 396:../src/sam/drivers/efc/efc.c ****  * \brief Set mode register.
+ 397:../src/sam/drivers/efc/efc.c ****  *
+ 398:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 399:../src/sam/drivers/efc/efc.c ****  * \param ul_fmr Value of mode register
+ 400:../src/sam/drivers/efc/efc.c ****  */
+ 401:../src/sam/drivers/efc/efc.c **** __no_inline
+ 402:../src/sam/drivers/efc/efc.c **** RAMFUNC
+ 403:../src/sam/drivers/efc/efc.c **** void efc_write_fmr(Efc *p_efc, uint32_t ul_fmr)
+ 404:../src/sam/drivers/efc/efc.c **** {
+ 222              		.loc 1 404 0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 0
+ 225              		@ frame_needed = 0, uses_anonymous_args = 0
+ 226              		@ link register save eliminated.
+ 227              	.LVL20:
+ 405:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FMR = ul_fmr;
+ 228              		.loc 1 405 0
+ 229 0064 0160     		str	r1, [r0]
+ 230 0066 7047     		bx	lr
+ 231              		.cfi_endproc
+ 232              	.LFE84:
+ 234              		.section	.text.efc_init,"ax",%progbits
+ 235              		.align	2
+ 236              		.global	efc_init
+ 237              		.thumb
+ 238              		.thumb_func
+ 240              	efc_init:
+ 241              	.LFB73:
+ 120:../src/sam/drivers/efc/efc.c **** #if (SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM || \
+ 242              		.loc 1 120 0
+ 243              		.cfi_startproc
+ 244              		@ args = 0, pretend = 0, frame = 0
+ 245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246              	.LVL21:
+ 247 0000 08B5     		push	{r3, lr}
+ 248              		.cfi_def_cfa_offset 8
+ 249              		.cfi_offset 3, -8
+ 250              		.cfi_offset 14, -4
+ 125:../src/sam/drivers/efc/efc.c **** #endif
+ 251              		.loc 1 125 0
+ 252 0002 1202     		lsls	r2, r2, #8
+ 253              	.LVL22:
+ 254 0004 02F47062 		and	r2, r2, #3840
+ 255 0008 1143     		orrs	r1, r1, r2
+ 256              	.LVL23:
+ 257 000a FFF7FEFF 		bl	efc_write_fmr
+ 258              	.LVL24:
+ 128:../src/sam/drivers/efc/efc.c **** 
+ 259              		.loc 1 128 0
+ 260 000e 0020     		movs	r0, #0
+ 261 0010 08BD     		pop	{r3, pc}
+ 262              		.cfi_endproc
+ 263              	.LFE73:
+ 265 0012 00BF     		.section	.text.efc_enable_frdy_interrupt,"ax",%progbits
+ 266              		.align	2
+ 267              		.global	efc_enable_frdy_interrupt
+ 268              		.thumb
+ 269              		.thumb_func
+ 271              	efc_enable_frdy_interrupt:
+ 272              	.LFB74:
+ 163:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 273              		.loc 1 163 0
+ 274              		.cfi_startproc
+ 275              		@ args = 0, pretend = 0, frame = 0
+ 276              		@ frame_needed = 0, uses_anonymous_args = 0
+ 277              	.LVL25:
+ 278 0000 08B5     		push	{r3, lr}
+ 279              		.cfi_def_cfa_offset 8
+ 280              		.cfi_offset 3, -8
+ 281              		.cfi_offset 14, -4
+ 164:../src/sam/drivers/efc/efc.c **** 
+ 282              		.loc 1 164 0
+ 283 0002 0168     		ldr	r1, [r0]
+ 284              	.LVL26:
+ 166:../src/sam/drivers/efc/efc.c **** }
+ 285              		.loc 1 166 0
+ 286 0004 41F00101 		orr	r1, r1, #1
+ 287              	.LVL27:
+ 288 0008 FFF7FEFF 		bl	efc_write_fmr
+ 289              	.LVL28:
+ 290 000c 08BD     		pop	{r3, pc}
+ 291              		.cfi_endproc
+ 292              	.LFE74:
+ 294 000e 00BF     		.section	.text.efc_disable_frdy_interrupt,"ax",%progbits
+ 295              		.align	2
+ 296              		.global	efc_disable_frdy_interrupt
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	efc_disable_frdy_interrupt:
+ 301              	.LFB75:
+ 175:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR;
+ 302              		.loc 1 175 0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 0
+ 305              		@ frame_needed = 0, uses_anonymous_args = 0
+ 306              	.LVL29:
+ 307 0000 08B5     		push	{r3, lr}
+ 308              		.cfi_def_cfa_offset 8
+ 309              		.cfi_offset 3, -8
+ 310              		.cfi_offset 14, -4
+ 176:../src/sam/drivers/efc/efc.c **** 
+ 311              		.loc 1 176 0
+ 312 0002 0168     		ldr	r1, [r0]
+ 313              	.LVL30:
+ 178:../src/sam/drivers/efc/efc.c **** }
+ 314              		.loc 1 178 0
+ 315 0004 21F00101 		bic	r1, r1, #1
+ 316              	.LVL31:
+ 317 0008 FFF7FEFF 		bl	efc_write_fmr
+ 318              	.LVL32:
+ 319 000c 08BD     		pop	{r3, pc}
+ 320              		.cfi_endproc
+ 321              	.LFE75:
+ 323 000e 00BF     		.section	.text.efc_set_flash_access_mode,"ax",%progbits
+ 324              		.align	2
+ 325              		.global	efc_set_flash_access_mode
+ 326              		.thumb
+ 327              		.thumb_func
+ 329              	efc_set_flash_access_mode:
+ 330              	.LFB76:
+ 209:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR & (~EEFC_FMR_FAM);
+ 331              		.loc 1 209 0
+ 332              		.cfi_startproc
+ 333              		@ args = 0, pretend = 0, frame = 0
+ 334              		@ frame_needed = 0, uses_anonymous_args = 0
+ 335              	.LVL33:
+ 336 0000 08B5     		push	{r3, lr}
+ 337              		.cfi_def_cfa_offset 8
+ 338              		.cfi_offset 3, -8
+ 339              		.cfi_offset 14, -4
+ 210:../src/sam/drivers/efc/efc.c **** 
+ 340              		.loc 1 210 0
+ 341 0002 0368     		ldr	r3, [r0]
+ 342 0004 23F08073 		bic	r3, r3, #16777216
+ 343              	.LVL34:
+ 212:../src/sam/drivers/efc/efc.c **** }
+ 344              		.loc 1 212 0
+ 345 0008 1943     		orrs	r1, r1, r3
+ 346              	.LVL35:
+ 347 000a FFF7FEFF 		bl	efc_write_fmr
+ 348              	.LVL36:
+ 349 000e 08BD     		pop	{r3, pc}
+ 350              		.cfi_endproc
+ 351              	.LFE76:
+ 353              		.section	.text.efc_set_wait_state,"ax",%progbits
+ 354              		.align	2
+ 355              		.global	efc_set_wait_state
+ 356              		.thumb
+ 357              		.thumb_func
+ 359              	efc_set_wait_state:
+ 360              	.LFB78:
+ 235:../src/sam/drivers/efc/efc.c **** 	uint32_t ul_fmr = p_efc->EEFC_FMR & (~EEFC_FMR_FWS_Msk);
+ 361              		.loc 1 235 0
+ 362              		.cfi_startproc
+ 363              		@ args = 0, pretend = 0, frame = 0
+ 364              		@ frame_needed = 0, uses_anonymous_args = 0
+ 365              	.LVL37:
+ 366 0000 08B5     		push	{r3, lr}
+ 367              		.cfi_def_cfa_offset 8
+ 368              		.cfi_offset 3, -8
+ 369              		.cfi_offset 14, -4
+ 236:../src/sam/drivers/efc/efc.c **** 
+ 370              		.loc 1 236 0
+ 371 0002 0368     		ldr	r3, [r0]
+ 372 0004 23F47063 		bic	r3, r3, #3840
+ 373              	.LVL38:
+ 238:../src/sam/drivers/efc/efc.c **** }
+ 374              		.loc 1 238 0
+ 375 0008 0902     		lsls	r1, r1, #8
+ 376              	.LVL39:
+ 377 000a 01F47061 		and	r1, r1, #3840
+ 378 000e 1943     		orrs	r1, r1, r3
+ 379 0010 FFF7FEFF 		bl	efc_write_fmr
+ 380              	.LVL40:
+ 381 0014 08BD     		pop	{r3, pc}
+ 382              		.cfi_endproc
+ 383              	.LFE78:
+ 385 0016 00BF     		.section	.ramfunc
+ 386              		.align	2
+ 387              		.global	efc_perform_fcr
+ 388              		.thumb
+ 389              		.thumb_func
+ 391              	efc_perform_fcr:
+ 392              	.LFB85:
+ 406:../src/sam/drivers/efc/efc.c **** }
+ 407:../src/sam/drivers/efc/efc.c **** 
+ 408:../src/sam/drivers/efc/efc.c **** /**
+ 409:../src/sam/drivers/efc/efc.c ****  * \brief Perform command.
+ 410:../src/sam/drivers/efc/efc.c ****  *
+ 411:../src/sam/drivers/efc/efc.c ****  * \param p_efc Pointer to an EFC instance.
+ 412:../src/sam/drivers/efc/efc.c ****  * \param ul_fcr Flash command.
+ 413:../src/sam/drivers/efc/efc.c ****  *
+ 414:../src/sam/drivers/efc/efc.c ****  * \return The current status.
+ 415:../src/sam/drivers/efc/efc.c ****  */
+ 416:../src/sam/drivers/efc/efc.c **** __no_inline
+ 417:../src/sam/drivers/efc/efc.c **** RAMFUNC
+ 418:../src/sam/drivers/efc/efc.c **** uint32_t efc_perform_fcr(Efc *p_efc, uint32_t ul_fcr)
+ 419:../src/sam/drivers/efc/efc.c **** {
+ 393              		.loc 1 419 0
+ 394              		.cfi_startproc
+ 395              		@ args = 0, pretend = 0, frame = 8
+ 396              		@ frame_needed = 0, uses_anonymous_args = 0
+ 397              		@ link register save eliminated.
+ 398              	.LVL41:
+ 399 0068 82B0     		sub	sp, sp, #8
+ 400              		.cfi_def_cfa_offset 8
+ 420:../src/sam/drivers/efc/efc.c **** 	volatile uint32_t ul_status;
+ 421:../src/sam/drivers/efc/efc.c **** 
+ 422:../src/sam/drivers/efc/efc.c **** 	p_efc->EEFC_FCR = ul_fcr;
+ 401              		.loc 1 422 0
+ 402 006a 4160     		str	r1, [r0, #4]
+ 403              	.L25:
+ 423:../src/sam/drivers/efc/efc.c **** 	do {
+ 424:../src/sam/drivers/efc/efc.c **** 		ul_status = p_efc->EEFC_FSR;
+ 404              		.loc 1 424 0 discriminator 1
+ 405 006c 8368     		ldr	r3, [r0, #8]
+ 406 006e 0193     		str	r3, [sp, #4]
+ 425:../src/sam/drivers/efc/efc.c **** 	} while ((ul_status & EEFC_FSR_FRDY) != EEFC_FSR_FRDY);
+ 407              		.loc 1 425 0 discriminator 1
+ 408 0070 019B     		ldr	r3, [sp, #4]
+ 409 0072 13F0010F 		tst	r3, #1
+ 410 0076 F9D0     		beq	.L25
+ 426:../src/sam/drivers/efc/efc.c **** 
+ 427:../src/sam/drivers/efc/efc.c **** 	return (ul_status & EEFC_ERROR_FLAGS);
+ 411              		.loc 1 427 0
+ 412 0078 0198     		ldr	r0, [sp, #4]
+ 413              	.LVL42:
+ 428:../src/sam/drivers/efc/efc.c **** }
+ 414              		.loc 1 428 0
+ 415 007a 00F00600 		and	r0, r0, #6
+ 416 007e 02B0     		add	sp, sp, #8
+ 417              		.cfi_def_cfa_offset 0
+ 418              		@ sp needed
+ 419 0080 7047     		bx	lr
+ 420              		.cfi_endproc
+ 421              	.LFE85:
+ 423 0082 00BF     		.section	.text.efc_perform_command,"ax",%progbits
+ 424              		.align	2
+ 425              		.global	efc_perform_command
+ 426              		.thumb
+ 427              		.thumb_func
+ 429              	efc_perform_command:
+ 430              	.LFB80:
+ 268:../src/sam/drivers/efc/efc.c **** 	uint32_t result;
+ 431              		.loc 1 268 0
+ 432              		.cfi_startproc
+ 433              		@ args = 0, pretend = 0, frame = 0
+ 434              		@ frame_needed = 0, uses_anonymous_args = 0
+ 435              	.LVL43:
+ 436 0000 38B5     		push	{r3, r4, r5, lr}
+ 437              		.cfi_def_cfa_offset 16
+ 438              		.cfi_offset 3, -16
+ 439              		.cfi_offset 4, -12
+ 440              		.cfi_offset 5, -8
+ 441              		.cfi_offset 14, -4
+ 273:../src/sam/drivers/efc/efc.c **** 		return EFC_RC_NOT_SUPPORT;
+ 442              		.loc 1 273 0
+ 443 0002 A1F10E03 		sub	r3, r1, #14
+ 444 0006 012B     		cmp	r3, #1
+ 445 0008 1AD9     		bls	.L29
+ 446              	.LBB32:
+ 447              	.LBB33:
+ 448              	.LBB34:
+ 449              	.LBB35:
+ 450              		.file 2 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /**************************************************************************//**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  * @file     core_cmFunc.h
+   3:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  * @brief    CMSIS Cortex-M Core Function Access Header File
+   4:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  * @version  V4.00
+   5:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  * @date     28. August 2014
+   6:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  *
+   7:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  * @note
+   8:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  *
+   9:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  ******************************************************************************/
+  10:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* Copyright (c) 2009 - 2014 ARM LIMITED
+  11:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  12:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    All rights reserved.
+  13:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    Redistribution and use in source and binary forms, with or without
+  14:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    modification, are permitted provided that the following conditions are met:
+  15:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    - Redistributions of source code must retain the above copyright
+  16:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****      notice, this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    - Redistributions in binary form must reproduce the above copyright
+  18:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****      notice, this list of conditions and the following disclaimer in the
+  19:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****      documentation and/or other materials provided with the distribution.
+  20:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    - Neither the name of ARM nor the names of its contributors may be used
+  21:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****      to endorse or promote products derived from this software without
+  22:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****      specific prior written permission.
+  23:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    *
+  24:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  25:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  26:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  27:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+  28:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  29:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  31:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  32:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  33:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  34:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    POSSIBILITY OF SUCH DAMAGE.
+  35:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    ---------------------------------------------------------------------------*/
+  36:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  37:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  38:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #ifndef __CORE_CMFUNC_H
+  39:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #define __CORE_CMFUNC_H
+  40:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  41:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  42:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* ###########################  Core Function Access  ########################### */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+  44:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+  45:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   @{
+  46:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+  47:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  48:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if   defined ( __CC_ARM ) /*------------------RealView Compiler -----------------*/
+  49:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* ARM armcc specific functions */
+  50:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  51:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if (__ARMCC_VERSION < 400677)
+  52:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   #error "Please use ARM Compiler Toolchain V4.0.677 or later!"
+  53:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #endif
+  54:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  55:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* intrinsic void __enable_irq();     */
+  56:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* intrinsic void __disable_irq();    */
+  57:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  58:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Control Register
+  59:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  60:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the Control Register.
+  61:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  62:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Control Register value
+  63:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+  64:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_CONTROL(void)
+  65:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+  66:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  67:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regControl);
+  68:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+  69:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  70:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  71:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Control Register
+  72:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  73:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function writes the given value to the Control Register.
+  74:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  75:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+  76:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+  77:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_CONTROL(uint32_t control)
+  78:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+  79:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  80:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regControl = control;
+  81:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+  82:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  83:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  84:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get IPSR Register
+  85:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  86:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the IPSR Register.
+  87:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  88:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               IPSR Register value
+  89:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+  90:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_IPSR(void)
+  91:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+  92:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regIPSR          __ASM("ipsr");
+  93:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regIPSR);
+  94:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+  95:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  96:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  97:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get APSR Register
+  98:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+  99:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the APSR Register.
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               APSR Register value
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_APSR(void)
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regAPSR          __ASM("apsr");
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regAPSR);
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get xPSR Register
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               xPSR Register value
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_xPSR(void)
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regXPSR          __ASM("xpsr");
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regXPSR);
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               PSP Register value
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_PSP(void)
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regProcessStackPointer);
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_PSP(uint32_t topOfProcStack)
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regProcessStackPointer = topOfProcStack;
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               MSP Register value
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_MSP(void)
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regMainStackPointer);
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regMainStackPointer = topOfMainStack;
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Priority Mask value
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_PRIMASK(void)
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regPriMask);
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Priority Mask
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Priority Mask Register.
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    priMask  Priority Mask
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_PRIMASK(uint32_t priMask)
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regPriMask = (priMask);
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if       (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300)
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Enable FIQ
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function enables FIQ interrupts by clearing the F-bit in the CPSR.
+ 206:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 207:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 208:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #define __enable_fault_irq                __enable_fiq
+ 209:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 210:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 211:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Disable FIQ
+ 212:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 213:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function disables FIQ interrupts by setting the F-bit in the CPSR.
+ 214:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 215:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 216:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #define __disable_fault_irq               __disable_fiq
+ 217:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 218:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 219:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Base Priority
+ 220:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 221:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Base Priority register.
+ 222:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 223:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Base Priority register value
+ 224:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 225:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t  __get_BASEPRI(void)
+ 226:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 227:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 228:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regBasePri);
+ 229:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 230:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 231:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 232:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Base Priority
+ 233:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 234:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Base Priority register.
+ 235:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 236:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    basePri  Base Priority value to set
+ 237:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 238:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_BASEPRI(uint32_t basePri)
+ 239:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 240:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 241:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regBasePri = (basePri & 0xff);
+ 242:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 243:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 244:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 245:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Fault Mask
+ 246:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 247:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Fault Mask register.
+ 248:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 249:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Fault Mask register value
+ 250:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 251:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_FAULTMASK(void)
+ 252:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 253:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 254:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regFaultMask);
+ 255:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 256:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 257:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 258:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Fault Mask
+ 259:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 260:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Fault Mask register.
+ 261:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 262:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    faultMask  Fault Mask value to set
+ 263:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 264:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_FAULTMASK(uint32_t faultMask)
+ 265:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 266:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 267:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regFaultMask = (faultMask & (uint32_t)1);
+ 268:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 269:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 270:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #endif /* (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300) */
+ 271:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 272:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 273:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if       (__CORTEX_M == 0x04) || (__CORTEX_M == 0x07)
+ 274:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 275:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get FPSCR
+ 276:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 277:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Floating Point Status/Control register.
+ 278:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 279:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Floating Point Status/Control register value
+ 280:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 281:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_FPSCR(void)
+ 282:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 283:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 284:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 285:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(__regfpscr);
+ 286:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #else
+ 287:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****    return(0);
+ 288:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #endif
+ 289:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 290:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 291:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 292:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set FPSCR
+ 293:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Floating Point Status/Control register.
+ 295:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 296:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    fpscr  Floating Point Status/Control value to set
+ 297:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 298:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __STATIC_INLINE void __set_FPSCR(uint32_t fpscr)
+ 299:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 300:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 301:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 302:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __regfpscr = (fpscr);
+ 303:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #endif
+ 304:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 305:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 306:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #endif /* (__CORTEX_M == 0x04) || (__CORTEX_M == 0x07) */
+ 307:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 308:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 309:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
+ 310:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /* GNU gcc specific functions */
+ 311:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 312:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Enable IRQ Interrupts
+ 313:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 314:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   This function enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 315:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 316:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 317:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __enable_irq(void)
+ 318:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 319:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 320:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 321:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 322:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 323:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Disable IRQ Interrupts
+ 324:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 325:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   This function disables IRQ interrupts by setting the I-bit in the CPSR.
+ 326:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 327:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 328:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __disable_irq(void)
+ 329:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 330:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 331:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 332:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 333:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 334:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Control Register
+ 335:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 336:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the Control Register.
+ 337:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 338:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Control Register value
+ 339:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 340:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_CONTROL(void)
+ 341:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 342:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   uint32_t result;
+ 343:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 344:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 345:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 346:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 347:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 348:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 349:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Control Register
+ 350:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 351:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function writes the given value to the Control Register.
+ 352:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 353:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+ 354:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 355:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_CONTROL(uint32_t control)
+ 356:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 357:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) : "memory");
+ 358:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 359:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 360:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 361:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get IPSR Register
+ 362:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 363:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the IPSR Register.
+ 364:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 365:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               IPSR Register value
+ 366:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 367:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_IPSR(void)
+ 368:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 369:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   uint32_t result;
+ 370:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 371:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, ipsr" : "=r" (result) );
+ 372:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 373:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 374:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 375:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 376:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get APSR Register
+ 377:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 378:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the APSR Register.
+ 379:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 380:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               APSR Register value
+ 381:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 382:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_APSR(void)
+ 383:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 384:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   uint32_t result;
+ 385:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 386:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, apsr" : "=r" (result) );
+ 387:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 388:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 389:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 390:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 391:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get xPSR Register
+ 392:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 393:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+ 394:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 395:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               xPSR Register value
+ 396:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 397:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_xPSR(void)
+ 398:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 399:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   uint32_t result;
+ 400:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 401:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
+ 402:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 403:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 404:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 405:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 406:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 407:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 408:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 409:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 410:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               PSP Register value
+ 411:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 412:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_PSP(void)
+ 413:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 414:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t result;
+ 415:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 416:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, psp\n"  : "=r" (result) );
+ 417:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 418:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 419:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 420:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 421:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 422:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 423:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 424:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 425:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 426:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 427:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_PSP(uint32_t topOfProcStack)
+ 428:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 429:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MSR psp, %0\n" : : "r" (topOfProcStack) : "sp");
+ 430:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 431:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 432:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 433:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 434:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 435:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 436:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 437:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               MSP Register value
+ 438:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 439:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_MSP(void)
+ 440:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 441:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   register uint32_t result;
+ 442:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 443:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, msp\n" : "=r" (result) );
+ 444:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   return(result);
+ 445:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 446:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 447:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 448:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 449:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 450:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 451:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 452:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 453:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 454:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
+ 455:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 456:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) : "sp");
+ 457:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 458:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 459:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 460:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 461:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 462:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 463:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 464:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****     \return               Priority Mask value
+ 465:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****  */
+ 466:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_PRIMASK(void)
+ 467:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** {
+ 468:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   uint32_t result;
+ 469:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** 
+ 470:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h ****   __ASM volatile ("MRS %0, primask" : "=r" (result) );
+ 451              		.loc 2 470 0
+ 452              		.syntax unified
+ 453              	@ 470 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h" 1
+ 454 000a EFF31084 		MRS r4, primask
+ 455              	@ 0 "" 2
+ 456              	.LVL44:
+ 457              		.thumb
+ 458              		.syntax unified
+ 459              	.LBE35:
+ 460              	.LBE34:
+ 461              	.LBB36:
+ 462              	.LBB37:
+ 330:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 463              		.loc 2 330 0
+ 464              		.syntax unified
+ 465              	@ 330 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h" 1
+ 466 000e 72B6     		cpsid i
+ 467              	@ 0 "" 2
+ 468              		.thumb
+ 469              		.syntax unified
+ 470              	.LBE37:
+ 471              	.LBE36:
+ 472              	.LBB38:
+ 473              	.LBB39:
+ 474              		.file 3 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /**************************************************************************//**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * @file     core_cmInstr.h
+   3:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * @brief    CMSIS Cortex-M Core Instruction Access Header File
+   4:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * @version  V4.00
+   5:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * @date     28. August 2014
+   6:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  *
+   7:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * @note
+   8:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  *
+   9:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  ******************************************************************************/
+  10:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /* Copyright (c) 2009 - 2014 ARM LIMITED
+  11:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  12:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    All rights reserved.
+  13:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    Redistribution and use in source and binary forms, with or without
+  14:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    modification, are permitted provided that the following conditions are met:
+  15:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    - Redistributions of source code must retain the above copyright
+  16:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****      notice, this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    - Redistributions in binary form must reproduce the above copyright
+  18:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****      notice, this list of conditions and the following disclaimer in the
+  19:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****      documentation and/or other materials provided with the distribution.
+  20:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    - Neither the name of ARM nor the names of its contributors may be used
+  21:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****      to endorse or promote products derived from this software without
+  22:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****      specific prior written permission.
+  23:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    *
+  24:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  25:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  26:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  27:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+  28:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  29:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  31:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  32:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  33:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  34:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    POSSIBILITY OF SUCH DAMAGE.
+  35:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****    ---------------------------------------------------------------------------*/
+  36:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  37:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  38:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #ifndef __CORE_CMINSTR_H
+  39:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CORE_CMINSTR_H
+  40:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  41:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  42:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /* ##########################  Core Instruction Access  ######################### */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \defgroup CMSIS_Core_InstructionInterface CMSIS Core Instruction Interface
+  44:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   Access to dedicated instructions
+  45:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   @{
+  46:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** */
+  47:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  48:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #if   defined ( __CC_ARM ) /*------------------RealView Compiler -----------------*/
+  49:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /* ARM armcc specific functions */
+  50:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  51:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #if (__ARMCC_VERSION < 400677)
+  52:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   #error "Please use ARM Compiler Toolchain V4.0.677 or later!"
+  53:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif
+  54:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  55:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  56:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  No Operation
+  57:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  58:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     No Operation does nothing. This instruction can be used for code alignment purposes.
+  59:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+  60:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __NOP                             __nop
+  61:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  62:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  63:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Wait For Interrupt
+  64:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  65:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Wait For Interrupt is a hint instruction that suspends execution
+  66:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     until one of a number of events occurs.
+  67:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+  68:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __WFI                             __wfi
+  69:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  70:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  71:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Wait For Event
+  72:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  73:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Wait For Event is a hint instruction that permits the processor to enter
+  74:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     a low-power state until one of a number of events occurs.
+  75:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+  76:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __WFE                             __wfe
+  77:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  78:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  79:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Send Event
+  80:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  81:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+  82:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+  83:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __SEV                             __sev
+  84:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  85:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  86:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Instruction Synchronization Barrier
+  87:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  88:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Instruction Synchronization Barrier flushes the pipeline in the processor,
+  89:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     so that all instructions following the ISB are fetched from cache or
+  90:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     memory, after the instruction has been completed.
+  91:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+  92:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __ISB()                           __isb(0xF)
+  93:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  94:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  95:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Data Synchronization Barrier
+  96:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+  97:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function acts as a special kind of Data Memory Barrier.
+  98:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     It completes when all explicit memory accesses before this instruction complete.
+  99:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __DSB()                           __dsb(0xF)
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Data Memory Barrier
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function ensures the apparent order of the explicit memory operations before
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     and after the instruction, without ensuring their completion.
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __DMB()                           __dmb(0xF)
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Reverse byte order (32 bit)
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function reverses the byte order in integer value.
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Reversed value
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __REV                             __rev
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Reverse byte order (16 bit)
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function reverses the byte order in two unsigned short values.
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Reversed value
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #ifndef __NO_EMBEDDED_ASM
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__((section(".rev16_text"))) __STATIC_INLINE __ASM uint32_t __REV16(uint32_t value)
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   rev16 r0, r0
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   bx lr
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Reverse byte order in signed short value
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function reverses the byte order in a signed short value with sign extension to integer.
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Reversed value
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #ifndef __NO_EMBEDDED_ASM
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__((section(".revsh_text"))) __STATIC_INLINE __ASM int32_t __REVSH(int32_t value)
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   revsh r0, r0
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   bx lr
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Rotate Right in unsigned value (32 bit)
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function Rotate Right (immediate) provides the value of the contents of a register rotated
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to rotate
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Number of Bits to rotate
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Rotated value
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __ROR                             __ror
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Breakpoint
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function causes the processor to enter Debug state.
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Debug tools can use this to investigate system state when the instruction at a particular addre
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  is ignored by the processor.
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****                    If required, a debugger can use it to store additional information about the bre
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __BKPT(value)                       __breakpoint(value)
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #if       (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300)
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Reverse bit order of value
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function reverses the bit order of the given value.
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Reversed value
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __RBIT                            __rbit
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDR Exclusive (8 bit)
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive LDR instruction for 8 bit value.
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return             value of type uint8_t at (*ptr)
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDREXB(ptr)                     ((uint8_t ) __ldrex(ptr))
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDR Exclusive (16 bit)
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive LDR instruction for 16 bit values.
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return        value of type uint16_t at (*ptr)
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDREXH(ptr)                     ((uint16_t) __ldrex(ptr))
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 206:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDR Exclusive (32 bit)
+ 207:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 208:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive LDR instruction for 32 bit values.
+ 209:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 210:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 211:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return        value of type uint32_t at (*ptr)
+ 212:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 213:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDREXW(ptr)                     ((uint32_t ) __ldrex(ptr))
+ 214:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 215:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 216:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STR Exclusive (8 bit)
+ 217:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 218:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive STR instruction for 8 bit values.
+ 219:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 220:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 221:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 222:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          0  Function succeeded
+ 223:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          1  Function failed
+ 224:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 225:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STREXB(value, ptr)              __strex(value, ptr)
+ 226:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 227:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 228:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STR Exclusive (16 bit)
+ 229:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 230:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive STR instruction for 16 bit values.
+ 231:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 232:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 233:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 234:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          0  Function succeeded
+ 235:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          1  Function failed
+ 236:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 237:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STREXH(value, ptr)              __strex(value, ptr)
+ 238:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 239:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 240:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STR Exclusive (32 bit)
+ 241:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 242:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a exclusive STR instruction for 32 bit values.
+ 243:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 244:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 245:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 246:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          0  Function succeeded
+ 247:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return          1  Function failed
+ 248:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 249:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STREXW(value, ptr)              __strex(value, ptr)
+ 250:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 251:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 252:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Remove the exclusive lock
+ 253:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 254:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function removes the exclusive lock which is created by LDREX.
+ 255:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 256:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 257:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CLREX                           __clrex
+ 258:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 259:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 260:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Signed Saturate
+ 261:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 262:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function saturates a signed value.
+ 263:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 264:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to be saturated
+ 265:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    sat  Bit position to saturate to (1..32)
+ 266:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return             Saturated value
+ 267:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 268:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __SSAT                            __ssat
+ 269:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 270:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 271:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Unsigned Saturate
+ 272:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 273:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function saturates an unsigned value.
+ 274:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 275:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to be saturated
+ 276:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    sat  Bit position to saturate to (0..31)
+ 277:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return             Saturated value
+ 278:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 279:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __USAT                            __usat
+ 280:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 281:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 282:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Count leading zeros
+ 283:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 284:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function counts the number of leading zeros of a data value.
+ 285:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 286:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to count the leading zeros
+ 287:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return             number of leading zeros in value
+ 288:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 289:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CLZ                             __clz
+ 290:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 291:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 292:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Rotate Right with Extend (32 bit)
+ 293:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function moves each bit of a bitstring right by one bit. The carry input is shifted in at 
+ 295:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 296:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    value  Value to rotate
+ 297:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return               Rotated value
+ 298:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 299:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #ifndef __NO_EMBEDDED_ASM
+ 300:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__((section(".rrx_text"))) __STATIC_INLINE __ASM uint32_t __RRX(uint32_t value)
+ 301:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 302:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   rrx r0, r0
+ 303:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   bx lr
+ 304:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 305:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif
+ 306:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 307:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 308:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDRT Unprivileged (8 bit)
+ 309:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 310:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged LDRT instruction for 8 bit value.
+ 311:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 312:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 313:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return             value of type uint8_t at (*ptr)
+ 314:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 315:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDRBT(ptr)                      ((uint8_t )  __ldrt(ptr))
+ 316:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 317:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 318:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDRT Unprivileged (16 bit)
+ 319:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 320:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged LDRT instruction for 16 bit values.
+ 321:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 322:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 323:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return        value of type uint16_t at (*ptr)
+ 324:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 325:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDRHT(ptr)                      ((uint16_t)  __ldrt(ptr))
+ 326:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 327:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 328:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  LDRT Unprivileged (32 bit)
+ 329:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 330:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged LDRT instruction for 32 bit values.
+ 331:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 332:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 333:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \return        value of type uint32_t at (*ptr)
+ 334:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 335:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __LDRT(ptr)                       ((uint32_t ) __ldrt(ptr))
+ 336:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 337:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 338:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STRT Unprivileged (8 bit)
+ 339:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 340:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged STRT instruction for 8 bit values.
+ 341:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 342:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 343:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 344:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 345:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STRBT(value, ptr)               __strt(value, ptr)
+ 346:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 347:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 348:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STRT Unprivileged (16 bit)
+ 349:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 350:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged STRT instruction for 16 bit values.
+ 351:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 352:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 353:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 354:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 355:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STRHT(value, ptr)               __strt(value, ptr)
+ 356:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 357:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 358:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  STRT Unprivileged (32 bit)
+ 359:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 360:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function executes a Unprivileged STRT instruction for 32 bit values.
+ 361:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 362:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]  value  Value to store
+ 363:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 364:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 365:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __STRT(value, ptr)                __strt(value, ptr)
+ 366:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 367:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif /* (__CORTEX_M >= 0x03) || (__CORTEX_SC >= 300) */
+ 368:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 369:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 370:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
+ 371:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /* GNU gcc specific functions */
+ 372:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 373:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /* Define macros for porting to both thumb1 and thumb2.
+ 374:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * For thumb1, use low register (r0-r7), specified by constrant "l"
+ 375:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  * Otherwise, use general registers, specified by constrant "r" */
+ 376:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #if defined (__thumb__) && !defined (__thumb2__)
+ 377:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CMSIS_GCC_OUT_REG(r) "=l" (r)
+ 378:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CMSIS_GCC_USE_REG(r) "l" (r)
+ 379:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #else
+ 380:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CMSIS_GCC_OUT_REG(r) "=r" (r)
+ 381:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #define __CMSIS_GCC_USE_REG(r) "r" (r)
+ 382:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** #endif
+ 383:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 384:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  No Operation
+ 385:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 386:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     No Operation does nothing. This instruction can be used for code alignment purposes.
+ 387:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 388:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __NOP(void)
+ 389:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 390:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("nop");
+ 391:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 392:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 393:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 394:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Wait For Interrupt
+ 395:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 396:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Wait For Interrupt is a hint instruction that suspends execution
+ 397:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     until one of a number of events occurs.
+ 398:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 399:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __WFI(void)
+ 400:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 401:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("wfi");
+ 402:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 403:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 404:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 405:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Wait For Event
+ 406:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 407:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Wait For Event is a hint instruction that permits the processor to enter
+ 408:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     a low-power state until one of a number of events occurs.
+ 409:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 410:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __WFE(void)
+ 411:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 412:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("wfe");
+ 413:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 414:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 415:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 416:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Send Event
+ 417:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 418:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+ 419:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 420:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __SEV(void)
+ 421:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 422:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("sev");
+ 423:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 424:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 425:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 426:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Instruction Synchronization Barrier
+ 427:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 428:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     Instruction Synchronization Barrier flushes the pipeline in the processor,
+ 429:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     so that all instructions following the ISB are fetched from cache or
+ 430:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     memory, after the instruction has been completed.
+ 431:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 432:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __ISB(void)
+ 433:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 434:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("isb");
+ 435:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 436:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 437:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 438:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Data Synchronization Barrier
+ 439:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 440:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function acts as a special kind of Data Memory Barrier.
+ 441:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     It completes when all explicit memory accesses before this instruction complete.
+ 442:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 443:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __DSB(void)
+ 444:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 445:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("dsb");
+ 446:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** }
+ 447:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 448:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 449:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** /** \brief  Data Memory Barrier
+ 450:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** 
+ 451:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     This function ensures the apparent order of the explicit memory operations before
+ 452:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****     and after the instruction, without ensuring their completion.
+ 453:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****  */
+ 454:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __DMB(void)
+ 455:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h **** {
+ 456:/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h ****   __ASM volatile ("dmb");
+ 475              		.loc 3 456 0
+ 476              		.syntax unified
+ 477              	@ 456 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h" 1
+ 478 0010 BFF35F8F 		dmb
+ 479              	@ 0 "" 2
+ 480              		.thumb
+ 481              		.syntax unified
+ 482              	.LBE39:
+ 483              	.LBE38:
+ 484              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \file
+   3:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+   4:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \brief Global interrupt management for SAM D20, SAM3 and SAM4 (NVIC based)
+   5:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+   6:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+   7:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+   8:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \asf_license_start
+   9:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  10:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \page License
+  11:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  12:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * Redistribution and use in source and binary forms, with or without
+  13:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * modification, are permitted provided that the following conditions are met:
+  14:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  15:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *    this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  18:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *    this list of conditions and the following disclaimer in the documentation
+  20:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *    and/or other materials provided with the distribution.
+  21:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  22:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *    from this software without specific prior written permission.
+  24:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  25:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * 4. This software may only be redistributed and used in connection with an
+  26:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *    Atmel microcontroller product.
+  27:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  28:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  40:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \asf_license_stop
+  41:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  42:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /*
+  44:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  46:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  47:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #ifndef UTILS_INTERRUPT_INTERRUPT_H
+  48:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #define UTILS_INTERRUPT_INTERRUPT_H
+  49:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  50:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #include <compiler.h>
+  51:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #include <parts.h>
+  52:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  53:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #ifdef __cplusplus
+  54:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** extern "C" {
+  55:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #endif
+  56:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  57:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+  58:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \weakgroup interrupt_group
+  59:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  60:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * @{
+  61:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  62:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  63:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+  64:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \name Interrupt Service Routine definition
+  65:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  66:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * @{
+  67:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  68:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  69:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+  70:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \brief Define service routine
+  71:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  72:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \note For NVIC devices the interrupt service routines are predefined to
+  73:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *       add to vector table in binary generation, so there is no service
+  74:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *       register at run time. The routine collections are in exceptions.h.
+  75:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  76:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * Usage:
+  77:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \code
+  78:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	ISR(foo_irq_handler)
+  79:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	{
+  80:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	     // Function definition
+  81:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	     ...
+  82:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	}
+  83:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** \endcode
+  84:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  85:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \param func Name for the function.
+  86:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  87:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #  define ISR(func)   \
+  88:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	void func (void)
+  89:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+  90:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+  91:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \brief Initialize interrupt vectors
+  92:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  93:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * For NVIC the interrupt vectors are put in vector table. So nothing
+  94:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * to do to initialize them, except defined the vector function with
+  95:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * right name.
+  96:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+  97:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * This must be called prior to \ref irq_register_handler.
+  98:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+  99:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #  define irq_initialize_vectors()   \
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	do {                             \
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	} while(0)
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** /**
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \brief Register handler for interrupt
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * For NVIC the interrupt vectors are put in vector table. So nothing
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * to do to register them, except defined the vector function with
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * right name.
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * Usage:
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \code
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	irq_initialize_vectors();
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	irq_register_handler(foo_irq_handler);
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** \endcode
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \note The function \a func must be defined with the \ref ISR macro.
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  * \note The functions prototypes can be found in the device exception header
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  *       files (exceptions.h).
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h ****  */
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #  define irq_register_handler(int_num, int_prio)                      \
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	NVIC_ClearPendingIRQ(    (IRQn_Type)int_num);                      \
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	NVIC_SetPriority(    (IRQn_Type)int_num, int_prio);                \
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	NVIC_EnableIRQ(      (IRQn_Type)int_num);                          \
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** //@}
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #  define cpu_irq_enable()                     \
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	do {                                       \
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		g_interrupt_enabled = true;            \
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		__DMB();                               \
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		__enable_irq();                        \
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	} while (0)
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #  define cpu_irq_disable()                    \
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	do {                                       \
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		__disable_irq();                       \
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		__DMB();                               \
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		g_interrupt_enabled = false;           \
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	} while (0)
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** typedef uint32_t irqflags_t;
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #if !defined(__DOXYGEN__)
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** extern volatile bool g_interrupt_enabled;
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #endif
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** #define cpu_irq_is_enabled()    (__get_PRIMASK() == 0)
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** static volatile uint32_t cpu_irq_critical_section_counter;
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** static volatile bool     cpu_irq_prev_interrupt_state;
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** static inline irqflags_t cpu_irq_save(void)
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** {
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	irqflags_t flags = cpu_irq_is_enabled();
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	cpu_irq_disable();
+ 485              		.loc 4 154 0
+ 486 0014 0025     		movs	r5, #0
+ 487 0016 0C4B     		ldr	r3, .L32
+ 488 0018 1D70     		strb	r5, [r3]
+ 489              	.LBE33:
+ 490              	.LBE32:
+ 280:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_command));
+ 491              		.loc 1 280 0
+ 492 001a 1202     		lsls	r2, r2, #8
+ 493              	.LVL45:
+ 494 001c 22F07F42 		bic	r2, r2, #-16777216
+ 495 0020 22F0FF02 		bic	r2, r2, #255
+ 281:../src/sam/drivers/efc/efc.c **** 	cpu_irq_restore(flags);
+ 496              		.loc 1 281 0
+ 497 0024 C9B2     		uxtb	r1, r1
+ 498              	.LVL46:
+ 280:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FCMD(ul_command));
+ 499              		.loc 1 280 0
+ 500 0026 1143     		orrs	r1, r1, r2
+ 279:../src/sam/drivers/efc/efc.c **** 			EEFC_FCR_FKEY_PASSWD | EEFC_FCR_FARG(ul_argument) |
+ 501              		.loc 1 279 0
+ 502 0028 41F0B441 		orr	r1, r1, #1509949440
+ 503 002c FFF7FEFF 		bl	efc_perform_fcr
+ 504              	.LVL47:
+ 505              	.LBB40:
+ 506              	.LBB41:
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	return flags;
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** }
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** static inline bool cpu_irq_is_enabled_flags(irqflags_t flags)
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** {
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	return (flags);
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** }
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** static inline void cpu_irq_restore(irqflags_t flags)
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** {
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 	if (cpu_irq_is_enabled_flags(flags))
+ 507              		.loc 4 165 0
+ 508 0030 44B9     		cbnz	r4, .L28
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h **** 		cpu_irq_enable();
+ 509              		.loc 4 166 0
+ 510 0032 0122     		movs	r2, #1
+ 511 0034 044B     		ldr	r3, .L32
+ 512 0036 1A70     		strb	r2, [r3]
+ 513              	.LBB42:
+ 514              	.LBB43:
+ 515              		.loc 3 456 0
+ 516              		.syntax unified
+ 517              	@ 456 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmInstr.h" 1
+ 518 0038 BFF35F8F 		dmb
+ 519              	@ 0 "" 2
+ 520              		.thumb
+ 521              		.syntax unified
+ 522              	.LBE43:
+ 523              	.LBE42:
+ 524              	.LBB44:
+ 525              	.LBB45:
+ 319:/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h **** }
+ 526              		.loc 2 319 0
+ 527              		.syntax unified
+ 528              	@ 319 "/home/bekeband/workspace/OLIMEX_Start/src/core_cmFunc.h" 1
+ 529 003c 62B6     		cpsie i
+ 530              	@ 0 "" 2
+ 531              		.thumb
+ 532              		.syntax unified
+ 533 003e 38BD     		pop	{r3, r4, r5, pc}
+ 534              	.LVL48:
+ 535              	.L29:
+ 536              	.LBE45:
+ 537              	.LBE44:
+ 538              	.LBE41:
+ 539              	.LBE40:
+ 274:../src/sam/drivers/efc/efc.c **** 	}
+ 540              		.loc 1 274 0
+ 541 0040 4FF0FF30 		mov	r0, #-1
+ 542              	.LVL49:
+ 543              	.L28:
+ 284:../src/sam/drivers/efc/efc.c **** 
+ 544              		.loc 1 284 0
+ 545 0044 38BD     		pop	{r3, r4, r5, pc}
+ 546              	.L33:
+ 547 0046 00BF     		.align	2
+ 548              	.L32:
+ 549 0048 00000000 		.word	g_interrupt_enabled
+ 550              		.cfi_endproc
+ 551              	.LFE80:
+ 553              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 554              		.align	2
+ 557              	cpu_irq_critical_section_counter:
+ 558 0000 00000000 		.space	4
+ 559              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 562              	cpu_irq_prev_interrupt_state:
+ 563 0000 00       		.space	1
+ 564              		.text
+ 565              	.Letext0:
+ 566              		.file 5 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 567              		.file 6 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 568              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 569              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_efc.h"
+ 570              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 571              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/efc.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 efc.c
+     /tmp/ccw7msqQ.s:20     .text.efc_get_flash_access_mode:00000000 $t
+     /tmp/ccw7msqQ.s:25     .text.efc_get_flash_access_mode:00000000 efc_get_flash_access_mode
+     /tmp/ccw7msqQ.s:44     .text.efc_get_wait_state:00000000 $t
+     /tmp/ccw7msqQ.s:49     .text.efc_get_wait_state:00000000 efc_get_wait_state
+     /tmp/ccw7msqQ.s:67     .text.efc_get_status:00000000 $t
+     /tmp/ccw7msqQ.s:72     .text.efc_get_status:00000000 efc_get_status
+     /tmp/ccw7msqQ.s:89     .text.efc_get_result:00000000 $t
+     /tmp/ccw7msqQ.s:94     .text.efc_get_result:00000000 efc_get_result
+     /tmp/ccw7msqQ.s:111    .ramfunc:00000000 $t
+     /tmp/ccw7msqQ.s:116    .ramfunc:00000000 efc_perform_read_sequence
+     /tmp/ccw7msqQ.s:220    .ramfunc:00000064 efc_write_fmr
+     /tmp/ccw7msqQ.s:235    .text.efc_init:00000000 $t
+     /tmp/ccw7msqQ.s:240    .text.efc_init:00000000 efc_init
+     /tmp/ccw7msqQ.s:266    .text.efc_enable_frdy_interrupt:00000000 $t
+     /tmp/ccw7msqQ.s:271    .text.efc_enable_frdy_interrupt:00000000 efc_enable_frdy_interrupt
+     /tmp/ccw7msqQ.s:295    .text.efc_disable_frdy_interrupt:00000000 $t
+     /tmp/ccw7msqQ.s:300    .text.efc_disable_frdy_interrupt:00000000 efc_disable_frdy_interrupt
+     /tmp/ccw7msqQ.s:324    .text.efc_set_flash_access_mode:00000000 $t
+     /tmp/ccw7msqQ.s:329    .text.efc_set_flash_access_mode:00000000 efc_set_flash_access_mode
+     /tmp/ccw7msqQ.s:354    .text.efc_set_wait_state:00000000 $t
+     /tmp/ccw7msqQ.s:359    .text.efc_set_wait_state:00000000 efc_set_wait_state
+     /tmp/ccw7msqQ.s:391    .ramfunc:00000068 efc_perform_fcr
+     /tmp/ccw7msqQ.s:424    .text.efc_perform_command:00000000 $t
+     /tmp/ccw7msqQ.s:429    .text.efc_perform_command:00000000 efc_perform_command
+     /tmp/ccw7msqQ.s:549    .text.efc_perform_command:00000048 $d
+     /tmp/ccw7msqQ.s:554    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccw7msqQ.s:557    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccw7msqQ.s:562    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccw7msqQ.s:563    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.efc.h.74.a20fdcf5c0d82132dea537fa30ce83b8
+
+UNDEFINED SYMBOLS
+g_interrupt_enabled

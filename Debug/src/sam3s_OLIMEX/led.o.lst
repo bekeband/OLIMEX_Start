@@ -1,0 +1,399 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"led.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.LED_Off,"ax",%progbits
+  20              		.align	2
+  21              		.global	LED_Off
+  22              		.thumb
+  23              		.thumb_func
+  25              	LED_Off:
+  26              	.LFB73:
+  27              		.file 1 "../src/sam3s_OLIMEX/led.c"
+   1:../src/sam3s_OLIMEX/led.c **** /**
+   2:../src/sam3s_OLIMEX/led.c ****  * \file
+   3:../src/sam3s_OLIMEX/led.c ****  *
+   4:../src/sam3s_OLIMEX/led.c ****  * \brief SAM3S-EK LEDs support package.
+   5:../src/sam3s_OLIMEX/led.c ****  *
+   6:../src/sam3s_OLIMEX/led.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:../src/sam3s_OLIMEX/led.c ****  *
+   8:../src/sam3s_OLIMEX/led.c ****  * \asf_license_start
+   9:../src/sam3s_OLIMEX/led.c ****  *
+  10:../src/sam3s_OLIMEX/led.c ****  * \page License
+  11:../src/sam3s_OLIMEX/led.c ****  *
+  12:../src/sam3s_OLIMEX/led.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/sam3s_OLIMEX/led.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/sam3s_OLIMEX/led.c ****  *
+  15:../src/sam3s_OLIMEX/led.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/sam3s_OLIMEX/led.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/sam3s_OLIMEX/led.c ****  *
+  18:../src/sam3s_OLIMEX/led.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/sam3s_OLIMEX/led.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/sam3s_OLIMEX/led.c ****  *    and/or other materials provided with the distribution.
+  21:../src/sam3s_OLIMEX/led.c ****  *
+  22:../src/sam3s_OLIMEX/led.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/sam3s_OLIMEX/led.c ****  *    from this software without specific prior written permission.
+  24:../src/sam3s_OLIMEX/led.c ****  *
+  25:../src/sam3s_OLIMEX/led.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/sam3s_OLIMEX/led.c ****  *    Atmel microcontroller product.
+  27:../src/sam3s_OLIMEX/led.c ****  *
+  28:../src/sam3s_OLIMEX/led.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/sam3s_OLIMEX/led.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/sam3s_OLIMEX/led.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/sam3s_OLIMEX/led.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/sam3s_OLIMEX/led.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/sam3s_OLIMEX/led.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/sam3s_OLIMEX/led.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/sam3s_OLIMEX/led.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/sam3s_OLIMEX/led.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/sam3s_OLIMEX/led.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/sam3s_OLIMEX/led.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/sam3s_OLIMEX/led.c ****  *
+  40:../src/sam3s_OLIMEX/led.c ****  * \asf_license_stop
+  41:../src/sam3s_OLIMEX/led.c ****  *
+  42:../src/sam3s_OLIMEX/led.c ****  */
+  43:../src/sam3s_OLIMEX/led.c **** /*
+  44:../src/sam3s_OLIMEX/led.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/sam3s_OLIMEX/led.c ****  */
+  46:../src/sam3s_OLIMEX/led.c **** 
+  47:../src/sam3s_OLIMEX/led.c **** #include "board.h"
+  48:../src/sam3s_OLIMEX/led.c **** #include "led.h"
+  49:../src/sam3s_OLIMEX/led.c **** #include "gpio.h"
+  50:../src/sam3s_OLIMEX/led.c **** 
+  51:../src/sam3s_OLIMEX/led.c **** #define ACTIVE_LEVEL_IS_HIGH 1
+  52:../src/sam3s_OLIMEX/led.c **** 
+  53:../src/sam3s_OLIMEX/led.c **** typedef const struct
+  54:../src/sam3s_OLIMEX/led.c **** {
+  55:../src/sam3s_OLIMEX/led.c ****     uint32_t ul_port_id;      //!< LED GPIO port.
+  56:../src/sam3s_OLIMEX/led.c ****     uint32_t ul_active_level; //!< Active level of the LED.
+  57:../src/sam3s_OLIMEX/led.c **** } tLED_DESCRIPTOR;
+  58:../src/sam3s_OLIMEX/led.c **** 
+  59:../src/sam3s_OLIMEX/led.c **** //! Hardware descriptors of all LEDs.
+  60:../src/sam3s_OLIMEX/led.c **** static tLED_DESCRIPTOR LED_DESCRIPTOR[BOARD_NUM_OF_LED] =
+  61:../src/sam3s_OLIMEX/led.c **** {
+  62:../src/sam3s_OLIMEX/led.c **** #define INSERT_LED_DESCRIPTOR(LED_NO, unused)      \
+  63:../src/sam3s_OLIMEX/led.c ****   {                                                \
+  64:../src/sam3s_OLIMEX/led.c ****     LED##LED_NO##_GPIO, LED##LED_NO##_ACTIVE_LEVEL \
+  65:../src/sam3s_OLIMEX/led.c ****   },
+  66:../src/sam3s_OLIMEX/led.c ****   MREPEAT(BOARD_NUM_OF_LED, INSERT_LED_DESCRIPTOR, ~)
+  67:../src/sam3s_OLIMEX/led.c **** #undef INSERT_LED_DESCRIPTOR
+  68:../src/sam3s_OLIMEX/led.c **** };
+  69:../src/sam3s_OLIMEX/led.c **** 
+  70:../src/sam3s_OLIMEX/led.c **** /*! \brief Turns off the specified LEDs.
+  71:../src/sam3s_OLIMEX/led.c ****  *
+  72:../src/sam3s_OLIMEX/led.c ****  * \param led_gpio LED to turn off (LEDx_GPIO).
+  73:../src/sam3s_OLIMEX/led.c ****  *
+  74:../src/sam3s_OLIMEX/led.c ****  * \note The pins of the specified LEDs are set to GPIO output mode.
+  75:../src/sam3s_OLIMEX/led.c ****  */
+  76:../src/sam3s_OLIMEX/led.c **** void LED_Off(uint32_t led_gpio)
+  77:../src/sam3s_OLIMEX/led.c **** {
+  28              		.loc 1 77 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 38B5     		push	{r3, r4, r5, lr}
+  34              		.cfi_def_cfa_offset 16
+  35              		.cfi_offset 3, -16
+  36              		.cfi_offset 4, -12
+  37              		.cfi_offset 5, -8
+  38              		.cfi_offset 14, -4
+  39 0002 0546     		mov	r5, r0
+  40              	.LVL1:
+  78:../src/sam3s_OLIMEX/led.c **** 	uint32_t i;
+  79:../src/sam3s_OLIMEX/led.c **** 	for (i = 0; i < BOARD_NUM_OF_LED; i++) {
+  41              		.loc 1 79 0
+  42 0004 0024     		movs	r4, #0
+  43 0006 12E0     		b	.L2
+  44              	.LVL2:
+  45              	.L5:
+  80:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+  46              		.loc 1 80 0
+  47 0008 0A4B     		ldr	r3, .L7
+  48 000a 53F83430 		ldr	r3, [r3, r4, lsl #3]
+  49 000e AB42     		cmp	r3, r5
+  50 0010 0CD1     		bne	.L3
+  81:../src/sam3s_OLIMEX/led.c **** 			if (LED_DESCRIPTOR[i].ul_active_level == ACTIVE_LEVEL_IS_HIGH) {
+  51              		.loc 1 81 0
+  52 0012 084B     		ldr	r3, .L7
+  53 0014 03EBC403 		add	r3, r3, r4, lsl #3
+  54 0018 5B68     		ldr	r3, [r3, #4]
+  55 001a 012B     		cmp	r3, #1
+  56 001c 03D1     		bne	.L4
+  82:../src/sam3s_OLIMEX/led.c **** 				gpio_set_pin_low(led_gpio);
+  57              		.loc 1 82 0
+  58 001e 2846     		mov	r0, r5
+  59 0020 FFF7FEFF 		bl	pio_set_pin_low
+  60              	.LVL3:
+  61 0024 02E0     		b	.L3
+  62              	.L4:
+  83:../src/sam3s_OLIMEX/led.c **** 			} else {
+  84:../src/sam3s_OLIMEX/led.c **** 				gpio_set_pin_high(led_gpio);
+  63              		.loc 1 84 0
+  64 0026 2846     		mov	r0, r5
+  65 0028 FFF7FEFF 		bl	pio_set_pin_high
+  66              	.LVL4:
+  67              	.L3:
+  79:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+  68              		.loc 1 79 0 discriminator 2
+  69 002c 0134     		adds	r4, r4, #1
+  70              	.LVL5:
+  71              	.L2:
+  79:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+  72              		.loc 1 79 0 is_stmt 0 discriminator 1
+  73 002e 012C     		cmp	r4, #1
+  74 0030 EAD9     		bls	.L5
+  85:../src/sam3s_OLIMEX/led.c **** 			}
+  86:../src/sam3s_OLIMEX/led.c **** 		}
+  87:../src/sam3s_OLIMEX/led.c **** 	}
+  88:../src/sam3s_OLIMEX/led.c **** }
+  75              		.loc 1 88 0 is_stmt 1
+  76 0032 38BD     		pop	{r3, r4, r5, pc}
+  77              	.LVL6:
+  78              	.L8:
+  79              		.align	2
+  80              	.L7:
+  81 0034 00000000 		.word	.LANCHOR0
+  82              		.cfi_endproc
+  83              	.LFE73:
+  85              		.section	.text.LED_On,"ax",%progbits
+  86              		.align	2
+  87              		.global	LED_On
+  88              		.thumb
+  89              		.thumb_func
+  91              	LED_On:
+  92              	.LFB74:
+  89:../src/sam3s_OLIMEX/led.c **** 
+  90:../src/sam3s_OLIMEX/led.c **** /*! \brief Turns on the specified LEDs.
+  91:../src/sam3s_OLIMEX/led.c ****  *
+  92:../src/sam3s_OLIMEX/led.c ****  * \param led_gpio LED to turn on (LEDx_GPIO).
+  93:../src/sam3s_OLIMEX/led.c ****  *
+  94:../src/sam3s_OLIMEX/led.c ****  * \note The pins of the specified LEDs are set to GPIO output mode.
+  95:../src/sam3s_OLIMEX/led.c ****  */
+  96:../src/sam3s_OLIMEX/led.c **** void LED_On(uint32_t led_gpio)
+  97:../src/sam3s_OLIMEX/led.c **** {
+  93              		.loc 1 97 0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              	.LVL7:
+  98 0000 38B5     		push	{r3, r4, r5, lr}
+  99              		.cfi_def_cfa_offset 16
+ 100              		.cfi_offset 3, -16
+ 101              		.cfi_offset 4, -12
+ 102              		.cfi_offset 5, -8
+ 103              		.cfi_offset 14, -4
+ 104 0002 0546     		mov	r5, r0
+ 105              	.LVL8:
+  98:../src/sam3s_OLIMEX/led.c **** 	uint32_t i;
+  99:../src/sam3s_OLIMEX/led.c **** 	for (i = 0; i < BOARD_NUM_OF_LED; i++) {
+ 106              		.loc 1 99 0
+ 107 0004 0024     		movs	r4, #0
+ 108 0006 12E0     		b	.L10
+ 109              	.LVL9:
+ 110              	.L13:
+ 100:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+ 111              		.loc 1 100 0
+ 112 0008 0A4B     		ldr	r3, .L15
+ 113 000a 53F83430 		ldr	r3, [r3, r4, lsl #3]
+ 114 000e AB42     		cmp	r3, r5
+ 115 0010 0CD1     		bne	.L11
+ 101:../src/sam3s_OLIMEX/led.c **** 			if (LED_DESCRIPTOR[i].ul_active_level == ACTIVE_LEVEL_IS_HIGH) {
+ 116              		.loc 1 101 0
+ 117 0012 084B     		ldr	r3, .L15
+ 118 0014 03EBC403 		add	r3, r3, r4, lsl #3
+ 119 0018 5B68     		ldr	r3, [r3, #4]
+ 120 001a 012B     		cmp	r3, #1
+ 121 001c 03D1     		bne	.L12
+ 102:../src/sam3s_OLIMEX/led.c **** 				gpio_set_pin_high(led_gpio);
+ 122              		.loc 1 102 0
+ 123 001e 2846     		mov	r0, r5
+ 124 0020 FFF7FEFF 		bl	pio_set_pin_high
+ 125              	.LVL10:
+ 126 0024 02E0     		b	.L11
+ 127              	.L12:
+ 103:../src/sam3s_OLIMEX/led.c **** 			} else {
+ 104:../src/sam3s_OLIMEX/led.c **** 				gpio_set_pin_low(led_gpio);
+ 128              		.loc 1 104 0
+ 129 0026 2846     		mov	r0, r5
+ 130 0028 FFF7FEFF 		bl	pio_set_pin_low
+ 131              	.LVL11:
+ 132              	.L11:
+  99:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+ 133              		.loc 1 99 0 discriminator 2
+ 134 002c 0134     		adds	r4, r4, #1
+ 135              	.LVL12:
+ 136              	.L10:
+  99:../src/sam3s_OLIMEX/led.c **** 		if (led_gpio == LED_DESCRIPTOR[i].ul_port_id) {
+ 137              		.loc 1 99 0 is_stmt 0 discriminator 1
+ 138 002e 012C     		cmp	r4, #1
+ 139 0030 EAD9     		bls	.L13
+ 105:../src/sam3s_OLIMEX/led.c **** 			}
+ 106:../src/sam3s_OLIMEX/led.c **** 		}
+ 107:../src/sam3s_OLIMEX/led.c **** 	}
+ 108:../src/sam3s_OLIMEX/led.c **** }
+ 140              		.loc 1 108 0 is_stmt 1
+ 141 0032 38BD     		pop	{r3, r4, r5, pc}
+ 142              	.LVL13:
+ 143              	.L16:
+ 144              		.align	2
+ 145              	.L15:
+ 146 0034 00000000 		.word	.LANCHOR0
+ 147              		.cfi_endproc
+ 148              	.LFE74:
+ 150              		.section	.rodata.LED_DESCRIPTOR,"a",%progbits
+ 151              		.align	2
+ 152              		.set	.LANCHOR0,. + 0
+ 155              	LED_DESCRIPTOR:
+ 156 0000 12000000 		.word	18
+ 157 0004 00000000 		.word	0
+ 158 0008 11000000 		.word	17
+ 159 000c 00000000 		.word	0
+ 160              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 161              		.align	2
+ 164              	cpu_irq_critical_section_counter:
+ 165 0000 00000000 		.space	4
+ 166              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 169              	cpu_irq_prev_interrupt_state:
+ 170 0000 00       		.space	1
+ 171              		.text
+ 172              	.Letext0:
+ 173              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 174              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 175              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 176              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 177              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 led.c
+     /tmp/ccqdnuum.s:20     .text.LED_Off:00000000 $t
+     /tmp/ccqdnuum.s:25     .text.LED_Off:00000000 LED_Off
+     /tmp/ccqdnuum.s:81     .text.LED_Off:00000034 $d
+     /tmp/ccqdnuum.s:86     .text.LED_On:00000000 $t
+     /tmp/ccqdnuum.s:91     .text.LED_On:00000000 LED_On
+     /tmp/ccqdnuum.s:146    .text.LED_On:00000034 $d
+     /tmp/ccqdnuum.s:151    .rodata.LED_DESCRIPTOR:00000000 $d
+     /tmp/ccqdnuum.s:155    .rodata.LED_DESCRIPTOR:00000000 LED_DESCRIPTOR
+     /tmp/ccqdnuum.s:161    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccqdnuum.s:164    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccqdnuum.s:169    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccqdnuum.s:170    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.bd6b70bfb51a4c4e00acd4c99bf5da8f
+                           .group:00000000 wm4.pio.h.48.6839f7027cbf1ef96bb233af1f2246d9
+                           .group:00000000 wm4.sam_gpio.h.53.afc3161f12a06e30e82678b4b38e082b
+
+UNDEFINED SYMBOLS
+pio_set_pin_low
+pio_set_pin_high

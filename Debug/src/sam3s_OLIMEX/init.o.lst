@@ -1,0 +1,898 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"init.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.board_init,"ax",%progbits
+  20              		.align	2
+  21              		.global	board_init
+  22              		.thumb
+  23              		.thumb_func
+  25              	board_init:
+  26              	.LFB135:
+  27              		.file 1 "../src/sam3s_OLIMEX/init.c"
+   1:../src/sam3s_OLIMEX/init.c **** /**
+   2:../src/sam3s_OLIMEX/init.c ****  * \file
+   3:../src/sam3s_OLIMEX/init.c ****  *
+   4:../src/sam3s_OLIMEX/init.c ****  * \brief SAM3S-EK board init.
+   5:../src/sam3s_OLIMEX/init.c ****  *
+   6:../src/sam3s_OLIMEX/init.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:../src/sam3s_OLIMEX/init.c ****  *
+   8:../src/sam3s_OLIMEX/init.c ****  * \asf_license_start
+   9:../src/sam3s_OLIMEX/init.c ****  *
+  10:../src/sam3s_OLIMEX/init.c ****  * \page License
+  11:../src/sam3s_OLIMEX/init.c ****  *
+  12:../src/sam3s_OLIMEX/init.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/sam3s_OLIMEX/init.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/sam3s_OLIMEX/init.c ****  *
+  15:../src/sam3s_OLIMEX/init.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/sam3s_OLIMEX/init.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/sam3s_OLIMEX/init.c ****  *
+  18:../src/sam3s_OLIMEX/init.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/sam3s_OLIMEX/init.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/sam3s_OLIMEX/init.c ****  *    and/or other materials provided with the distribution.
+  21:../src/sam3s_OLIMEX/init.c ****  *
+  22:../src/sam3s_OLIMEX/init.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/sam3s_OLIMEX/init.c ****  *    from this software without specific prior written permission.
+  24:../src/sam3s_OLIMEX/init.c ****  *
+  25:../src/sam3s_OLIMEX/init.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/sam3s_OLIMEX/init.c ****  *    Atmel microcontroller product.
+  27:../src/sam3s_OLIMEX/init.c ****  *
+  28:../src/sam3s_OLIMEX/init.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/sam3s_OLIMEX/init.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/sam3s_OLIMEX/init.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/sam3s_OLIMEX/init.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/sam3s_OLIMEX/init.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/sam3s_OLIMEX/init.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/sam3s_OLIMEX/init.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/sam3s_OLIMEX/init.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/sam3s_OLIMEX/init.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/sam3s_OLIMEX/init.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/sam3s_OLIMEX/init.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/sam3s_OLIMEX/init.c ****  *
+  40:../src/sam3s_OLIMEX/init.c ****  * \asf_license_stop
+  41:../src/sam3s_OLIMEX/init.c ****  *
+  42:../src/sam3s_OLIMEX/init.c ****  */
+  43:../src/sam3s_OLIMEX/init.c **** /*
+  44:../src/sam3s_OLIMEX/init.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/sam3s_OLIMEX/init.c ****  */
+  46:../src/sam3s_OLIMEX/init.c **** 
+  47:../src/sam3s_OLIMEX/init.c **** #include "compiler.h"
+  48:../src/sam3s_OLIMEX/init.c **** #include "board.h"
+  49:../src/sam3s_OLIMEX/init.c **** #include "conf_board.h"
+  50:../src/sam3s_OLIMEX/init.c **** #include "gpio.h"
+  51:../src/sam3s_OLIMEX/init.c **** #include "ioport.h"
+  52:../src/sam3s_OLIMEX/init.c **** 
+  53:../src/sam3s_OLIMEX/init.c **** void board_init(void)
+  54:../src/sam3s_OLIMEX/init.c **** {
+  28              		.loc 1 54 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  55:../src/sam3s_OLIMEX/init.c **** #ifndef CONF_BOARD_KEEP_WATCHDOG_AT_INIT
+  56:../src/sam3s_OLIMEX/init.c **** 	/* Disable the watchdog */
+  57:../src/sam3s_OLIMEX/init.c **** 	WDT->WDT_MR = WDT_MR_WDDIS;
+  36              		.loc 1 57 0
+  37 0002 4FF40042 		mov	r2, #32768
+  38 0006 204B     		ldr	r3, .L3
+  39 0008 5A60     		str	r2, [r3, #4]
+  40              	.LVL0:
+  41              	.LBB15:
+  42              	.LBB16:
+  43              	.LBB17:
+  44              	.LBB18:
+  45              		.file 2 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \file
+   3:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   4:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Chip-specific system clock management functions.
+   5:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   6:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   8:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \asf_license_start
+   9:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  10:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page License
+  11:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  12:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Redistribution and use in source and binary forms, with or without
+  13:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * modification, are permitted provided that the following conditions are met:
+  14:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  15:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  18:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    this list of conditions and the following disclaimer in the documentation
+  20:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    and/or other materials provided with the distribution.
+  21:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  22:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    from this software without specific prior written permission.
+  24:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  25:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 4. This software may only be redistributed and used in connection with an
+  26:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    Atmel microcontroller product.
+  27:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  28:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  40:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \asf_license_stop
+  41:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  42:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /*
+  44:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+  46:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  47:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CHIP_SYSCLK_H_INCLUDED
+  48:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define CHIP_SYSCLK_H_INCLUDED
+  49:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  50:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (SAM3S8 || SAM3SD8)
+  51:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <osc.h>
+  52:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <pll.h>
+  53:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #else
+  54:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <osc.h>
+  55:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <pll.h>
+  56:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+  57:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  58:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+  59:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page sysclk_quickstart Quick Start Guide for the System Clock Management service (SAM3S)
+  60:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  61:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This is the quick start guide for the \ref sysclk_group "System Clock Management"
+  62:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * service, with step-by-step instructions on how to configure and use the service for
+  63:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * specific use cases.
+  64:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  65:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_usecases System Clock Management use cases
+  66:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * - \ref sysclk_quickstart_basic
+  67:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * - \ref sysclk_quickstart_use_case_2
+  68:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  69:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_basic Basic usage of the System Clock Management service
+  70:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This section will present a basic use case for the System Clock Management service.
+  71:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This use case will configure the main system clock to 64MHz, using an internal PLL
+  72:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * module to multiply the frequency of a crystal attached to the microcontroller.
+  73:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  74:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_prereq Prerequisites
+  75:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  - None
+  76:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  77:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_setup_steps Initialization code
+  78:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Add to the application initialization code:
+  79:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \code
+  80:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	sysclk_init();
+  81:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+  82:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  83:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_setup_steps_workflow Workflow
+  84:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * -# Configure the system clocks according to the settings in conf_clock.h:
+  85:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code sysclk_init(); \endcode
+  86:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  87:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_example_code Example code
+  88:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   Add or uncomment the following in your conf_clock.h header file, commenting out all other
+  89:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   definitions of the same symbol(s):
+  90:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+  91:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLLACK
+  92:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  93:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll0 = (Fclk * PLL_mul) / PLL_div
+  94:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_SOURCE          PLL_SRC_MAINCK_XTAL
+  95:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+  96:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_DIV             1
+  97:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  98:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fbus = Fsys / BUS_div
+  99:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_PRES          SYSCLK_PRES_1
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_example_workflow Workflow
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main system clock to use the output of the PLL module as its source:
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          SYSCLK_SRC_PLLACK \endcode
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL module to use the fast external fast crystal oscillator as its source:
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL0_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL module to multiply the external fast crystal oscillator frequency up to 64
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_DIV             1
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \note For user boards, \c BOARD_FREQ_MAINCK_XTAL should be defined in the board \c conf_board.
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *         file as the frequency of the fast crystal attached to the microcontroller.
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main clock to run at the full 64MHz, disable scaling of the main system clock 
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_SYSCLK_PRES         SYSCLK_PRES_1
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \note Some dividers are powers of two, while others are integer division factors. Refer to th
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *          formulas in the conf_clock.h template commented above each division define.
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page sysclk_quickstart_use_case_2 Advanced use case - Peripheral Bus Clock Management (SAM3S)
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_use_case_2 Advanced use case - Peripheral Bus Clock Management
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This section will present a more advanced use case for the System Clock Management service.
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This use case will configure the main system clock to 64MHz, using an internal PLL
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * module to multiply the frequency of a crystal attached to the microcontroller. The USB clock
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * will be configured via a separate PLL module.
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_prereq Prerequisites
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  - None
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_setup_steps Initialization code
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Add to the application initialization code:
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \code
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	sysclk_init();
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_setup_steps_workflow Workflow
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * -# Configure the system clocks according to the settings in conf_clock.h:
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code sysclk_init(); \endcode
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_example_code Example code
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   Add or uncomment the following in your conf_clock.h header file, commenting out all other
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   definitions of the same symbol(s):
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLLACK
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll0 = (Fclk * PLL_mul) / PLL_div
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_SOURCE          PLL_SRC_MAINCK_XTAL
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_DIV             1
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fbus = Fsys / BUS_div
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_PRES          SYSCLK_PRES_1
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fusb = Fsys / USB_div
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_USBCLK_SOURCE        USBCLK_SRC_PLL1
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_USBCLK_DIV           1
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll1 = (Fclk * PLL_mul) / PLL_div
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_SOURCE          PLL_SRC_MAINCK_XTAL
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_MUL             (48000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_DIV             1
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_example_workflow Workflow
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main system clock to use the output of the PLL0 module as its source:
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          SYSCLK_SRC_PLLACK \endcode
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL0 module to use the fast external fast crystal oscillator as its source:
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL0_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL0 module to multiply the external fast crystal oscillator frequency up to 6
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_DIV             1
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \note For user boards, \c BOARD_FREQ_MAINCK_XTAL should be defined in the board \c conf_board.
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *         file as the frequency of the fast crystal attached to the microcontroller.
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main clock to run at the full 64MHz, disable scaling of the main system clock 
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_SYSCLK_PRES         SYSCLK_PRES_1
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \note Some dividers are powers of two, while others are integer division factors. Refer to th
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *          formulas in the conf_clock.h template commented above each division define.
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the USB module clock to use the output of the PLL1 module as its source:
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          USBCLK_SRC_PLL1 \endcode
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL1 module to use the fast external fast crystal oscillator as its source:
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL1_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL1 module to multiply the external fast crystal oscillator frequency up to 4
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL1_MUL             (48000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL1_DIV             1
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /// @cond 0
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**INDENT-OFF**/
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __cplusplus
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** extern "C" {
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**INDENT-ON**/
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /// @endcond
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 206:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \weakgroup sysclk_group
+ 207:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * @{
+ 208:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 209:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 210:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Configuration Symbols
+ 211:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 212:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 213:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_SYSCLK_SOURCE
+ 214:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Initial/static main system clock source
+ 215:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 216:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The main system clock will be configured to use this clock during
+ 217:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * initialization.
+ 218:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 219:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CONFIG_SYSCLK_SOURCE
+ 220:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_SYSCLK_SOURCE   SYSCLK_SRC_MAINCK_4M_RC
+ 221:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 222:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 223:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_SYSCLK_PRES
+ 224:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Initial CPU clock divider (mck)
+ 225:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 226:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The MCK will run at
+ 227:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \f[
+ 228:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   f_{MCK} = \frac{f_{sys}}{\mathrm{CONFIG\_SYSCLK\_PRES}}\,\mbox{Hz}
+ 229:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \f]
+ 230:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * after initialization.
+ 231:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 232:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CONFIG_SYSCLK_PRES
+ 233:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_SYSCLK_PRES  0
+ 234:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 235:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 236:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 237:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 238:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Master Clock Sources (MCK)
+ 239:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 240:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_RC              0       //!< Internal 32kHz RC oscillator as master source 
+ 241:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_XTAL            1       //!< External 32kHz crystal oscillator as master so
+ 242:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_BYPASS          2       //!< External 32kHz bypass oscillator as master sou
+ 243:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_4M_RC         3       //!< Internal 4MHz RC oscillator as master source c
+ 244:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_8M_RC         4       //!< Internal 8MHz RC oscillator as master source c
+ 245:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_12M_RC        5       //!< Internal 12MHz RC oscillator as master source 
+ 246:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_XTAL          6       //!< External crystal oscillator as master source c
+ 247:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_BYPASS        7       //!< External bypass oscillator as master source cl
+ 248:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_PLLACK               8       //!< Use PLLACK as master source clock
+ 249:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_PLLBCK               9       //!< Use PLLBCK as master source clock
+ 250:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 251:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 252:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Master Clock Prescalers (MCK)
+ 253:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 254:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_1           PMC_MCKR_PRES_CLK_1     //!< Set master clock prescaler to 1
+ 255:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_2           PMC_MCKR_PRES_CLK_2     //!< Set master clock prescaler to 2
+ 256:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_4           PMC_MCKR_PRES_CLK_4     //!< Set master clock prescaler to 4
+ 257:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_8           PMC_MCKR_PRES_CLK_8     //!< Set master clock prescaler to 8
+ 258:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_16          PMC_MCKR_PRES_CLK_16    //!< Set master clock prescaler to 16
+ 259:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_32          PMC_MCKR_PRES_CLK_32    //!< Set master clock prescaler to 32
+ 260:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_64          PMC_MCKR_PRES_CLK_64    //!< Set master clock prescaler to 64
+ 261:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_3           PMC_MCKR_PRES_CLK_3     //!< Set master clock prescaler to 3
+ 262:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 263:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 264:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name USB Clock Sources
+ 265:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 266:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define USBCLK_SRC_PLL0       0     //!< Use PLLA
+ 267:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define USBCLK_SRC_PLL1       1     //!< Use PLLB
+ 268:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 269:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 270:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 271:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_USBCLK_SOURCE
+ 272:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Configuration symbol for the USB generic clock source
+ 273:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 274:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Sets the clock source to use for the USB. The source must also be properly
+ 275:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configured.
+ 276:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 277:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Define this to one of the \c USBCLK_SRC_xxx settings. Leave it undefined if
+ 278:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * USB is not required.
+ 279:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 280:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __DOXYGEN__
+ 281:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_USBCLK_SOURCE
+ 282:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 283:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 284:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 285:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_USBCLK_DIV
+ 286:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Configuration symbol for the USB generic clock divider setting
+ 287:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 288:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Sets the clock division for the USB generic clock. If a USB clock source is
+ 289:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * selected with CONFIG_USBCLK_SOURCE, this configuration symbol must also be
+ 290:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * defined.
+ 291:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 292:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __DOXYGEN__
+ 293:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_USBCLK_DIV
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 295:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 296:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 297:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \name Querying the system clock
+ 298:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 299:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The following functions may be used to query the current frequency of
+ 300:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * the system clock and the CPU and bus clocks derived from it.
+ 301:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * sysclk_get_main_hz() and sysclk_get_cpu_hz() can be assumed to be
+ 302:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * available on all platforms, although some platforms may define
+ 303:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * additional accessors for various chip-internal bus clocks. These are
+ 304:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * usually not intended to be queried directly by generic code.
+ 305:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 306:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 307:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 308:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 309:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Return the current rate in Hz of the main system clock
+ 310:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 311:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \todo This function assumes that the main clock source never changes
+ 312:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * once it's been set up, and that PLL0 always runs at the compile-time
+ 313:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configured default rate. While this is probably the most common
+ 314:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configuration, which we want to support as a special case for
+ 315:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * performance reasons, we will at some point need to support more
+ 316:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * dynamic setups as well.
+ 317:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 318:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (defined CONFIG_SYSCLK_DEFAULT_RETURNS_SLOW_OSC)
+ 319:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** extern uint32_t sysclk_initialized;
+ 320:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 321:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_main_hz(void)
+ 322:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 323:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (defined CONFIG_SYSCLK_DEFAULT_RETURNS_SLOW_OSC)
+ 324:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	if (!sysclk_initialized ) {
+ 325:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_4M_RC_HZ;
+ 326:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 327:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 328:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 329:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* Config system clock setting */
+ 330:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_RC) {
+ 331:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_RC_HZ;
+ 332:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_XTAL) {
+ 333:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_XTAL_HZ;
+ 334:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_BYPASS) {
+ 335:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_BYPASS_HZ;
+ 336:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_4M_RC) {
+ 337:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_4M_RC_HZ;
+ 338:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_8M_RC) {
+ 339:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_8M_RC_HZ;
+ 340:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_12M_RC) {
+ 341:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_12M_RC_HZ;
+ 342:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_XTAL) {
+ 343:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_XTAL_HZ;
+ 344:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_BYPASS) {
+ 345:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_BYPASS_HZ;
+ 346:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 347:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef CONFIG_PLL0_SOURCE
+ 348:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_PLLACK) {
+ 349:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return pll_get_default_rate(0);
+ 350:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 351:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 352:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 353:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef CONFIG_PLL1_SOURCE
+ 354:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_PLLBCK) {
+ 355:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return pll_get_default_rate(1);
+ 356:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 357:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 358:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else {
+ 359:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		/* unhandled_case(CONFIG_SYSCLK_SOURCE); */
+ 360:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return 0;
+ 361:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 362:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 363:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 364:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 365:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Return the current rate in Hz of the CPU clock
+ 366:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 367:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \todo This function assumes that the CPU always runs at the system
+ 368:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clock frequency. We want to support at least two more scenarios:
+ 369:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Fixed CPU/bus clock dividers (config symbols) and dynamic CPU/bus
+ 370:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clock dividers (which may change at run time). Ditto for all the bus
+ 371:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clocks.
+ 372:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 373:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the CPU clock, in Hz.
+ 374:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 375:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_cpu_hz(void)
+ 376:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 377:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* CONFIG_SYSCLK_PRES is the register value for setting the expected */
+ 378:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* prescaler, not an immediate value. */
+ 379:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_main_hz() /
+ 380:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		((CONFIG_SYSCLK_PRES == SYSCLK_PRES_3) ? 3 :
+ 381:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 			(1 << (CONFIG_SYSCLK_PRES >> PMC_MCKR_PRES_Pos)));
+ 382:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 383:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 384:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 385:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Retrieves the current rate in Hz of the peripheral clocks.
+ 386:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 387:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the peripheral clocks, in Hz.
+ 388:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 389:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_peripheral_hz(void)
+ 390:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 391:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* CONFIG_SYSCLK_PRES is the register value for setting the expected */
+ 392:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* prescaler, not an immediate value. */
+ 393:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_main_hz() /
+ 394:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		((CONFIG_SYSCLK_PRES == SYSCLK_PRES_3) ? 3 :
+ 395:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 			(1 << (CONFIG_SYSCLK_PRES >> PMC_MCKR_PRES_Pos)));
+ 396:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 397:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 398:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 399:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Retrieves the current rate in Hz of the Peripheral Bus clock attached
+ 400:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *        to the specified peripheral.
+ 401:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 402:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \param module Pointer to the module's base address.
+ 403:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 404:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the bus attached to the specified peripheral, in Hz.
+ 405:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 406:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_peripheral_bus_hz(const volatile void *module)
+ 407:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 408:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	UNUSED(module);
+ 409:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_peripheral_hz();
+ 410:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 411:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 412:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 413:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Enabling and disabling synchronous clocks
+ 414:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 415:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 416:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 417:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Enable a peripheral's clock.
+ 418:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 419:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \param ul_id Id (number) of the peripheral clock.
+ 420:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 421:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline void sysclk_enable_peripheral_clock(uint32_t ul_id)
+ 422:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 423:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	pmc_enable_periph_clk(ul_id);
+  46              		.loc 2 423 0
+  47 000a 0B20     		movs	r0, #11
+  48 000c FFF7FEFF 		bl	pmc_enable_periph_clk
+  49              	.LVL1:
+  50              	.LBE18:
+  51              	.LBE17:
+  52              	.LBB19:
+  53              	.LBB20:
+  54 0010 0C20     		movs	r0, #12
+  55 0012 FFF7FEFF 		bl	pmc_enable_periph_clk
+  56              	.LVL2:
+  57              	.LBE20:
+  58              	.LBE19:
+  59              	.LBE16:
+  60              	.LBE15:
+  58:../src/sam3s_OLIMEX/init.c **** #endif
+  59:../src/sam3s_OLIMEX/init.c **** 
+  60:../src/sam3s_OLIMEX/init.c **** 	/* GPIO has been deprecated, the old code just keeps it for compatibility.
+  61:../src/sam3s_OLIMEX/init.c **** 	 * In new designs IOPORT is used instead.
+  62:../src/sam3s_OLIMEX/init.c **** 	 * Here IOPORT must be initialized for others to use before setting up IO.
+  63:../src/sam3s_OLIMEX/init.c **** 	 */
+  64:../src/sam3s_OLIMEX/init.c **** 	ioport_init();
+  65:../src/sam3s_OLIMEX/init.c **** 
+  66:../src/sam3s_OLIMEX/init.c **** 	/* Configure LED pins */
+  67:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(LED_GREEN_GPIO, LED_GREEN_FLAGS);
+  61              		.loc 1 67 0
+  62 0016 4FF06051 		mov	r1, #939524096
+  63 001a 1220     		movs	r0, #18
+  64 001c FFF7FEFF 		bl	pio_configure_pin
+  65              	.LVL3:
+  68:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(LED_YELLOW_GPIO, LED_YELLOW_FLAGS);
+  66              		.loc 1 68 0
+  67 0020 4FF06051 		mov	r1, #939524096
+  68 0024 1120     		movs	r0, #17
+  69 0026 FFF7FEFF 		bl	pio_configure_pin
+  70              	.LVL4:
+  69:../src/sam3s_OLIMEX/init.c **** 
+  70:../src/sam3s_OLIMEX/init.c **** 	/* Configure Push Button pins */
+  71:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(GPIO_PUSH_BUTTON_1, GPIO_PUSH_BUTTON_1_FLAGS);
+  71              		.loc 1 71 0
+  72 002a 1849     		ldr	r1, .L3+4
+  73 002c 1320     		movs	r0, #19
+  74 002e FFF7FEFF 		bl	pio_configure_pin
+  75              	.LVL5:
+  72:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(GPIO_PUSH_BUTTON_2, GPIO_PUSH_BUTTON_2_FLAGS);
+  76              		.loc 1 72 0
+  77 0032 1749     		ldr	r1, .L3+8
+  78 0034 1420     		movs	r0, #20
+  79 0036 FFF7FEFF 		bl	pio_configure_pin
+  80              	.LVL6:
+  73:../src/sam3s_OLIMEX/init.c **** 
+  74:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_UART_CONSOLE
+  75:../src/sam3s_OLIMEX/init.c **** 	/* Configure UART pins */
+  76:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_group(PINS_UART0_PIO, PINS_UART0, PINS_UART0_FLAGS);
+  81              		.loc 1 76 0
+  82 003a 4FF00062 		mov	r2, #134217728
+  83 003e 4FF4C061 		mov	r1, #1536
+  84 0042 1448     		ldr	r0, .L3+12
+  85 0044 FFF7FEFF 		bl	pio_configure_pin_group
+  86              	.LVL7:
+  77:../src/sam3s_OLIMEX/init.c **** #endif
+  78:../src/sam3s_OLIMEX/init.c **** 
+  79:../src/sam3s_OLIMEX/init.c **** 	/* Configure ADC example pins */
+  80:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_ADC
+  81:../src/sam3s_OLIMEX/init.c **** 	/* TC TIOA configuration */
+  82:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_TC0_TIOA0,PIN_TC0_TIOA0_FLAGS);
+  83:../src/sam3s_OLIMEX/init.c **** 
+  84:../src/sam3s_OLIMEX/init.c **** 	/* ADC Trigger configuration */
+  85:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PINS_ADC_TRIG, PINS_ADC_TRIG_FLAG);
+  86:../src/sam3s_OLIMEX/init.c **** 
+  87:../src/sam3s_OLIMEX/init.c **** 	/* PWMH0 configuration */
+  88:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_PWMC_PWMH0_TRIG, PIN_PWMC_PWMH0_TRIG_FLAG);
+  89:../src/sam3s_OLIMEX/init.c **** #endif
+  90:../src/sam3s_OLIMEX/init.c **** 
+  91:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_PWM_LED0
+  92:../src/sam3s_OLIMEX/init.c **** 	/* Configure PWM LED0 pin */
+  93:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_PWM_LED0_GPIO, PIN_PWM_LED0_FLAGS);
+  94:../src/sam3s_OLIMEX/init.c **** #endif
+  95:../src/sam3s_OLIMEX/init.c **** 
+  96:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_PWM_LED1
+  97:../src/sam3s_OLIMEX/init.c **** 	/* Configure PWM LED1 pin */
+  98:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_PWM_LED1_GPIO, PIN_PWM_LED1_FLAGS);
+  99:../src/sam3s_OLIMEX/init.c **** #endif
+ 100:../src/sam3s_OLIMEX/init.c **** 
+ 101:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_PWM_LED2
+ 102:../src/sam3s_OLIMEX/init.c **** 	/* Configure PWM LED2 pin */
+ 103:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_PWM_LED2_GPIO, PIN_PWM_LED2_FLAGS);
+ 104:../src/sam3s_OLIMEX/init.c **** #endif
+ 105:../src/sam3s_OLIMEX/init.c **** 
+ 106:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_TWI0
+ 107:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
+ 108:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);
+ 109:../src/sam3s_OLIMEX/init.c **** #endif
+ 110:../src/sam3s_OLIMEX/init.c **** 
+ 111:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_TWI1
+ 112:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(TWI1_DATA_GPIO, TWI1_DATA_FLAGS);
+ 113:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(TWI1_CLK_GPIO, TWI1_CLK_FLAGS);
+ 114:../src/sam3s_OLIMEX/init.c **** #endif
+ 115:../src/sam3s_OLIMEX/init.c **** 
+ 116:../src/sam3s_OLIMEX/init.c **** 	/* Configure SPI pins */
+ 117:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_SPI
+ 118:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_MISO_GPIO, SPI_MISO_FLAGS);
+ 119:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_MOSI_GPIO, SPI_MOSI_FLAGS);
+ 120:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_SPCK_GPIO, SPI_SPCK_FLAGS);
+ 121:../src/sam3s_OLIMEX/init.c **** 	/**
+ 122:../src/sam3s_OLIMEX/init.c **** 	 * For NPCS 1, 2, and 3, different PINs can be used to access the same NPCS line.
+ 123:../src/sam3s_OLIMEX/init.c **** 	 * Depending on the application requirements, the default PIN may not be available.
+ 124:../src/sam3s_OLIMEX/init.c **** 	 * Hence a different PIN should be selected using the CONF_BOARD_SPI_NPCS_GPIO and
+ 125:../src/sam3s_OLIMEX/init.c **** 	 * CONF_BOARD_SPI_NPCS_FLAGS macros.
+ 126:../src/sam3s_OLIMEX/init.c **** 	 */
+ 127:../src/sam3s_OLIMEX/init.c **** 
+ 128:../src/sam3s_OLIMEX/init.c **** #  ifdef CONF_BOARD_SPI_NPCS0
+ 129:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS0_GPIO, SPI_NPCS0_FLAGS);
+ 130:../src/sam3s_OLIMEX/init.c **** #  endif
+ 131:../src/sam3s_OLIMEX/init.c **** 
+ 132:../src/sam3s_OLIMEX/init.c **** #  ifdef CONF_BOARD_SPI_NPCS1
+ 133:../src/sam3s_OLIMEX/init.c **** #    if defined(CONF_BOARD_SPI_NPCS1_GPIO) && defined(CONF_BOARD_SPI_NPCS1_FLAGS)
+ 134:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(CONF_BOARD_SPI_NPCS1_GPIO, CONF_BOARD_SPI_NPCS1_FLAGS);
+ 135:../src/sam3s_OLIMEX/init.c **** #    else
+ 136:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS1_PA31_GPIO, SPI_NPCS1_PA31_FLAGS);
+ 137:../src/sam3s_OLIMEX/init.c **** #    endif
+ 138:../src/sam3s_OLIMEX/init.c **** #  endif
+ 139:../src/sam3s_OLIMEX/init.c **** 
+ 140:../src/sam3s_OLIMEX/init.c **** #  ifdef CONF_BOARD_SPI_NPCS2
+ 141:../src/sam3s_OLIMEX/init.c **** #    if defined(CONF_BOARD_SPI_NPCS2_GPIO) && defined(CONF_BOARD_SPI_NPCS2_FLAGS)
+ 142:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(CONF_BOARD_SPI_NPCS2_GPIO, CONF_BOARD_SPI_NPCS2_FLAGS);
+ 143:../src/sam3s_OLIMEX/init.c **** #    else
+ 144:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS2_PA30_GPIO, SPI_NPCS2_PA30_FLAGS);
+ 145:../src/sam3s_OLIMEX/init.c **** #    endif
+ 146:../src/sam3s_OLIMEX/init.c **** #  endif
+ 147:../src/sam3s_OLIMEX/init.c **** 
+ 148:../src/sam3s_OLIMEX/init.c **** #  ifdef CONF_BOARD_SPI_NPCS3
+ 149:../src/sam3s_OLIMEX/init.c **** #    if defined(CONF_BOARD_SPI_NPCS3_GPIO) && defined(CONF_BOARD_SPI_NPCS3_FLAGS)
+ 150:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(CONF_BOARD_SPI_NPCS3_GPIO, CONF_BOARD_SPI_NPCS3_FLAGS);
+ 151:../src/sam3s_OLIMEX/init.c **** #    else
+ 152:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS3_PA22_GPIO, SPI_NPCS3_PA22_FLAGS);
+ 153:../src/sam3s_OLIMEX/init.c **** #    endif
+ 154:../src/sam3s_OLIMEX/init.c **** #  endif
+ 155:../src/sam3s_OLIMEX/init.c **** #endif /* CONF_BOARD_SPI */
+ 156:../src/sam3s_OLIMEX/init.c **** 
+ 157:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_USART_RXD
+ 158:../src/sam3s_OLIMEX/init.c **** 	/* Configure USART RXD pin */
+ 159:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_RXD_IDX, PIN_USART1_RXD_FLAGS);
+ 160:../src/sam3s_OLIMEX/init.c **** #endif
+ 161:../src/sam3s_OLIMEX/init.c **** 
+ 162:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_USART_TXD
+ 163:../src/sam3s_OLIMEX/init.c **** 	/* Configure USART TXD pin */
+ 164:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_TXD_IDX, PIN_USART1_TXD_FLAGS);
+ 165:../src/sam3s_OLIMEX/init.c **** #endif
+ 166:../src/sam3s_OLIMEX/init.c **** 
+ 167:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_USART_CTS
+ 168:../src/sam3s_OLIMEX/init.c **** 	/* Configure USART CTS pin */
+ 169:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_CTS_IDX, PIN_USART1_CTS_FLAGS);
+ 170:../src/sam3s_OLIMEX/init.c **** #endif
+ 171:../src/sam3s_OLIMEX/init.c **** 
+ 172:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_USART_RTS
+ 173:../src/sam3s_OLIMEX/init.c **** 	/* Configure USART RTS pin */
+ 174:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_RTS_IDX, PIN_USART1_RTS_FLAGS);
+ 175:../src/sam3s_OLIMEX/init.c **** #endif
+ 176:../src/sam3s_OLIMEX/init.c **** 
+ 177:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_USART_SCK
+ 178:../src/sam3s_OLIMEX/init.c **** 	/* Configure USART synchronous communication SCK pin */
+ 179:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_SCK_IDX, PIN_USART1_SCK_FLAGS);
+ 180:../src/sam3s_OLIMEX/init.c **** #endif
+ 181:../src/sam3s_OLIMEX/init.c **** 
+ 182:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_ADM3312_EN
+ 183:../src/sam3s_OLIMEX/init.c **** 	/* Configure ADM33312 enable pin */
+ 184:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_USART1_EN_IDX, PIN_USART1_EN_FLAGS);
+ 185:../src/sam3s_OLIMEX/init.c **** 	gpio_set_pin_low(PIN_USART1_EN_IDX);
+ 186:../src/sam3s_OLIMEX/init.c **** #endif
+ 187:../src/sam3s_OLIMEX/init.c **** 
+ 188:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_TFDU4300_SD
+ 189:../src/sam3s_OLIMEX/init.c **** 	/* Configure IrDA transceiver shutdown pin */
+ 190:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_IRDA_SD_IDX, PIN_IRDA_SD_FLAGS);
+ 191:../src/sam3s_OLIMEX/init.c **** 	gpio_set_pin_low(PIN_IRDA_SD_IDX);
+ 192:../src/sam3s_OLIMEX/init.c **** #endif
+ 193:../src/sam3s_OLIMEX/init.c **** 
+ 194:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_ADM3485_RE
+ 195:../src/sam3s_OLIMEX/init.c **** 	/* Configure RS485 transceiver RE pin */
+ 196:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(PIN_RE_IDX, PIN_RE_FLAGS);
+ 197:../src/sam3s_OLIMEX/init.c **** 	gpio_set_pin_low(PIN_RE_IDX);
+ 198:../src/sam3s_OLIMEX/init.c **** #endif
+ 199:../src/sam3s_OLIMEX/init.c **** 
+ 200:../src/sam3s_OLIMEX/init.c **** #ifdef CONF_BOARD_ILI9341
+ 201:../src/sam3s_OLIMEX/init.c **** 	/* Configure SPI LCD control pin */
+ 202:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_MISO_GPIO, SPI_MISO_FLAGS);
+  87              		.loc 1 202 0
+  88 0048 4FF00061 		mov	r1, #134217728
+  89 004c 0C20     		movs	r0, #12
+  90 004e FFF7FEFF 		bl	pio_configure_pin
+  91              	.LVL8:
+ 203:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_MOSI_GPIO, SPI_MOSI_FLAGS);
+  92              		.loc 1 203 0
+  93 0052 4FF00061 		mov	r1, #134217728
+  94 0056 0D20     		movs	r0, #13
+  95 0058 FFF7FEFF 		bl	pio_configure_pin
+  96              	.LVL9:
+ 204:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_SPCK_GPIO, SPI_SPCK_FLAGS);
+  97              		.loc 1 204 0
+  98 005c 4FF00061 		mov	r1, #134217728
+  99 0060 0E20     		movs	r0, #14
+ 100 0062 FFF7FEFF 		bl	pio_configure_pin
+ 101              	.LVL10:
+ 205:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS0_GPIO, SPI_NPCS0_FLAGS);
+ 102              		.loc 1 205 0
+ 103 0066 4FF00061 		mov	r1, #134217728
+ 104 006a 0B20     		movs	r0, #11
+ 105 006c FFF7FEFF 		bl	pio_configure_pin
+ 106              	.LVL11:
+ 206:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(BOARD_ILI9341_DC_GPIO, BOARD_ILI9341_DC_FLAGS);
+ 107              		.loc 1 206 0
+ 108 0070 4FF06051 		mov	r1, #939524096
+ 109 0074 0220     		movs	r0, #2
+ 110 0076 FFF7FEFF 		bl	pio_configure_pin
+ 111              	.LVL12:
+ 207:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(BOARD_ILI9341_RSTN_GPIO, BOARD_ILI9341_RSTN_FLAGS);
+ 112              		.loc 1 207 0
+ 113 007a 4FF06051 		mov	r1, #939524096
+ 114 007e 0020     		movs	r0, #0
+ 115 0080 FFF7FEFF 		bl	pio_configure_pin
+ 116              	.LVL13:
+ 117 0084 08BD     		pop	{r3, pc}
+ 118              	.L4:
+ 119 0086 00BF     		.align	2
+ 120              	.L3:
+ 121 0088 50140E40 		.word	1074664528
+ 122 008c 79000028 		.word	671088761
+ 123 0090 59000028 		.word	671088729
+ 124 0094 000E0E40 		.word	1074662912
+ 125              		.cfi_endproc
+ 126              	.LFE135:
+ 128              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 129              		.align	2
+ 132              	cpu_irq_critical_section_counter:
+ 133 0000 00000000 		.space	4
+ 134              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 137              	cpu_irq_prev_interrupt_state:
+ 138 0000 00       		.space	1
+ 139              		.text
+ 140              	.Letext0:
+ 141              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 142              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 143              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 144              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pio.h"
+ 145              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_wdt.h"
+ 146              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h"
+ 147              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/ioport.h"
+ 148              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 149              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 150              		.file 12 "/home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h"
+ 151              		.file 13 "/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 init.c
+     /tmp/ccQRr8A4.s:20     .text.board_init:00000000 $t
+     /tmp/ccQRr8A4.s:25     .text.board_init:00000000 board_init
+     /tmp/ccQRr8A4.s:121    .text.board_init:00000088 $d
+     /tmp/ccQRr8A4.s:129    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccQRr8A4.s:132    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccQRr8A4.s:137    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccQRr8A4.s:138    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.conf_board.h.48.a9a1c3375452fc4734a134d7ff745e00
+                           .group:00000000 wm4.pio.h.48.6839f7027cbf1ef96bb233af1f2246d9
+                           .group:00000000 wm4.sam_gpio.h.53.afc3161f12a06e30e82678b4b38e082b
+                           .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
+                           .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
+                           .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
+                           .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308
+                           .group:00000000 wm4.sysclk.h.240.cfab6246305f0088614c69f722fe0ee0
+                           .group:00000000 wm4.ioport_pio.h.51.69cc0e499f80def25a90c3a47be57436
+
+UNDEFINED SYMBOLS
+pmc_enable_periph_clk
+pio_configure_pin
+pio_configure_pin_group

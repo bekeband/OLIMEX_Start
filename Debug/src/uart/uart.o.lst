@@ -1,0 +1,1247 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"uart.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.uart_init,"ax",%progbits
+  20              		.align	2
+  21              		.global	uart_init
+  22              		.thumb
+  23              		.thumb_func
+  25              	uart_init:
+  26              	.LFB73:
+  27              		.file 1 "../src/uart/uart.c"
+   1:../src/uart/uart.c **** /**
+   2:../src/uart/uart.c ****  * \file
+   3:../src/uart/uart.c ****  *
+   4:../src/uart/uart.c ****  * \brief Universal Asynchronous Receiver Transceiver (UART) driver for SAM.
+   5:../src/uart/uart.c ****  *
+   6:../src/uart/uart.c ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:../src/uart/uart.c ****  *
+   8:../src/uart/uart.c ****  * \asf_license_start
+   9:../src/uart/uart.c ****  *
+  10:../src/uart/uart.c ****  * \page License
+  11:../src/uart/uart.c ****  *
+  12:../src/uart/uart.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/uart/uart.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/uart/uart.c ****  *
+  15:../src/uart/uart.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/uart/uart.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/uart/uart.c ****  *
+  18:../src/uart/uart.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/uart/uart.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/uart/uart.c ****  *    and/or other materials provided with the distribution.
+  21:../src/uart/uart.c ****  *
+  22:../src/uart/uart.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/uart/uart.c ****  *    from this software without specific prior written permission.
+  24:../src/uart/uart.c ****  *
+  25:../src/uart/uart.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/uart/uart.c ****  *    Atmel microcontroller product.
+  27:../src/uart/uart.c ****  *
+  28:../src/uart/uart.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/uart/uart.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/uart/uart.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/uart/uart.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/uart/uart.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/uart/uart.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/uart/uart.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/uart/uart.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/uart/uart.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/uart/uart.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/uart/uart.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/uart/uart.c ****  *
+  40:../src/uart/uart.c ****  * \asf_license_stop
+  41:../src/uart/uart.c ****  *
+  42:../src/uart/uart.c ****  */
+  43:../src/uart/uart.c **** /*
+  44:../src/uart/uart.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/uart/uart.c ****  */
+  46:../src/uart/uart.c **** 
+  47:../src/uart/uart.c **** #include "uart.h"
+  48:../src/uart/uart.c **** 
+  49:../src/uart/uart.c **** /// @cond 0
+  50:../src/uart/uart.c **** /**INDENT-OFF**/
+  51:../src/uart/uart.c **** #ifdef __cplusplus
+  52:../src/uart/uart.c **** extern "C" {
+  53:../src/uart/uart.c **** #endif
+  54:../src/uart/uart.c **** /**INDENT-ON**/
+  55:../src/uart/uart.c **** /// @endcond
+  56:../src/uart/uart.c **** 
+  57:../src/uart/uart.c **** /**
+  58:../src/uart/uart.c ****  * \defgroup sam_drivers_uart_group Universal Asynchronous Receiver Transceiver (UART)
+  59:../src/uart/uart.c ****  *
+  60:../src/uart/uart.c ****  * The Universal Asynchronous Receiver Transmitter features a two-pin UART that
+  61:../src/uart/uart.c ****  * can be used for communication and trace purposes and offers an ideal medium
+  62:../src/uart/uart.c ****  * for in-situ programming solutions. Moreover, the association with two
+  63:../src/uart/uart.c ****  * peripheral DMA controller (PDC) channels permits packet handling for these
+  64:../src/uart/uart.c ****  * tasks with processor time reduced to a minimum.
+  65:../src/uart/uart.c ****  *
+  66:../src/uart/uart.c ****  * \par Usage
+  67:../src/uart/uart.c ****  *
+  68:../src/uart/uart.c ****  * -# Enable the UART peripheral clock in the PMC.
+  69:../src/uart/uart.c ****  * -# Enable the required UART PIOs (see pio.h).
+  70:../src/uart/uart.c ****  * -# Configure the UART by calling uart_init.
+  71:../src/uart/uart.c ****  * -# Send data through the UART using the uart_write.
+  72:../src/uart/uart.c ****  * -# Receive data from the UART using the uart_read; the availability of data
+  73:../src/uart/uart.c ****  *    can be polled with uart_is_rx_ready.
+  74:../src/uart/uart.c ****  * -# Disable the transmitter and/or the receiver of the UART with
+  75:../src/uart/uart.c ****  *    uart_disable_tx and uart_disable_rx.
+  76:../src/uart/uart.c ****  *
+  77:../src/uart/uart.c ****  * @{
+  78:../src/uart/uart.c ****  */
+  79:../src/uart/uart.c **** 
+  80:../src/uart/uart.c **** /**
+  81:../src/uart/uart.c ****  * \brief Configure UART with the specified parameters.
+  82:../src/uart/uart.c ****  *
+  83:../src/uart/uart.c ****  * \note The PMC and PIOs must be configured first.
+  84:../src/uart/uart.c ****  *
+  85:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+  86:../src/uart/uart.c ****  * \param p_uart_opt Pointer to sam_uart_opt_t instance.
+  87:../src/uart/uart.c ****  *
+  88:../src/uart/uart.c ****  * \retval 0 Success.
+  89:../src/uart/uart.c ****  * \retval 1 Bad baud rate generator value.
+  90:../src/uart/uart.c ****  */
+  91:../src/uart/uart.c **** uint32_t uart_init(Uart *p_uart, const sam_uart_opt_t *p_uart_opt)
+  92:../src/uart/uart.c **** {
+  28              		.loc 1 92 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  34 0000 10B4     		push	{r4}
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 4, -4
+  37              	.LVL1:
+  93:../src/uart/uart.c **** 	uint32_t cd = 0;
+  94:../src/uart/uart.c **** 
+  95:../src/uart/uart.c **** 	/* Reset and disable receiver & transmitter */
+  96:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RSTRX | UART_CR_RSTTX
+  38              		.loc 1 96 0
+  39 0002 AC23     		movs	r3, #172
+  40 0004 0360     		str	r3, [r0]
+  97:../src/uart/uart.c **** 			| UART_CR_RXDIS | UART_CR_TXDIS;
+  98:../src/uart/uart.c **** 
+  99:../src/uart/uart.c **** 	/* Check and configure baudrate */
+ 100:../src/uart/uart.c **** 	/* Asynchronous, no oversampling */
+ 101:../src/uart/uart.c **** 	cd = (p_uart_opt->ul_mck / p_uart_opt->ul_baudrate) / UART_MCK_DIV;
+  41              		.loc 1 101 0
+  42 0006 0B68     		ldr	r3, [r1]
+  43 0008 4A68     		ldr	r2, [r1, #4]
+  44 000a B3FBF2F3 		udiv	r3, r3, r2
+  45 000e 1B09     		lsrs	r3, r3, #4
+  46              	.LVL2:
+ 102:../src/uart/uart.c **** 	if (cd < UART_MCK_DIV_MIN_FACTOR || cd > UART_MCK_DIV_MAX_FACTOR)
+  47              		.loc 1 102 0
+  48 0010 5C1E     		subs	r4, r3, #1
+  49 0012 4FF6FE72 		movw	r2, #65534
+  50 0016 9442     		cmp	r4, r2
+  51 0018 0AD8     		bhi	.L3
+ 103:../src/uart/uart.c **** 		return 1;
+ 104:../src/uart/uart.c **** 
+ 105:../src/uart/uart.c **** 	p_uart->UART_BRGR = cd;
+  52              		.loc 1 105 0
+  53 001a 0362     		str	r3, [r0, #32]
+ 106:../src/uart/uart.c **** 	/* Configure mode */
+ 107:../src/uart/uart.c **** 	p_uart->UART_MR = p_uart_opt->ul_mode;
+  54              		.loc 1 107 0
+  55 001c 8B68     		ldr	r3, [r1, #8]
+  56              	.LVL3:
+  57 001e 4360     		str	r3, [r0, #4]
+  58              	.LVL4:
+ 108:../src/uart/uart.c **** 
+ 109:../src/uart/uart.c **** #if (!SAMV71 && !SAMV70 && !SAME70 && !SAMS70)
+ 110:../src/uart/uart.c **** 	/* Disable PDC channel */
+ 111:../src/uart/uart.c **** 	p_uart->UART_PTCR = UART_PTCR_RXTDIS | UART_PTCR_TXTDIS;
+  59              		.loc 1 111 0
+  60 0020 40F20223 		movw	r3, #514
+  61 0024 C0F82031 		str	r3, [r0, #288]
+ 112:../src/uart/uart.c **** #endif
+ 113:../src/uart/uart.c **** 
+ 114:../src/uart/uart.c **** 	/* Enable receiver and transmitter */
+ 115:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RXEN | UART_CR_TXEN;
+  62              		.loc 1 115 0
+  63 0028 5023     		movs	r3, #80
+  64 002a 0360     		str	r3, [r0]
+ 116:../src/uart/uart.c **** 
+ 117:../src/uart/uart.c **** 	return 0;
+  65              		.loc 1 117 0
+  66 002c 0020     		movs	r0, #0
+  67              	.LVL5:
+  68 002e 00E0     		b	.L2
+  69              	.LVL6:
+  70              	.L3:
+ 103:../src/uart/uart.c **** 
+  71              		.loc 1 103 0
+  72 0030 0120     		movs	r0, #1
+  73              	.LVL7:
+  74              	.L2:
+ 118:../src/uart/uart.c **** }
+  75              		.loc 1 118 0
+  76 0032 10BC     		pop	{r4}
+  77              		.cfi_restore 4
+  78              		.cfi_def_cfa_offset 0
+  79              	.LVL8:
+  80 0034 7047     		bx	lr
+  81              		.cfi_endproc
+  82              	.LFE73:
+  84 0036 00BF     		.section	.text.uart_enable_tx,"ax",%progbits
+  85              		.align	2
+  86              		.global	uart_enable_tx
+  87              		.thumb
+  88              		.thumb_func
+  90              	uart_enable_tx:
+  91              	.LFB74:
+ 119:../src/uart/uart.c **** 
+ 120:../src/uart/uart.c **** /**
+ 121:../src/uart/uart.c ****  * \brief Enable UART transmitter.
+ 122:../src/uart/uart.c ****  *
+ 123:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 124:../src/uart/uart.c ****  */
+ 125:../src/uart/uart.c **** void uart_enable_tx(Uart *p_uart)
+ 126:../src/uart/uart.c **** {
+  92              		.loc 1 126 0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96              		@ link register save eliminated.
+  97              	.LVL9:
+ 127:../src/uart/uart.c **** 	/* Enable transmitter */
+ 128:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_TXEN;
+  98              		.loc 1 128 0
+  99 0000 4023     		movs	r3, #64
+ 100 0002 0360     		str	r3, [r0]
+ 101 0004 7047     		bx	lr
+ 102              		.cfi_endproc
+ 103              	.LFE74:
+ 105 0006 00BF     		.section	.text.uart_disable_tx,"ax",%progbits
+ 106              		.align	2
+ 107              		.global	uart_disable_tx
+ 108              		.thumb
+ 109              		.thumb_func
+ 111              	uart_disable_tx:
+ 112              	.LFB75:
+ 129:../src/uart/uart.c **** }
+ 130:../src/uart/uart.c **** 
+ 131:../src/uart/uart.c **** /**
+ 132:../src/uart/uart.c ****  * \brief Disable UART transmitter.
+ 133:../src/uart/uart.c ****  *
+ 134:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 135:../src/uart/uart.c ****  */
+ 136:../src/uart/uart.c **** void uart_disable_tx(Uart *p_uart)
+ 137:../src/uart/uart.c **** {
+ 113              		.loc 1 137 0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		@ link register save eliminated.
+ 118              	.LVL10:
+ 138:../src/uart/uart.c **** 	/* Disable transmitter */
+ 139:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_TXDIS;
+ 119              		.loc 1 139 0
+ 120 0000 8023     		movs	r3, #128
+ 121 0002 0360     		str	r3, [r0]
+ 122 0004 7047     		bx	lr
+ 123              		.cfi_endproc
+ 124              	.LFE75:
+ 126 0006 00BF     		.section	.text.uart_reset_tx,"ax",%progbits
+ 127              		.align	2
+ 128              		.global	uart_reset_tx
+ 129              		.thumb
+ 130              		.thumb_func
+ 132              	uart_reset_tx:
+ 133              	.LFB76:
+ 140:../src/uart/uart.c **** }
+ 141:../src/uart/uart.c **** 
+ 142:../src/uart/uart.c **** /**
+ 143:../src/uart/uart.c ****  * \brief Reset UART transmitter.
+ 144:../src/uart/uart.c ****  *
+ 145:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 146:../src/uart/uart.c ****  */
+ 147:../src/uart/uart.c **** void uart_reset_tx(Uart *p_uart)
+ 148:../src/uart/uart.c **** {
+ 134              		.loc 1 148 0
+ 135              		.cfi_startproc
+ 136              		@ args = 0, pretend = 0, frame = 0
+ 137              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138              		@ link register save eliminated.
+ 139              	.LVL11:
+ 149:../src/uart/uart.c **** 	/* Reset transmitter */
+ 150:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RSTTX | UART_CR_TXDIS;
+ 140              		.loc 1 150 0
+ 141 0000 8823     		movs	r3, #136
+ 142 0002 0360     		str	r3, [r0]
+ 143 0004 7047     		bx	lr
+ 144              		.cfi_endproc
+ 145              	.LFE76:
+ 147 0006 00BF     		.section	.text.uart_enable_rx,"ax",%progbits
+ 148              		.align	2
+ 149              		.global	uart_enable_rx
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	uart_enable_rx:
+ 154              	.LFB77:
+ 151:../src/uart/uart.c **** }
+ 152:../src/uart/uart.c **** 
+ 153:../src/uart/uart.c **** /**
+ 154:../src/uart/uart.c ****  * \brief Enable UART receiver.
+ 155:../src/uart/uart.c ****  *
+ 156:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 157:../src/uart/uart.c ****  */
+ 158:../src/uart/uart.c **** void uart_enable_rx(Uart *p_uart)
+ 159:../src/uart/uart.c **** {
+ 155              		.loc 1 159 0
+ 156              		.cfi_startproc
+ 157              		@ args = 0, pretend = 0, frame = 0
+ 158              		@ frame_needed = 0, uses_anonymous_args = 0
+ 159              		@ link register save eliminated.
+ 160              	.LVL12:
+ 160:../src/uart/uart.c **** 	/* Enable receiver */
+ 161:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RXEN;
+ 161              		.loc 1 161 0
+ 162 0000 1023     		movs	r3, #16
+ 163 0002 0360     		str	r3, [r0]
+ 164 0004 7047     		bx	lr
+ 165              		.cfi_endproc
+ 166              	.LFE77:
+ 168 0006 00BF     		.section	.text.uart_disable_rx,"ax",%progbits
+ 169              		.align	2
+ 170              		.global	uart_disable_rx
+ 171              		.thumb
+ 172              		.thumb_func
+ 174              	uart_disable_rx:
+ 175              	.LFB78:
+ 162:../src/uart/uart.c **** }
+ 163:../src/uart/uart.c **** 
+ 164:../src/uart/uart.c **** /**
+ 165:../src/uart/uart.c ****  * \brief Disable UART receiver.
+ 166:../src/uart/uart.c ****  *
+ 167:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 168:../src/uart/uart.c ****  */
+ 169:../src/uart/uart.c **** void uart_disable_rx(Uart *p_uart)
+ 170:../src/uart/uart.c **** {
+ 176              		.loc 1 170 0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 0, uses_anonymous_args = 0
+ 180              		@ link register save eliminated.
+ 181              	.LVL13:
+ 171:../src/uart/uart.c **** 	/* Disable receiver */
+ 172:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RXDIS;
+ 182              		.loc 1 172 0
+ 183 0000 2023     		movs	r3, #32
+ 184 0002 0360     		str	r3, [r0]
+ 185 0004 7047     		bx	lr
+ 186              		.cfi_endproc
+ 187              	.LFE78:
+ 189 0006 00BF     		.section	.text.uart_reset_rx,"ax",%progbits
+ 190              		.align	2
+ 191              		.global	uart_reset_rx
+ 192              		.thumb
+ 193              		.thumb_func
+ 195              	uart_reset_rx:
+ 196              	.LFB79:
+ 173:../src/uart/uart.c **** }
+ 174:../src/uart/uart.c **** 
+ 175:../src/uart/uart.c **** /**
+ 176:../src/uart/uart.c ****  * \brief Reset UART receiver.
+ 177:../src/uart/uart.c ****  *
+ 178:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 179:../src/uart/uart.c ****  */
+ 180:../src/uart/uart.c **** void uart_reset_rx(Uart *p_uart)
+ 181:../src/uart/uart.c **** {
+ 197              		.loc 1 181 0
+ 198              		.cfi_startproc
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201              		@ link register save eliminated.
+ 202              	.LVL14:
+ 182:../src/uart/uart.c **** 	/* Reset receiver */
+ 183:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RSTRX | UART_CR_RXDIS;
+ 203              		.loc 1 183 0
+ 204 0000 2423     		movs	r3, #36
+ 205 0002 0360     		str	r3, [r0]
+ 206 0004 7047     		bx	lr
+ 207              		.cfi_endproc
+ 208              	.LFE79:
+ 210 0006 00BF     		.section	.text.uart_enable,"ax",%progbits
+ 211              		.align	2
+ 212              		.global	uart_enable
+ 213              		.thumb
+ 214              		.thumb_func
+ 216              	uart_enable:
+ 217              	.LFB80:
+ 184:../src/uart/uart.c **** }
+ 185:../src/uart/uart.c **** 
+ 186:../src/uart/uart.c **** /**
+ 187:../src/uart/uart.c ****  * \brief Enable UART receiver and transmitter.
+ 188:../src/uart/uart.c ****  *
+ 189:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 190:../src/uart/uart.c ****  */
+ 191:../src/uart/uart.c **** void uart_enable(Uart *p_uart)
+ 192:../src/uart/uart.c **** {
+ 218              		.loc 1 192 0
+ 219              		.cfi_startproc
+ 220              		@ args = 0, pretend = 0, frame = 0
+ 221              		@ frame_needed = 0, uses_anonymous_args = 0
+ 222              		@ link register save eliminated.
+ 223              	.LVL15:
+ 193:../src/uart/uart.c **** 	/* Enable receiver and transmitter */
+ 194:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RXEN | UART_CR_TXEN;
+ 224              		.loc 1 194 0
+ 225 0000 5023     		movs	r3, #80
+ 226 0002 0360     		str	r3, [r0]
+ 227 0004 7047     		bx	lr
+ 228              		.cfi_endproc
+ 229              	.LFE80:
+ 231 0006 00BF     		.section	.text.uart_disable,"ax",%progbits
+ 232              		.align	2
+ 233              		.global	uart_disable
+ 234              		.thumb
+ 235              		.thumb_func
+ 237              	uart_disable:
+ 238              	.LFB81:
+ 195:../src/uart/uart.c **** }
+ 196:../src/uart/uart.c **** 
+ 197:../src/uart/uart.c **** /**
+ 198:../src/uart/uart.c ****  * \brief Disable UART receiver and transmitter.
+ 199:../src/uart/uart.c ****  *
+ 200:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 201:../src/uart/uart.c ****  */
+ 202:../src/uart/uart.c **** void uart_disable(Uart *p_uart)
+ 203:../src/uart/uart.c **** {
+ 239              		.loc 1 203 0
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243              		@ link register save eliminated.
+ 244              	.LVL16:
+ 204:../src/uart/uart.c **** 	/* Disable receiver and transmitter */
+ 205:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RXDIS | UART_CR_TXDIS;
+ 245              		.loc 1 205 0
+ 246 0000 A023     		movs	r3, #160
+ 247 0002 0360     		str	r3, [r0]
+ 248 0004 7047     		bx	lr
+ 249              		.cfi_endproc
+ 250              	.LFE81:
+ 252 0006 00BF     		.section	.text.uart_reset,"ax",%progbits
+ 253              		.align	2
+ 254              		.global	uart_reset
+ 255              		.thumb
+ 256              		.thumb_func
+ 258              	uart_reset:
+ 259              	.LFB82:
+ 206:../src/uart/uart.c **** }
+ 207:../src/uart/uart.c **** 
+ 208:../src/uart/uart.c **** /**
+ 209:../src/uart/uart.c ****  * \brief Reset UART receiver and transmitter.
+ 210:../src/uart/uart.c ****  *
+ 211:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 212:../src/uart/uart.c ****  */
+ 213:../src/uart/uart.c **** void uart_reset(Uart *p_uart)
+ 214:../src/uart/uart.c **** {
+ 260              		.loc 1 214 0
+ 261              		.cfi_startproc
+ 262              		@ args = 0, pretend = 0, frame = 0
+ 263              		@ frame_needed = 0, uses_anonymous_args = 0
+ 264              		@ link register save eliminated.
+ 265              	.LVL17:
+ 215:../src/uart/uart.c **** 	/* Reset and disable receiver & transmitter */
+ 216:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RSTRX | UART_CR_RSTTX
+ 266              		.loc 1 216 0
+ 267 0000 AC23     		movs	r3, #172
+ 268 0002 0360     		str	r3, [r0]
+ 269 0004 7047     		bx	lr
+ 270              		.cfi_endproc
+ 271              	.LFE82:
+ 273 0006 00BF     		.section	.text.uart_enable_interrupt,"ax",%progbits
+ 274              		.align	2
+ 275              		.global	uart_enable_interrupt
+ 276              		.thumb
+ 277              		.thumb_func
+ 279              	uart_enable_interrupt:
+ 280              	.LFB83:
+ 217:../src/uart/uart.c **** 			| UART_CR_RXDIS | UART_CR_TXDIS;
+ 218:../src/uart/uart.c **** }
+ 219:../src/uart/uart.c **** 
+ 220:../src/uart/uart.c **** /** \brief Enable UART interrupts.
+ 221:../src/uart/uart.c ****  *
+ 222:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 223:../src/uart/uart.c ****  *  \param ul_sources Interrupts to be enabled.
+ 224:../src/uart/uart.c ****  */
+ 225:../src/uart/uart.c **** void uart_enable_interrupt(Uart *p_uart, uint32_t ul_sources)
+ 226:../src/uart/uart.c **** {
+ 281              		.loc 1 226 0
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 0
+ 284              		@ frame_needed = 0, uses_anonymous_args = 0
+ 285              		@ link register save eliminated.
+ 286              	.LVL18:
+ 227:../src/uart/uart.c **** 	p_uart->UART_IER = ul_sources;
+ 287              		.loc 1 227 0
+ 288 0000 8160     		str	r1, [r0, #8]
+ 289 0002 7047     		bx	lr
+ 290              		.cfi_endproc
+ 291              	.LFE83:
+ 293              		.section	.text.uart_disable_interrupt,"ax",%progbits
+ 294              		.align	2
+ 295              		.global	uart_disable_interrupt
+ 296              		.thumb
+ 297              		.thumb_func
+ 299              	uart_disable_interrupt:
+ 300              	.LFB84:
+ 228:../src/uart/uart.c **** }
+ 229:../src/uart/uart.c **** 
+ 230:../src/uart/uart.c **** /** \brief Disable UART interrupts.
+ 231:../src/uart/uart.c ****  *
+ 232:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 233:../src/uart/uart.c ****  *  \param ul_sources Interrupts to be disabled.
+ 234:../src/uart/uart.c ****  */
+ 235:../src/uart/uart.c **** void uart_disable_interrupt(Uart *p_uart, uint32_t ul_sources)
+ 236:../src/uart/uart.c **** {
+ 301              		.loc 1 236 0
+ 302              		.cfi_startproc
+ 303              		@ args = 0, pretend = 0, frame = 0
+ 304              		@ frame_needed = 0, uses_anonymous_args = 0
+ 305              		@ link register save eliminated.
+ 306              	.LVL19:
+ 237:../src/uart/uart.c **** 	p_uart->UART_IDR = ul_sources;
+ 307              		.loc 1 237 0
+ 308 0000 C160     		str	r1, [r0, #12]
+ 309 0002 7047     		bx	lr
+ 310              		.cfi_endproc
+ 311              	.LFE84:
+ 313              		.section	.text.uart_get_interrupt_mask,"ax",%progbits
+ 314              		.align	2
+ 315              		.global	uart_get_interrupt_mask
+ 316              		.thumb
+ 317              		.thumb_func
+ 319              	uart_get_interrupt_mask:
+ 320              	.LFB85:
+ 238:../src/uart/uart.c **** }
+ 239:../src/uart/uart.c **** 
+ 240:../src/uart/uart.c **** /** \brief Read UART interrupt mask.
+ 241:../src/uart/uart.c ****  *
+ 242:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 243:../src/uart/uart.c ****  *
+ 244:../src/uart/uart.c ****  *  \return The interrupt mask value.
+ 245:../src/uart/uart.c ****  */
+ 246:../src/uart/uart.c **** uint32_t uart_get_interrupt_mask(Uart *p_uart)
+ 247:../src/uart/uart.c **** {
+ 321              		.loc 1 247 0
+ 322              		.cfi_startproc
+ 323              		@ args = 0, pretend = 0, frame = 0
+ 324              		@ frame_needed = 0, uses_anonymous_args = 0
+ 325              		@ link register save eliminated.
+ 326              	.LVL20:
+ 248:../src/uart/uart.c **** 	return p_uart->UART_IMR;
+ 327              		.loc 1 248 0
+ 328 0000 0069     		ldr	r0, [r0, #16]
+ 329              	.LVL21:
+ 249:../src/uart/uart.c **** }
+ 330              		.loc 1 249 0
+ 331 0002 7047     		bx	lr
+ 332              		.cfi_endproc
+ 333              	.LFE85:
+ 335              		.section	.text.uart_get_status,"ax",%progbits
+ 336              		.align	2
+ 337              		.global	uart_get_status
+ 338              		.thumb
+ 339              		.thumb_func
+ 341              	uart_get_status:
+ 342              	.LFB86:
+ 250:../src/uart/uart.c **** 
+ 251:../src/uart/uart.c **** /**
+ 252:../src/uart/uart.c ****  * \brief Get current status.
+ 253:../src/uart/uart.c ****  *
+ 254:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 255:../src/uart/uart.c ****  *
+ 256:../src/uart/uart.c ****  * \return The current UART status.
+ 257:../src/uart/uart.c ****  */
+ 258:../src/uart/uart.c **** uint32_t uart_get_status(Uart *p_uart)
+ 259:../src/uart/uart.c **** {
+ 343              		.loc 1 259 0
+ 344              		.cfi_startproc
+ 345              		@ args = 0, pretend = 0, frame = 0
+ 346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 347              		@ link register save eliminated.
+ 348              	.LVL22:
+ 260:../src/uart/uart.c **** 	return p_uart->UART_SR;
+ 349              		.loc 1 260 0
+ 350 0000 4069     		ldr	r0, [r0, #20]
+ 351              	.LVL23:
+ 261:../src/uart/uart.c **** }
+ 352              		.loc 1 261 0
+ 353 0002 7047     		bx	lr
+ 354              		.cfi_endproc
+ 355              	.LFE86:
+ 357              		.section	.text.uart_reset_status,"ax",%progbits
+ 358              		.align	2
+ 359              		.global	uart_reset_status
+ 360              		.thumb
+ 361              		.thumb_func
+ 363              	uart_reset_status:
+ 364              	.LFB87:
+ 262:../src/uart/uart.c **** 
+ 263:../src/uart/uart.c **** /**
+ 264:../src/uart/uart.c ****  * \brief Reset status bits.
+ 265:../src/uart/uart.c ****  *
+ 266:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 267:../src/uart/uart.c ****  */
+ 268:../src/uart/uart.c **** void uart_reset_status(Uart *p_uart)
+ 269:../src/uart/uart.c **** {
+ 365              		.loc 1 269 0
+ 366              		.cfi_startproc
+ 367              		@ args = 0, pretend = 0, frame = 0
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 369              		@ link register save eliminated.
+ 370              	.LVL24:
+ 270:../src/uart/uart.c **** 	p_uart->UART_CR = UART_CR_RSTSTA;
+ 371              		.loc 1 270 0
+ 372 0000 4FF48073 		mov	r3, #256
+ 373 0004 0360     		str	r3, [r0]
+ 374 0006 7047     		bx	lr
+ 375              		.cfi_endproc
+ 376              	.LFE87:
+ 378              		.section	.text.uart_is_tx_ready,"ax",%progbits
+ 379              		.align	2
+ 380              		.global	uart_is_tx_ready
+ 381              		.thumb
+ 382              		.thumb_func
+ 384              	uart_is_tx_ready:
+ 385              	.LFB88:
+ 271:../src/uart/uart.c **** }
+ 272:../src/uart/uart.c **** 
+ 273:../src/uart/uart.c **** /**
+ 274:../src/uart/uart.c ****  * \brief Check if Transmit is Ready.
+ 275:../src/uart/uart.c ****  * Check if data has been loaded in UART_THR and is waiting to be loaded in the
+ 276:../src/uart/uart.c ****  * Transmit Shift Register (TSR).
+ 277:../src/uart/uart.c ****  *
+ 278:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 279:../src/uart/uart.c ****  *
+ 280:../src/uart/uart.c ****  * \retval 1 Data has been transmitted.
+ 281:../src/uart/uart.c ****  * \retval 0 Transmit is not ready, data pending.
+ 282:../src/uart/uart.c ****  */
+ 283:../src/uart/uart.c **** uint32_t uart_is_tx_ready(Uart *p_uart)
+ 284:../src/uart/uart.c **** {
+ 386              		.loc 1 284 0
+ 387              		.cfi_startproc
+ 388              		@ args = 0, pretend = 0, frame = 0
+ 389              		@ frame_needed = 0, uses_anonymous_args = 0
+ 390              		@ link register save eliminated.
+ 391              	.LVL25:
+ 285:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_TXRDY) > 0;
+ 392              		.loc 1 285 0
+ 393 0000 4069     		ldr	r0, [r0, #20]
+ 394              	.LVL26:
+ 286:../src/uart/uart.c **** }
+ 395              		.loc 1 286 0
+ 396 0002 C0F34000 		ubfx	r0, r0, #1, #1
+ 397 0006 7047     		bx	lr
+ 398              		.cfi_endproc
+ 399              	.LFE88:
+ 401              		.section	.text.uart_is_tx_empty,"ax",%progbits
+ 402              		.align	2
+ 403              		.global	uart_is_tx_empty
+ 404              		.thumb
+ 405              		.thumb_func
+ 407              	uart_is_tx_empty:
+ 408              	.LFB89:
+ 287:../src/uart/uart.c **** 
+ 288:../src/uart/uart.c **** /**
+ 289:../src/uart/uart.c ****  * \brief Check if Transmit Hold Register is empty.
+ 290:../src/uart/uart.c ****  * Check if the last data written in UART_THR has been loaded in TSR and the
+ 291:../src/uart/uart.c ****  * last data loaded in TSR has been transmitted.
+ 292:../src/uart/uart.c ****  *
+ 293:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 294:../src/uart/uart.c ****  *
+ 295:../src/uart/uart.c ****  * \retval 1 Transmitter is empty.
+ 296:../src/uart/uart.c ****  * \retval 0 Transmitter is not empty.
+ 297:../src/uart/uart.c ****  */
+ 298:../src/uart/uart.c **** uint32_t uart_is_tx_empty(Uart *p_uart)
+ 299:../src/uart/uart.c **** {
+ 409              		.loc 1 299 0
+ 410              		.cfi_startproc
+ 411              		@ args = 0, pretend = 0, frame = 0
+ 412              		@ frame_needed = 0, uses_anonymous_args = 0
+ 413              		@ link register save eliminated.
+ 414              	.LVL27:
+ 300:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_TXEMPTY) > 0;
+ 415              		.loc 1 300 0
+ 416 0000 4069     		ldr	r0, [r0, #20]
+ 417              	.LVL28:
+ 301:../src/uart/uart.c **** }
+ 418              		.loc 1 301 0
+ 419 0002 C0F34020 		ubfx	r0, r0, #9, #1
+ 420 0006 7047     		bx	lr
+ 421              		.cfi_endproc
+ 422              	.LFE89:
+ 424              		.section	.text.uart_is_rx_ready,"ax",%progbits
+ 425              		.align	2
+ 426              		.global	uart_is_rx_ready
+ 427              		.thumb
+ 428              		.thumb_func
+ 430              	uart_is_rx_ready:
+ 431              	.LFB90:
+ 302:../src/uart/uart.c **** 
+ 303:../src/uart/uart.c **** /**
+ 304:../src/uart/uart.c ****  * \brief Check if Received data is ready.
+ 305:../src/uart/uart.c ****  * Check if data has been received and loaded in UART_RHR.
+ 306:../src/uart/uart.c ****  *
+ 307:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 308:../src/uart/uart.c ****  *
+ 309:../src/uart/uart.c ****  * \retval 1 One data has been received.
+ 310:../src/uart/uart.c ****  * \retval 0 No data has been received.
+ 311:../src/uart/uart.c ****  */
+ 312:../src/uart/uart.c **** uint32_t uart_is_rx_ready(Uart *p_uart)
+ 313:../src/uart/uart.c **** {
+ 432              		.loc 1 313 0
+ 433              		.cfi_startproc
+ 434              		@ args = 0, pretend = 0, frame = 0
+ 435              		@ frame_needed = 0, uses_anonymous_args = 0
+ 436              		@ link register save eliminated.
+ 437              	.LVL29:
+ 314:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_RXRDY) > 0;
+ 438              		.loc 1 314 0
+ 439 0000 4069     		ldr	r0, [r0, #20]
+ 440              	.LVL30:
+ 441 0002 00F00100 		and	r0, r0, #1
+ 315:../src/uart/uart.c **** }
+ 442              		.loc 1 315 0
+ 443 0006 7047     		bx	lr
+ 444              		.cfi_endproc
+ 445              	.LFE90:
+ 447              		.section	.text.uart_is_tx_buf_empty,"ax",%progbits
+ 448              		.align	2
+ 449              		.global	uart_is_tx_buf_empty
+ 450              		.thumb
+ 451              		.thumb_func
+ 453              	uart_is_tx_buf_empty:
+ 454              	.LFB91:
+ 316:../src/uart/uart.c **** 
+ 317:../src/uart/uart.c **** /**
+ 318:../src/uart/uart.c ****  * \brief Check if both transmit buffers are sent out.
+ 319:../src/uart/uart.c ****  *
+ 320:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 321:../src/uart/uart.c ****  *
+ 322:../src/uart/uart.c ****  * \retval 1 Transmit buffer is empty.
+ 323:../src/uart/uart.c ****  * \retval 0 Transmit buffer is not empty.
+ 324:../src/uart/uart.c ****  */
+ 325:../src/uart/uart.c **** uint32_t uart_is_tx_buf_empty(Uart *p_uart)
+ 326:../src/uart/uart.c **** {
+ 455              		.loc 1 326 0
+ 456              		.cfi_startproc
+ 457              		@ args = 0, pretend = 0, frame = 0
+ 458              		@ frame_needed = 0, uses_anonymous_args = 0
+ 459              		@ link register save eliminated.
+ 460              	.LVL31:
+ 327:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_TXEMPTY) > 0;
+ 461              		.loc 1 327 0
+ 462 0000 4069     		ldr	r0, [r0, #20]
+ 463              	.LVL32:
+ 328:../src/uart/uart.c **** }
+ 464              		.loc 1 328 0
+ 465 0002 C0F34020 		ubfx	r0, r0, #9, #1
+ 466 0006 7047     		bx	lr
+ 467              		.cfi_endproc
+ 468              	.LFE91:
+ 470              		.section	.text.uart_set_clock_divisor,"ax",%progbits
+ 471              		.align	2
+ 472              		.global	uart_set_clock_divisor
+ 473              		.thumb
+ 474              		.thumb_func
+ 476              	uart_set_clock_divisor:
+ 477              	.LFB92:
+ 329:../src/uart/uart.c **** 
+ 330:../src/uart/uart.c **** /**
+ 331:../src/uart/uart.c ****  * \brief Set UART clock divisor value
+ 332:../src/uart/uart.c ****  *
+ 333:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 334:../src/uart/uart.c ****  * \param us_divisor Value to be set.
+ 335:../src/uart/uart.c ****  *
+ 336:../src/uart/uart.c ****  */
+ 337:../src/uart/uart.c **** void uart_set_clock_divisor(Uart *p_uart, uint16_t us_divisor)
+ 338:../src/uart/uart.c **** {
+ 478              		.loc 1 338 0
+ 479              		.cfi_startproc
+ 480              		@ args = 0, pretend = 0, frame = 0
+ 481              		@ frame_needed = 0, uses_anonymous_args = 0
+ 482              		@ link register save eliminated.
+ 483              	.LVL33:
+ 339:../src/uart/uart.c **** 	p_uart->UART_BRGR = us_divisor;
+ 484              		.loc 1 339 0
+ 485 0000 0162     		str	r1, [r0, #32]
+ 486 0002 7047     		bx	lr
+ 487              		.cfi_endproc
+ 488              	.LFE92:
+ 490              		.section	.text.uart_write,"ax",%progbits
+ 491              		.align	2
+ 492              		.global	uart_write
+ 493              		.thumb
+ 494              		.thumb_func
+ 496              	uart_write:
+ 497              	.LFB93:
+ 340:../src/uart/uart.c **** }
+ 341:../src/uart/uart.c **** 
+ 342:../src/uart/uart.c **** /**
+ 343:../src/uart/uart.c ****  * \brief Write to UART Transmit Holding Register
+ 344:../src/uart/uart.c ****  * Before writing user should check if tx is ready (or empty).
+ 345:../src/uart/uart.c ****  *
+ 346:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 347:../src/uart/uart.c ****  * \param data Data to be sent.
+ 348:../src/uart/uart.c ****  *
+ 349:../src/uart/uart.c ****  * \retval 0 Success.
+ 350:../src/uart/uart.c ****  * \retval 1 I/O Failure, UART is not ready.
+ 351:../src/uart/uart.c ****  */
+ 352:../src/uart/uart.c **** uint32_t uart_write(Uart *p_uart, const uint8_t uc_data)
+ 353:../src/uart/uart.c **** {
+ 498              		.loc 1 353 0
+ 499              		.cfi_startproc
+ 500              		@ args = 0, pretend = 0, frame = 0
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502              		@ link register save eliminated.
+ 503              	.LVL34:
+ 354:../src/uart/uart.c **** 	/* Check if the transmitter is ready */
+ 355:../src/uart/uart.c **** 	if (!(p_uart->UART_SR & UART_SR_TXRDY))
+ 504              		.loc 1 355 0
+ 505 0000 4369     		ldr	r3, [r0, #20]
+ 506 0002 13F0020F 		tst	r3, #2
+ 507 0006 02D0     		beq	.L26
+ 356:../src/uart/uart.c **** 		return 1;
+ 357:../src/uart/uart.c **** 
+ 358:../src/uart/uart.c **** 	/* Send character */
+ 359:../src/uart/uart.c **** 	p_uart->UART_THR = uc_data;
+ 508              		.loc 1 359 0
+ 509 0008 C161     		str	r1, [r0, #28]
+ 360:../src/uart/uart.c **** 	return 0;
+ 510              		.loc 1 360 0
+ 511 000a 0020     		movs	r0, #0
+ 512              	.LVL35:
+ 513 000c 7047     		bx	lr
+ 514              	.LVL36:
+ 515              	.L26:
+ 356:../src/uart/uart.c **** 		return 1;
+ 516              		.loc 1 356 0
+ 517 000e 0120     		movs	r0, #1
+ 518              	.LVL37:
+ 361:../src/uart/uart.c **** }
+ 519              		.loc 1 361 0
+ 520 0010 7047     		bx	lr
+ 521              		.cfi_endproc
+ 522              	.LFE93:
+ 524 0012 00BF     		.section	.text.uart_read,"ax",%progbits
+ 525              		.align	2
+ 526              		.global	uart_read
+ 527              		.thumb
+ 528              		.thumb_func
+ 530              	uart_read:
+ 531              	.LFB94:
+ 362:../src/uart/uart.c **** 
+ 363:../src/uart/uart.c **** /**
+ 364:../src/uart/uart.c ****  * \brief Read from UART Receive Holding Register.
+ 365:../src/uart/uart.c ****  * Before reading user should check if rx is ready.
+ 366:../src/uart/uart.c ****  *
+ 367:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 368:../src/uart/uart.c ****  *
+ 369:../src/uart/uart.c ****  * \retval 0 Success.
+ 370:../src/uart/uart.c ****  * \retval 1 I/O Failure, UART is not ready.
+ 371:../src/uart/uart.c ****  */
+ 372:../src/uart/uart.c **** uint32_t uart_read(Uart *p_uart, uint8_t *puc_data)
+ 373:../src/uart/uart.c **** {
+ 532              		.loc 1 373 0
+ 533              		.cfi_startproc
+ 534              		@ args = 0, pretend = 0, frame = 0
+ 535              		@ frame_needed = 0, uses_anonymous_args = 0
+ 536              		@ link register save eliminated.
+ 537              	.LVL38:
+ 374:../src/uart/uart.c **** 	/* Check if the receiver is ready */
+ 375:../src/uart/uart.c **** 	if ((p_uart->UART_SR & UART_SR_RXRDY) == 0)
+ 538              		.loc 1 375 0
+ 539 0000 4369     		ldr	r3, [r0, #20]
+ 540 0002 13F0010F 		tst	r3, #1
+ 541 0006 03D0     		beq	.L29
+ 376:../src/uart/uart.c **** 		return 1;
+ 377:../src/uart/uart.c **** 
+ 378:../src/uart/uart.c **** 	/* Read character */
+ 379:../src/uart/uart.c **** 	*puc_data = (uint8_t) p_uart->UART_RHR;
+ 542              		.loc 1 379 0
+ 543 0008 8369     		ldr	r3, [r0, #24]
+ 544 000a 0B70     		strb	r3, [r1]
+ 380:../src/uart/uart.c **** 	return 0;
+ 545              		.loc 1 380 0
+ 546 000c 0020     		movs	r0, #0
+ 547              	.LVL39:
+ 548 000e 7047     		bx	lr
+ 549              	.LVL40:
+ 550              	.L29:
+ 376:../src/uart/uart.c **** 		return 1;
+ 551              		.loc 1 376 0
+ 552 0010 0120     		movs	r0, #1
+ 553              	.LVL41:
+ 381:../src/uart/uart.c **** }
+ 554              		.loc 1 381 0
+ 555 0012 7047     		bx	lr
+ 556              		.cfi_endproc
+ 557              	.LFE94:
+ 559              		.section	.text.uart_is_rx_buf_end,"ax",%progbits
+ 560              		.align	2
+ 561              		.global	uart_is_rx_buf_end
+ 562              		.thumb
+ 563              		.thumb_func
+ 565              	uart_is_rx_buf_end:
+ 566              	.LFB95:
+ 382:../src/uart/uart.c **** 
+ 383:../src/uart/uart.c **** #if (!SAMV71 && !SAMV70 && !SAME70 && !SAMS70)
+ 384:../src/uart/uart.c **** /**
+ 385:../src/uart/uart.c ****  * \brief Check if one receive buffer is filled.
+ 386:../src/uart/uart.c ****  *
+ 387:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 388:../src/uart/uart.c ****  *
+ 389:../src/uart/uart.c ****  * \retval 1 Receive is completed.
+ 390:../src/uart/uart.c ****  * \retval 0 Receive is still pending.
+ 391:../src/uart/uart.c ****  */
+ 392:../src/uart/uart.c **** uint32_t uart_is_rx_buf_end(Uart *p_uart)
+ 393:../src/uart/uart.c **** {
+ 567              		.loc 1 393 0
+ 568              		.cfi_startproc
+ 569              		@ args = 0, pretend = 0, frame = 0
+ 570              		@ frame_needed = 0, uses_anonymous_args = 0
+ 571              		@ link register save eliminated.
+ 572              	.LVL42:
+ 394:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_ENDRX) > 0;
+ 573              		.loc 1 394 0
+ 574 0000 4069     		ldr	r0, [r0, #20]
+ 575              	.LVL43:
+ 395:../src/uart/uart.c **** }
+ 576              		.loc 1 395 0
+ 577 0002 C0F3C000 		ubfx	r0, r0, #3, #1
+ 578 0006 7047     		bx	lr
+ 579              		.cfi_endproc
+ 580              	.LFE95:
+ 582              		.section	.text.uart_is_tx_buf_end,"ax",%progbits
+ 583              		.align	2
+ 584              		.global	uart_is_tx_buf_end
+ 585              		.thumb
+ 586              		.thumb_func
+ 588              	uart_is_tx_buf_end:
+ 589              	.LFB96:
+ 396:../src/uart/uart.c **** 
+ 397:../src/uart/uart.c **** /**
+ 398:../src/uart/uart.c ****  * \brief Check if one transmit buffer is sent out.
+ 399:../src/uart/uart.c ****  *
+ 400:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 401:../src/uart/uart.c ****  *
+ 402:../src/uart/uart.c ****  * \retval 1 Transmit is completed.
+ 403:../src/uart/uart.c ****  * \retval 0 Transmit is still pending.
+ 404:../src/uart/uart.c ****  */
+ 405:../src/uart/uart.c **** uint32_t uart_is_tx_buf_end(Uart *p_uart)
+ 406:../src/uart/uart.c **** {
+ 590              		.loc 1 406 0
+ 591              		.cfi_startproc
+ 592              		@ args = 0, pretend = 0, frame = 0
+ 593              		@ frame_needed = 0, uses_anonymous_args = 0
+ 594              		@ link register save eliminated.
+ 595              	.LVL44:
+ 407:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_ENDTX) > 0;
+ 596              		.loc 1 407 0
+ 597 0000 4069     		ldr	r0, [r0, #20]
+ 598              	.LVL45:
+ 408:../src/uart/uart.c **** }
+ 599              		.loc 1 408 0
+ 600 0002 C0F30010 		ubfx	r0, r0, #4, #1
+ 601 0006 7047     		bx	lr
+ 602              		.cfi_endproc
+ 603              	.LFE96:
+ 605              		.section	.text.uart_is_rx_buf_full,"ax",%progbits
+ 606              		.align	2
+ 607              		.global	uart_is_rx_buf_full
+ 608              		.thumb
+ 609              		.thumb_func
+ 611              	uart_is_rx_buf_full:
+ 612              	.LFB97:
+ 409:../src/uart/uart.c **** 
+ 410:../src/uart/uart.c **** /**
+ 411:../src/uart/uart.c ****  * \brief Check if both receive buffers are full.
+ 412:../src/uart/uart.c ****  *
+ 413:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 414:../src/uart/uart.c ****  *
+ 415:../src/uart/uart.c ****  * \retval 1 Receive buffers are full.
+ 416:../src/uart/uart.c ****  * \retval 0 Receive buffers are not full.
+ 417:../src/uart/uart.c ****  */
+ 418:../src/uart/uart.c **** uint32_t uart_is_rx_buf_full(Uart *p_uart)
+ 419:../src/uart/uart.c **** {
+ 613              		.loc 1 419 0
+ 614              		.cfi_startproc
+ 615              		@ args = 0, pretend = 0, frame = 0
+ 616              		@ frame_needed = 0, uses_anonymous_args = 0
+ 617              		@ link register save eliminated.
+ 618              	.LVL46:
+ 420:../src/uart/uart.c **** 	return (p_uart->UART_SR & UART_SR_RXBUFF) > 0;
+ 619              		.loc 1 420 0
+ 620 0000 4069     		ldr	r0, [r0, #20]
+ 621              	.LVL47:
+ 421:../src/uart/uart.c **** }
+ 622              		.loc 1 421 0
+ 623 0002 C0F30030 		ubfx	r0, r0, #12, #1
+ 624 0006 7047     		bx	lr
+ 625              		.cfi_endproc
+ 626              	.LFE97:
+ 628              		.section	.text.uart_get_pdc_base,"ax",%progbits
+ 629              		.align	2
+ 630              		.global	uart_get_pdc_base
+ 631              		.thumb
+ 632              		.thumb_func
+ 634              	uart_get_pdc_base:
+ 635              	.LFB98:
+ 422:../src/uart/uart.c **** 
+ 423:../src/uart/uart.c **** /**
+ 424:../src/uart/uart.c ****  * \brief Get UART PDC base address.
+ 425:../src/uart/uart.c ****  *
+ 426:../src/uart/uart.c ****  * \param p_uart Pointer to a UART instance.
+ 427:../src/uart/uart.c ****  *
+ 428:../src/uart/uart.c ****  * \return UART PDC registers base for PDC driver to access.
+ 429:../src/uart/uart.c ****  */
+ 430:../src/uart/uart.c **** Pdc *uart_get_pdc_base(Uart *p_uart)
+ 431:../src/uart/uart.c **** {
+ 636              		.loc 1 431 0
+ 637              		.cfi_startproc
+ 638              		@ args = 0, pretend = 0, frame = 0
+ 639              		@ frame_needed = 0, uses_anonymous_args = 0
+ 640              		@ link register save eliminated.
+ 641              	.LVL48:
+ 432:../src/uart/uart.c **** 	Pdc *p_pdc_base;
+ 433:../src/uart/uart.c **** 
+ 434:../src/uart/uart.c **** #if (SAM3S || SAM3N || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM)
+ 435:../src/uart/uart.c **** 	if (p_uart == UART0)
+ 436:../src/uart/uart.c **** 		p_pdc_base = PDC_UART0;
+ 437:../src/uart/uart.c **** #elif (SAM3XA || SAM3U)
+ 438:../src/uart/uart.c **** 	if (p_uart == UART)
+ 439:../src/uart/uart.c **** 		p_pdc_base = PDC_UART;
+ 440:../src/uart/uart.c **** #else
+ 441:../src/uart/uart.c **** #error "Unsupported device"
+ 442:../src/uart/uart.c **** #endif
+ 443:../src/uart/uart.c **** 
+ 444:../src/uart/uart.c **** #if (SAM3S || SAM4S || SAM4E || SAM4N || SAM4C || SAMG || SAM4CP || SAM4CM)
+ 445:../src/uart/uart.c **** 	if (p_uart == UART1)
+ 642              		.loc 1 445 0
+ 643 0000 034B     		ldr	r3, .L36
+ 644 0002 9842     		cmp	r0, r3
+ 645 0004 01D0     		beq	.L35
+ 646 0006 0348     		ldr	r0, .L36+4
+ 647              	.LVL49:
+ 648 0008 7047     		bx	lr
+ 649              	.LVL50:
+ 650              	.L35:
+ 446:../src/uart/uart.c **** 		p_pdc_base = PDC_UART1;
+ 651              		.loc 1 446 0
+ 652 000a 0348     		ldr	r0, .L36+8
+ 653              	.LVL51:
+ 447:../src/uart/uart.c **** #endif
+ 448:../src/uart/uart.c **** 
+ 449:../src/uart/uart.c **** #if (SAM4N)
+ 450:../src/uart/uart.c **** 	if (p_uart == UART2)
+ 451:../src/uart/uart.c **** 		p_pdc_base = PDC_UART2;
+ 452:../src/uart/uart.c **** #endif
+ 453:../src/uart/uart.c **** 
+ 454:../src/uart/uart.c **** 	return p_pdc_base;
+ 455:../src/uart/uart.c **** }
+ 654              		.loc 1 455 0
+ 655 000c 7047     		bx	lr
+ 656              	.L37:
+ 657 000e 00BF     		.align	2
+ 658              	.L36:
+ 659 0010 00080E40 		.word	1074661376
+ 660 0014 00070E40 		.word	1074661120
+ 661 0018 00090E40 		.word	1074661632
+ 662              		.cfi_endproc
+ 663              	.LFE98:
+ 665              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 666              		.align	2
+ 669              	cpu_irq_critical_section_counter:
+ 670 0000 00000000 		.space	4
+ 671              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 674              	cpu_irq_prev_interrupt_state:
+ 675 0000 00       		.space	1
+ 676              		.text
+ 677              	.Letext0:
+ 678              		.file 2 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 679              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 680              		.file 4 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 681              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pdc.h"
+ 682              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_uart.h"
+ 683              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/uart.h"
+ 684              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 685              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 uart.c
+     /tmp/ccdRHdLu.s:20     .text.uart_init:00000000 $t
+     /tmp/ccdRHdLu.s:25     .text.uart_init:00000000 uart_init
+     /tmp/ccdRHdLu.s:85     .text.uart_enable_tx:00000000 $t
+     /tmp/ccdRHdLu.s:90     .text.uart_enable_tx:00000000 uart_enable_tx
+     /tmp/ccdRHdLu.s:106    .text.uart_disable_tx:00000000 $t
+     /tmp/ccdRHdLu.s:111    .text.uart_disable_tx:00000000 uart_disable_tx
+     /tmp/ccdRHdLu.s:127    .text.uart_reset_tx:00000000 $t
+     /tmp/ccdRHdLu.s:132    .text.uart_reset_tx:00000000 uart_reset_tx
+     /tmp/ccdRHdLu.s:148    .text.uart_enable_rx:00000000 $t
+     /tmp/ccdRHdLu.s:153    .text.uart_enable_rx:00000000 uart_enable_rx
+     /tmp/ccdRHdLu.s:169    .text.uart_disable_rx:00000000 $t
+     /tmp/ccdRHdLu.s:174    .text.uart_disable_rx:00000000 uart_disable_rx
+     /tmp/ccdRHdLu.s:190    .text.uart_reset_rx:00000000 $t
+     /tmp/ccdRHdLu.s:195    .text.uart_reset_rx:00000000 uart_reset_rx
+     /tmp/ccdRHdLu.s:211    .text.uart_enable:00000000 $t
+     /tmp/ccdRHdLu.s:216    .text.uart_enable:00000000 uart_enable
+     /tmp/ccdRHdLu.s:232    .text.uart_disable:00000000 $t
+     /tmp/ccdRHdLu.s:237    .text.uart_disable:00000000 uart_disable
+     /tmp/ccdRHdLu.s:253    .text.uart_reset:00000000 $t
+     /tmp/ccdRHdLu.s:258    .text.uart_reset:00000000 uart_reset
+     /tmp/ccdRHdLu.s:274    .text.uart_enable_interrupt:00000000 $t
+     /tmp/ccdRHdLu.s:279    .text.uart_enable_interrupt:00000000 uart_enable_interrupt
+     /tmp/ccdRHdLu.s:294    .text.uart_disable_interrupt:00000000 $t
+     /tmp/ccdRHdLu.s:299    .text.uart_disable_interrupt:00000000 uart_disable_interrupt
+     /tmp/ccdRHdLu.s:314    .text.uart_get_interrupt_mask:00000000 $t
+     /tmp/ccdRHdLu.s:319    .text.uart_get_interrupt_mask:00000000 uart_get_interrupt_mask
+     /tmp/ccdRHdLu.s:336    .text.uart_get_status:00000000 $t
+     /tmp/ccdRHdLu.s:341    .text.uart_get_status:00000000 uart_get_status
+     /tmp/ccdRHdLu.s:358    .text.uart_reset_status:00000000 $t
+     /tmp/ccdRHdLu.s:363    .text.uart_reset_status:00000000 uart_reset_status
+     /tmp/ccdRHdLu.s:379    .text.uart_is_tx_ready:00000000 $t
+     /tmp/ccdRHdLu.s:384    .text.uart_is_tx_ready:00000000 uart_is_tx_ready
+     /tmp/ccdRHdLu.s:402    .text.uart_is_tx_empty:00000000 $t
+     /tmp/ccdRHdLu.s:407    .text.uart_is_tx_empty:00000000 uart_is_tx_empty
+     /tmp/ccdRHdLu.s:425    .text.uart_is_rx_ready:00000000 $t
+     /tmp/ccdRHdLu.s:430    .text.uart_is_rx_ready:00000000 uart_is_rx_ready
+     /tmp/ccdRHdLu.s:448    .text.uart_is_tx_buf_empty:00000000 $t
+     /tmp/ccdRHdLu.s:453    .text.uart_is_tx_buf_empty:00000000 uart_is_tx_buf_empty
+     /tmp/ccdRHdLu.s:471    .text.uart_set_clock_divisor:00000000 $t
+     /tmp/ccdRHdLu.s:476    .text.uart_set_clock_divisor:00000000 uart_set_clock_divisor
+     /tmp/ccdRHdLu.s:491    .text.uart_write:00000000 $t
+     /tmp/ccdRHdLu.s:496    .text.uart_write:00000000 uart_write
+     /tmp/ccdRHdLu.s:525    .text.uart_read:00000000 $t
+     /tmp/ccdRHdLu.s:530    .text.uart_read:00000000 uart_read
+     /tmp/ccdRHdLu.s:560    .text.uart_is_rx_buf_end:00000000 $t
+     /tmp/ccdRHdLu.s:565    .text.uart_is_rx_buf_end:00000000 uart_is_rx_buf_end
+     /tmp/ccdRHdLu.s:583    .text.uart_is_tx_buf_end:00000000 $t
+     /tmp/ccdRHdLu.s:588    .text.uart_is_tx_buf_end:00000000 uart_is_tx_buf_end
+     /tmp/ccdRHdLu.s:606    .text.uart_is_rx_buf_full:00000000 $t
+     /tmp/ccdRHdLu.s:611    .text.uart_is_rx_buf_full:00000000 uart_is_rx_buf_full
+     /tmp/ccdRHdLu.s:629    .text.uart_get_pdc_base:00000000 $t
+     /tmp/ccdRHdLu.s:634    .text.uart_get_pdc_base:00000000 uart_get_pdc_base
+     /tmp/ccdRHdLu.s:659    .text.uart_get_pdc_base:00000010 $d
+     /tmp/ccdRHdLu.s:666    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccdRHdLu.s:669    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccdRHdLu.s:674    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccdRHdLu.s:675    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.uart.h.61.c06589f43ca52d74aa413956b65f02f6
+
+NO UNDEFINED SYMBOLS

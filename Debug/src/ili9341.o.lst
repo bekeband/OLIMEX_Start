@@ -1,0 +1,1371 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"ili9341.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.LCD_IO_WriteReg,"ax",%progbits
+  20              		.align	2
+  21              		.global	LCD_IO_WriteReg
+  22              		.thumb
+  23              		.thumb_func
+  25              	LCD_IO_WriteReg:
+  26              	.LFB173:
+  27              		.file 1 "../src/ili9341.c"
+   1:../src/ili9341.c **** 
+   2:../src/ili9341.c **** #include "asf.h"
+   3:../src/ili9341.c **** #include "stdio_serial.h"
+   4:../src/ili9341.c **** #include "ili9341.h"
+   5:../src/ili9341.c **** #include "mdelay.h"
+   6:../src/ili9341.c **** 
+   7:../src/ili9341.c **** #define HAL_Delay mdelay
+   8:../src/ili9341.c **** 
+   9:../src/ili9341.c **** const uint8_t datas_pwa[] = {0x39, 0x2C, 0x00, 0x34, 0x02};
+  10:../src/ili9341.c **** const uint8_t datas_pwb[] = {0x00, 0xC1, 0x30};
+  11:../src/ili9341.c **** const uint8_t datas_dtca[] = {0x85, 0x00, 0x78};
+  12:../src/ili9341.c **** const uint8_t datas_dtcb[] = {0x00, 0x00};
+  13:../src/ili9341.c **** const uint8_t datas_pw_seq[] = {0x64, 0x03, 0x12, 0x81};
+  14:../src/ili9341.c **** const uint8_t datas_prc[] = {0x20};
+  15:../src/ili9341.c **** const uint8_t datas_pw1[] = {0x23};
+  16:../src/ili9341.c **** const uint8_t datas_pw2[] = {0x10};
+  17:../src/ili9341.c **** const uint8_t datas_vcom1[] = {0x3E, 0x28};
+  18:../src/ili9341.c **** const uint8_t datas_vcom2[] = {0x86};
+  19:../src/ili9341.c **** const uint8_t datas_mac[] = {0x48};
+  20:../src/ili9341.c **** const uint8_t datas_pform[] = {0x55};
+  21:../src/ili9341.c **** const uint8_t datas_frc[] = {0x00, 0x18};
+  22:../src/ili9341.c **** const uint8_t datas_dfc[] = {0x08, 0x82, 0x27};
+  23:../src/ili9341.c **** const uint8_t datas_gen[] = {0x00};
+  24:../src/ili9341.c **** const uint8_t datas_caddr[] = {0x00, 0x00, 0x00, 0xEF};
+  25:../src/ili9341.c **** const uint8_t datas_paddr[] = {0x00, 0x00, 0x01, 0x3F};
+  26:../src/ili9341.c **** const uint8_t datas_gamma[] = {0x01};
+  27:../src/ili9341.c **** const uint8_t datas_pgamma[] = {0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0
+  28:../src/ili9341.c **** const uint8_t datas_ngamma[] = {0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0
+  29:../src/ili9341.c **** 
+  30:../src/ili9341.c **** /**
+  31:../src/ili9341.c ****   * @brief  Write command to select the LCD register.
+  32:../src/ili9341.c ****   * @param  LCDReg: Address of the selected register.
+  33:../src/ili9341.c ****   * @retval None
+  34:../src/ili9341.c ****   */
+  35:../src/ili9341.c **** void LCD_IO_WriteReg(uint8_t LCDReg)
+  36:../src/ili9341.c **** {
+  28              		.loc 1 36 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 10B5     		push	{r4, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 14, -4
+  37 0002 0446     		mov	r4, r0
+  37:../src/ili9341.c ****   /* Reset LCD control line CS */
+  38:../src/ili9341.c ****   LCD_CS_LOW();
+  38              		.loc 1 38 0
+  39 0004 0648     		ldr	r0, .L3
+  40              	.LVL1:
+  41 0006 FFF7FEFF 		bl	puts
+  42              	.LVL2:
+  43              	.LBB79:
+  44              	.LBB80:
+  45              	.LBB81:
+  46              		.file 2 "/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \file
+   3:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+   4:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \brief SAM architecture specific IOPORT service implementation header file.
+   5:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+   6:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+   7:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+   8:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \asf_license_start
+   9:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  10:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \page License
+  11:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  12:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * Redistribution and use in source and binary forms, with or without
+  13:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * modification, are permitted provided that the following conditions are met:
+  14:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  15:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *    this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  18:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *    this list of conditions and the following disclaimer in the documentation
+  20:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *    and/or other materials provided with the distribution.
+  21:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  22:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *    from this software without specific prior written permission.
+  24:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  25:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * 4. This software may only be redistributed and used in connection with an
+  26:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *    Atmel microcontroller product.
+  27:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  28:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  40:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \asf_license_stop
+  41:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  42:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /*
+  44:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  */
+  46:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifndef IOPORT_SAM_H
+  47:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_SAM_H
+  48:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  49:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #include <sysclk.h>
+  50:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  51:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_CREATE_PIN(port, pin) ((IOPORT_ ## port) * 32 + (pin))
+  52:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_BASE_ADDRESS (uintptr_t)PIOA
+  53:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIO_OFFSET   ((uintptr_t)PIOB - (uintptr_t)PIOA)
+  54:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  55:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOA     0
+  56:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOB     1
+  57:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOC     2
+  58:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOD     3
+  59:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOE     4
+  60:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_PIOF     5
+  61:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  62:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /**
+  63:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \weakgroup ioport_group
+  64:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * \section ioport_modes IOPORT Modes
+  65:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  66:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * For details on these please see the SAM Manual.
+  67:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  *
+  68:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  * @{
+  69:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h ****  */
+  70:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  71:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /** \name IOPORT Mode bit definitions */
+  72:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /** @{ */
+  73:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_MASK            (0x7 << 0) /*!< MUX bits mask */
+  74:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_BIT0            (  1 << 0) /*!< MUX BIT0 mask */
+  75:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  76:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if SAM3N || SAM3S || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CM || SAMG || SAM4CP || SAMV71 || SAM
+  77:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_BIT1            (  1 << 1) /*!< MUX BIT1 mask */
+  78:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+  79:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  80:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_A               (  0 << 0) /*!< MUX function A */
+  81:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_B               (  1 << 0) /*!< MUX function B */
+  82:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  83:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if SAM3N || SAM3S || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CM || SAMG || SAM4CP || SAMV71 || SAM
+  84:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_C               (  2 << 0) /*!< MUX function C */
+  85:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_MUX_D               (  3 << 0) /*!< MUX function D */
+  86:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+  87:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  88:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_PULLUP              (  1 << 3) /*!< Pull-up */
+  89:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  90:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if SAM3N || SAM3S || SAM4S || SAM4E || SAM4N || SAM4C || SAM4CM || SAMG || SAM4CP || SAMV71 || SAM
+  91:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_PULLDOWN            (  1 << 4) /*!< Pull-down */
+  92:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+  93:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  94:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_OPEN_DRAIN          (  1 << 5) /*!< Open drain */
+  95:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+  96:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_GLITCH_FILTER       (  1 << 6) /*!< Glitch filter */
+  97:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #define IOPORT_MODE_DEBOUNCE            (  1 << 7) /*!< Input debounce */
+  98:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /** @} */
+  99:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** /** @} */
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** typedef uint32_t ioport_mode_t;
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** typedef uint32_t ioport_pin_t;
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** typedef uint32_t ioport_port_t;
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** typedef uint32_t ioport_port_mask_t;
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static ioport_port_t arch_ioport_pin_to_port_id(ioport_pin_t pin)
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	return pin >> 5;
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static Pio *arch_ioport_port_to_base(ioport_port_t port)
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if (SAM4C || SAM4CM || SAM4CP)
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (port == IOPORT_PIOC) {
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		return (Pio *)(uintptr_t)PIOC;
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #  ifdef ID_PIOD
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else if (port == IOPORT_PIOD) {
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		return (Pio *)(uintptr_t)PIOD;
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #  endif
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		return (Pio *)((uintptr_t)IOPORT_BASE_ADDRESS +
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		       (IOPORT_PIO_OFFSET * port));
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #else
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	return (Pio *)((uintptr_t)IOPORT_BASE_ADDRESS +
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	       (IOPORT_PIO_OFFSET * port));
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static Pio *arch_ioport_pin_to_base(ioport_pin_t pin)
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	return arch_ioport_port_to_base(arch_ioport_pin_to_port_id(pin));
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static ioport_port_mask_t arch_ioport_pin_to_mask(ioport_pin_t pin)
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	return 1U << (pin & 0x1F);
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_init(void)
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOA
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOA);
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOB
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOB);
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOC
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOC);
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOD
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOD);
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOE
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOE);
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #ifdef ID_PIOF
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	sysclk_enable_peripheral_clock(ID_PIOF);
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_enable_port(ioport_port_t port,
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		ioport_port_mask_t mask)
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	arch_ioport_port_to_base(port)->PIO_PER = mask;
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_disable_port(ioport_port_t port,
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		ioport_port_mask_t mask)
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	arch_ioport_port_to_base(port)->PIO_PDR = mask;
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_enable_pin(ioport_pin_t pin)
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	arch_ioport_enable_port(arch_ioport_pin_to_port_id(pin),
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 			arch_ioport_pin_to_mask(pin));
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_disable_pin(ioport_pin_t pin)
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	arch_ioport_disable_port(arch_ioport_pin_to_port_id(pin),
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 			arch_ioport_pin_to_mask(pin));
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_set_port_mode(ioport_port_t port,
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		ioport_port_mask_t mask, ioport_mode_t mode)
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	Pio *base = arch_ioport_port_to_base(port);
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_PULLUP) {
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_PUER = mask;
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_PUDR = mask;
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if defined(IOPORT_MODE_PULLDOWN)
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_PULLDOWN) {
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_PPDER = mask;
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_PPDDR = mask;
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 206:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_OPEN_DRAIN) {
+ 207:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_MDER = mask;
+ 208:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 209:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_MDDR = mask;
+ 210:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 211:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 212:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & (IOPORT_MODE_GLITCH_FILTER | IOPORT_MODE_DEBOUNCE)) {
+ 213:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_IFER = mask;
+ 214:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 215:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_IFDR = mask;
+ 216:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 217:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 218:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_DEBOUNCE) {
+ 219:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if SAM3U || SAM3XA
+ 220:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_DIFSR = mask;
+ 221:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #else
+ 222:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_IFSCER = mask;
+ 223:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 224:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 225:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if SAM3U || SAM3XA
+ 226:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_SCIFSR = mask;
+ 227:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #else
+ 228:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_IFSCDR = mask;
+ 229:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 230:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 231:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 232:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #if !defined(IOPORT_MODE_MUX_BIT1)
+ 233:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_MUX_BIT0) {
+ 234:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABSR |= mask;
+ 235:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 236:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABSR &= ~mask;
+ 237:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 238:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #else
+ 239:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_MUX_BIT0) {
+ 240:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABCDSR[0] |= mask;
+ 241:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 242:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABCDSR[0] &= ~mask;
+ 243:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 244:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 245:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (mode & IOPORT_MODE_MUX_BIT1) {
+ 246:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABCDSR[1] |= mask;
+ 247:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 248:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ABCDSR[1] &= ~mask;
+ 249:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 250:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** #endif
+ 251:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 252:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 253:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_set_pin_mode(ioport_pin_t pin,
+ 254:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		ioport_mode_t mode)
+ 255:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 256:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	arch_ioport_set_port_mode(arch_ioport_pin_to_port_id(pin),
+ 257:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 			arch_ioport_pin_to_mask(pin), mode);
+ 258:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 259:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 260:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_set_port_dir(ioport_port_t port,
+ 261:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		ioport_port_mask_t mask, enum ioport_direction group_direction)
+ 262:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 263:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	Pio *base = arch_ioport_port_to_base(port);
+ 264:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 265:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (group_direction == IOPORT_DIR_OUTPUT) {
+ 266:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_OER = mask;
+ 267:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else if (group_direction == IOPORT_DIR_INPUT) {
+ 268:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ODR = mask;
+ 269:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 270:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 271:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	base->PIO_OWER = mask;
+ 272:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 273:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 274:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_set_pin_dir(ioport_pin_t pin,
+ 275:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		enum ioport_direction dir)
+ 276:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 277:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	Pio *base = arch_ioport_pin_to_base(pin);
+ 278:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 279:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (dir == IOPORT_DIR_OUTPUT) {
+ 280:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_OER = arch_ioport_pin_to_mask(pin);
+ 281:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else if (dir == IOPORT_DIR_INPUT) {
+ 282:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_ODR = arch_ioport_pin_to_mask(pin);
+ 283:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	}
+ 284:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 285:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	base->PIO_OWER = arch_ioport_pin_to_mask(pin);
+ 286:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** }
+ 287:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 288:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** __always_inline static void arch_ioport_set_pin_level(ioport_pin_t pin,
+ 289:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		bool level)
+ 290:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** {
+ 291:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	Pio *base = arch_ioport_pin_to_base(pin);
+ 292:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 
+ 293:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	if (level) {
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_SODR = arch_ioport_pin_to_mask(pin);
+ 295:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 296:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 		base->PIO_CODR = arch_ioport_pin_to_mask(pin);
+  47              		.loc 2 296 0
+  48 000a 0422     		movs	r2, #4
+  49 000c 054B     		ldr	r3, .L3+4
+  50 000e 5A63     		str	r2, [r3, #52]
+  51              	.LVL3:
+  52              	.LBE81:
+  53              	.LBE80:
+  54              	.LBE79:
+  39:../src/ili9341.c **** 
+  40:../src/ili9341.c ****   /* Set LCD data/command line DC to Low */
+  41:../src/ili9341.c ****   LCD_DC_LOW();
+  42:../src/ili9341.c **** 
+  43:../src/ili9341.c ****   spi_write(SPI_MASTER_BASE, LCDReg, 1, 0);
+  55              		.loc 1 43 0
+  56 0010 0023     		movs	r3, #0
+  57 0012 0122     		movs	r2, #1
+  58 0014 2146     		mov	r1, r4
+  59 0016 0448     		ldr	r0, .L3+8
+  60 0018 FFF7FEFF 		bl	spi_write
+  61              	.LVL4:
+  62 001c 10BD     		pop	{r4, pc}
+  63              	.L4:
+  64 001e 00BF     		.align	2
+  65              	.L3:
+  66 0020 00000000 		.word	.LC0
+  67 0024 000E0E40 		.word	1074662912
+  68 0028 00800040 		.word	1073774592
+  69              		.cfi_endproc
+  70              	.LFE173:
+  72              		.section	.text.LCD_IO_WriteMultipleData,"ax",%progbits
+  73              		.align	2
+  74              		.global	LCD_IO_WriteMultipleData
+  75              		.thumb
+  76              		.thumb_func
+  78              	LCD_IO_WriteMultipleData:
+  79              	.LFB174:
+  44:../src/ili9341.c **** 
+  45:../src/ili9341.c ****   /* Send Command */
+  46:../src/ili9341.c **** //  SPIx_Write(LCDReg);
+  47:../src/ili9341.c **** 
+  48:../src/ili9341.c ****   /* Deselect : Chip Select high */
+  49:../src/ili9341.c ****   //LCD_CS_HIGH();
+  50:../src/ili9341.c **** }
+  51:../src/ili9341.c **** 
+  52:../src/ili9341.c **** /**
+  53:../src/ili9341.c **** * @brief  Write register value.
+  54:../src/ili9341.c **** * @param  pData Pointer on the register value
+  55:../src/ili9341.c **** * @param  Size Size of byte to transmit to the register
+  56:../src/ili9341.c **** * @retval None
+  57:../src/ili9341.c **** */
+  58:../src/ili9341.c **** void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
+  59:../src/ili9341.c **** {
+  80              		.loc 1 59 0
+  81              		.cfi_startproc
+  82              		@ args = 0, pretend = 0, frame = 8
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84              	.LVL5:
+  85 0000 10B5     		push	{r4, lr}
+  86              		.cfi_def_cfa_offset 8
+  87              		.cfi_offset 4, -8
+  88              		.cfi_offset 14, -4
+  89 0002 82B0     		sub	sp, sp, #8
+  90              		.cfi_def_cfa_offset 16
+  91 0004 0190     		str	r0, [sp, #4]
+  92 0006 0C46     		mov	r4, r1
+  93              	.LVL6:
+  60:../src/ili9341.c ****   uint32_t counter = 0;
+  61:../src/ili9341.c **** 
+  62:../src/ili9341.c ****   /* Reset LCD control line CS */
+  63:../src/ili9341.c ****   LCD_CS_LOW();
+  94              		.loc 1 63 0
+  95 0008 0F48     		ldr	r0, .L10
+  96              	.LVL7:
+  97 000a FFF7FEFF 		bl	puts
+  98              	.LVL8:
+  99              	.LBB82:
+ 100              	.LBB83:
+ 101              	.LBB84:
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 102              		.loc 2 294 0
+ 103 000e 0422     		movs	r2, #4
+ 104 0010 0E4B     		ldr	r3, .L10+4
+ 105 0012 1A63     		str	r2, [r3, #48]
+ 106              	.LVL9:
+ 107              	.LBE84:
+ 108              	.LBE83:
+ 109              	.LBE82:
+  64:../src/ili9341.c **** 
+  65:../src/ili9341.c ****   /* Set LCD data/command line DC to High */
+  66:../src/ili9341.c ****   LCD_DC_HIGH();
+  67:../src/ili9341.c **** 
+  68:../src/ili9341.c ****   if (Size == 1)
+ 110              		.loc 1 68 0
+ 111 0014 012C     		cmp	r4, #1
+ 112 0016 13D1     		bne	.L6
+  69:../src/ili9341.c ****   {
+  70:../src/ili9341.c ****     /* Only 1 byte to be sent to LCD - general interface can be used */
+  71:../src/ili9341.c ****     /* Send Data */
+  72:../src/ili9341.c ****     spi_write(SPI_MASTER_BASE, &pData, 1, 0);
+ 113              		.loc 1 72 0
+ 114 0018 0DEB0201 		add	r1, sp, r2
+ 115 001c 89B2     		uxth	r1, r1
+ 116 001e 0023     		movs	r3, #0
+ 117 0020 0122     		movs	r2, #1
+ 118 0022 0B48     		ldr	r0, .L10+8
+ 119 0024 FFF7FEFF 		bl	spi_write
+ 120              	.LVL10:
+ 121 0028 0CE0     		b	.L5
+ 122              	.LVL11:
+ 123              	.L8:
+  73:../src/ili9341.c ****   }
+  74:../src/ili9341.c ****   else
+  75:../src/ili9341.c **** {
+  76:../src/ili9341.c ****       /* Several data should be sent in a raw */
+  77:../src/ili9341.c ****       /* Direct SPI accesses for optimization */
+  78:../src/ili9341.c ****   for (counter = Size; counter != 0; counter--)
+  79:../src/ili9341.c ****   {
+  80:../src/ili9341.c **** //      while(((TFT_SPI_HANDLE.Instance->SR) & SPI_FLAG_TXE) != SPI_FLAG_TXE) 	{}
+  81:../src/ili9341.c ****       /* Need to invert bytes for LCD*/
+  82:../src/ili9341.c **** //      *((__IO uint8_t*)&TFT_SPI_HANDLE.Instance->DR) = *(pData);
+  83:../src/ili9341.c **** 
+  84:../src/ili9341.c **** /*      while(((TFT_SPI_HANDLE.Instance->SR) & SPI_FLAG_TXE) != SPI_FLAG_TXE)	{}
+  85:../src/ili9341.c ****       *((__IO uint8_t*)&TFT_SPI_HANDLE.Instance->DR) = *pData;*/
+  86:../src/ili9341.c ****       spi_write(SPI_MASTER_BASE, (&pData), 1, 0);
+ 124              		.loc 1 86 0 discriminator 3
+ 125 002a 01A9     		add	r1, sp, #4
+ 126              	.LVL12:
+ 127 002c 89B2     		uxth	r1, r1
+ 128              	.LVL13:
+ 129 002e 0023     		movs	r3, #0
+ 130 0030 0122     		movs	r2, #1
+ 131 0032 0748     		ldr	r0, .L10+8
+ 132 0034 FFF7FEFF 		bl	spi_write
+ 133              	.LVL14:
+  87:../src/ili9341.c ****       pData++;
+ 134              		.loc 1 87 0 discriminator 3
+ 135 0038 019B     		ldr	r3, [sp, #4]
+ 136 003a 0133     		adds	r3, r3, #1
+ 137 003c 0193     		str	r3, [sp, #4]
+  78:../src/ili9341.c ****   {
+ 138              		.loc 1 78 0 discriminator 3
+ 139 003e 013C     		subs	r4, r4, #1
+ 140              	.LVL15:
+ 141              	.L6:
+  78:../src/ili9341.c ****   {
+ 142              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 143 0040 002C     		cmp	r4, #0
+ 144 0042 F2D1     		bne	.L8
+ 145              	.LVL16:
+ 146              	.L5:
+  88:../src/ili9341.c ****   }
+  89:../src/ili9341.c **** 
+  90:../src/ili9341.c ****     /* Wait until the bus is ready before releasing Chip select */
+  91:../src/ili9341.c **** //    while(((TFT_SPI_HANDLE.Instance->SR) & SPI_FLAG_BSY) != RESET)
+  92:../src/ili9341.c ****   {
+  93:../src/ili9341.c ****   }
+  94:../src/ili9341.c ****   }
+  95:../src/ili9341.c **** 
+  96:../src/ili9341.c ****   /* Deselect : Chip Select high */
+  97:../src/ili9341.c **** //  LCD_CS_HIGH();
+  98:../src/ili9341.c **** }
+ 147              		.loc 1 98 0 is_stmt 1
+ 148 0044 02B0     		add	sp, sp, #8
+ 149              		.cfi_def_cfa_offset 8
+ 150              		@ sp needed
+ 151 0046 10BD     		pop	{r4, pc}
+ 152              	.LVL17:
+ 153              	.L11:
+ 154              		.align	2
+ 155              	.L10:
+ 156 0048 00000000 		.word	.LC0
+ 157 004c 000E0E40 		.word	1074662912
+ 158 0050 00800040 		.word	1073774592
+ 159              		.cfi_endproc
+ 160              	.LFE174:
+ 162              		.section	.text.InitLCD,"ax",%progbits
+ 163              		.align	2
+ 164              		.global	InitLCD
+ 165              		.thumb
+ 166              		.thumb_func
+ 168              	InitLCD:
+ 169              	.LFB175:
+  99:../src/ili9341.c **** 
+ 100:../src/ili9341.c **** void InitLCD()
+ 101:../src/ili9341.c **** {
+ 170              		.loc 1 101 0
+ 171              		.cfi_startproc
+ 172              		@ args = 0, pretend = 0, frame = 0
+ 173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 174 0000 38B5     		push	{r3, r4, r5, lr}
+ 175              		.cfi_def_cfa_offset 16
+ 176              		.cfi_offset 3, -16
+ 177              		.cfi_offset 4, -12
+ 178              		.cfi_offset 5, -8
+ 179              		.cfi_offset 14, -4
+ 180              	.LVL18:
+ 181              	.LBB85:
+ 182              	.LBB86:
+ 183              	.LBB87:
+ 184              		.loc 2 296 0
+ 185 0002 564D     		ldr	r5, .L14
+ 186 0004 0124     		movs	r4, #1
+ 187 0006 6C63     		str	r4, [r5, #52]
+ 188              	.LVL19:
+ 189              	.LBE87:
+ 190              	.LBE86:
+ 191              	.LBE85:
+ 102:../src/ili9341.c ****   /* Force reset */
+ 103:../src/ili9341.c ****   LCD_RST_LOW();
+ 104:../src/ili9341.c ****   HAL_Delay(300);
+ 192              		.loc 1 104 0
+ 193 0008 4FF49670 		mov	r0, #300
+ 194 000c FFF7FEFF 		bl	mdelay
+ 195              	.LVL20:
+ 196              	.LBB88:
+ 197              	.LBB89:
+ 198              	.LBB90:
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h **** 	} else {
+ 199              		.loc 2 294 0
+ 200 0010 2C63     		str	r4, [r5, #48]
+ 201              	.LVL21:
+ 202              	.LBE90:
+ 203              	.LBE89:
+ 204              	.LBE88:
+ 105:../src/ili9341.c ****   LCD_RST_HIGH();
+ 106:../src/ili9341.c ****   /* Delay for RST response */
+ 107:../src/ili9341.c ****   HAL_Delay(300);
+ 205              		.loc 1 107 0
+ 206 0012 4FF49670 		mov	r0, #300
+ 207 0016 FFF7FEFF 		bl	mdelay
+ 208              	.LVL22:
+ 108:../src/ili9341.c **** 
+ 109:../src/ili9341.c ****   /* Software reset */
+ 110:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_RESET);
+ 209              		.loc 1 110 0
+ 210 001a 2046     		mov	r0, r4
+ 211 001c FFF7FEFF 		bl	LCD_IO_WriteReg
+ 212              	.LVL23:
+ 111:../src/ili9341.c ****   HAL_Delay(300);
+ 213              		.loc 1 111 0
+ 214 0020 4FF49670 		mov	r0, #300
+ 215 0024 FFF7FEFF 		bl	mdelay
+ 216              	.LVL24:
+ 112:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_POWERA);
+ 217              		.loc 1 112 0
+ 218 0028 CB20     		movs	r0, #203
+ 219 002a FFF7FEFF 		bl	LCD_IO_WriteReg
+ 220              	.LVL25:
+ 113:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pwa, sizeof(datas_pwa));
+ 221              		.loc 1 113 0
+ 222 002e 0521     		movs	r1, #5
+ 223 0030 4B48     		ldr	r0, .L14+4
+ 224 0032 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 225              	.LVL26:
+ 114:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_POWERB);
+ 226              		.loc 1 114 0
+ 227 0036 CF20     		movs	r0, #207
+ 228 0038 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 229              	.LVL27:
+ 115:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pwb, sizeof(datas_pwb));
+ 230              		.loc 1 115 0
+ 231 003c 0321     		movs	r1, #3
+ 232 003e 4948     		ldr	r0, .L14+8
+ 233 0040 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 234              	.LVL28:
+ 116:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_DTCA);
+ 235              		.loc 1 116 0
+ 236 0044 E820     		movs	r0, #232
+ 237 0046 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 238              	.LVL29:
+ 117:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_dtca, sizeof(datas_dtca));
+ 239              		.loc 1 117 0
+ 240 004a 0321     		movs	r1, #3
+ 241 004c 4648     		ldr	r0, .L14+12
+ 242 004e FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 243              	.LVL30:
+ 118:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_DTCB);
+ 244              		.loc 1 118 0
+ 245 0052 EA20     		movs	r0, #234
+ 246 0054 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 247              	.LVL31:
+ 119:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_dtcb, sizeof(datas_dtcb));
+ 248              		.loc 1 119 0
+ 249 0058 0221     		movs	r1, #2
+ 250 005a 4448     		ldr	r0, .L14+16
+ 251 005c FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 252              	.LVL32:
+ 120:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_POWER_SEQ);
+ 253              		.loc 1 120 0
+ 254 0060 ED20     		movs	r0, #237
+ 255 0062 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 256              	.LVL33:
+ 121:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pw_seq, sizeof(datas_pw_seq));
+ 257              		.loc 1 121 0
+ 258 0066 0421     		movs	r1, #4
+ 259 0068 4148     		ldr	r0, .L14+20
+ 260 006a FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 261              	.LVL34:
+ 122:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_PRC);
+ 262              		.loc 1 122 0
+ 263 006e F720     		movs	r0, #247
+ 264 0070 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 265              	.LVL35:
+ 123:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_prc, sizeof(datas_prc));
+ 266              		.loc 1 123 0
+ 267 0074 2146     		mov	r1, r4
+ 268 0076 3F48     		ldr	r0, .L14+24
+ 269 0078 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 270              	.LVL36:
+ 124:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_POWER1);
+ 271              		.loc 1 124 0
+ 272 007c C020     		movs	r0, #192
+ 273 007e FFF7FEFF 		bl	LCD_IO_WriteReg
+ 274              	.LVL37:
+ 125:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pw1, sizeof(datas_pw1));
+ 275              		.loc 1 125 0
+ 276 0082 2146     		mov	r1, r4
+ 277 0084 3C48     		ldr	r0, .L14+28
+ 278 0086 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 279              	.LVL38:
+ 126:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_POWER2);
+ 280              		.loc 1 126 0
+ 281 008a C120     		movs	r0, #193
+ 282 008c FFF7FEFF 		bl	LCD_IO_WriteReg
+ 283              	.LVL39:
+ 127:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pw2, sizeof(datas_pw2));
+ 284              		.loc 1 127 0
+ 285 0090 2146     		mov	r1, r4
+ 286 0092 3A48     		ldr	r0, .L14+32
+ 287 0094 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 288              	.LVL40:
+ 128:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_VCOM1);
+ 289              		.loc 1 128 0
+ 290 0098 C520     		movs	r0, #197
+ 291 009a FFF7FEFF 		bl	LCD_IO_WriteReg
+ 292              	.LVL41:
+ 129:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_vcom1, sizeof(datas_vcom1));
+ 293              		.loc 1 129 0
+ 294 009e 0221     		movs	r1, #2
+ 295 00a0 3748     		ldr	r0, .L14+36
+ 296 00a2 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 297              	.LVL42:
+ 130:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_VCOM2);
+ 298              		.loc 1 130 0
+ 299 00a6 C720     		movs	r0, #199
+ 300 00a8 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 301              	.LVL43:
+ 131:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_vcom2, sizeof(datas_vcom2));
+ 302              		.loc 1 131 0
+ 303 00ac 2146     		mov	r1, r4
+ 304 00ae 3548     		ldr	r0, .L14+40
+ 305 00b0 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 306              	.LVL44:
+ 132:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_MAC);
+ 307              		.loc 1 132 0
+ 308 00b4 3620     		movs	r0, #54
+ 309 00b6 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 310              	.LVL45:
+ 133:../src/ili9341.c **** 
+ 134:../src/ili9341.c **** #ifdef RGB_BGR_COLOR
+ 135:../src/ili9341.c ****   #ifdef ROW_COL_EXCH
+ 136:../src/ili9341.c ****     SendData(0x68);
+ 137:../src/ili9341.c ****   #else
+ 138:../src/ili9341.c ****     LCD_IO_WriteMultipleData((uint8_t*)&datas_mac, sizeof(datas_mac));
+ 311              		.loc 1 138 0
+ 312 00ba 2146     		mov	r1, r4
+ 313 00bc 3248     		ldr	r0, .L14+44
+ 314 00be FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 315              	.LVL46:
+ 139:../src/ili9341.c ****   #endif
+ 140:../src/ili9341.c **** #else
+ 141:../src/ili9341.c ****   #ifdef ROW_COL_EXCH
+ 142:../src/ili9341.c ****   #else
+ 143:../src/ili9341.c ****     SendData(0x60);
+ 144:../src/ili9341.c **** #endif
+ 145:../src/ili9341.c ****   SendData(0x40);
+ 146:../src/ili9341.c **** #endif
+ 147:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_PIXEL_FORMAT);
+ 316              		.loc 1 147 0
+ 317 00c2 3A20     		movs	r0, #58
+ 318 00c4 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 319              	.LVL47:
+ 148:../src/ili9341.c **** #ifdef PIXEL_FORMAT_18_BIT
+ 149:../src/ili9341.c ****   SendData(0x66);	// 18 bits pixel format
+ 150:../src/ili9341.c **** #else
+ 151:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pform, sizeof(datas_pform));
+ 320              		.loc 1 151 0
+ 321 00c8 2146     		mov	r1, r4
+ 322 00ca 3048     		ldr	r0, .L14+48
+ 323 00cc FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 324              	.LVL48:
+ 152:../src/ili9341.c **** #endif
+ 153:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_FRC);
+ 325              		.loc 1 153 0
+ 326 00d0 B120     		movs	r0, #177
+ 327 00d2 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 328              	.LVL49:
+ 154:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_frc, sizeof(datas_frc));
+ 329              		.loc 1 154 0
+ 330 00d6 0221     		movs	r1, #2
+ 331 00d8 2D48     		ldr	r0, .L14+52
+ 332 00da FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 333              	.LVL50:
+ 155:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_DFC);
+ 334              		.loc 1 155 0
+ 335 00de B620     		movs	r0, #182
+ 336 00e0 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 337              	.LVL51:
+ 156:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_dfc, sizeof(datas_dfc));
+ 338              		.loc 1 156 0
+ 339 00e4 0321     		movs	r1, #3
+ 340 00e6 2B48     		ldr	r0, .L14+56
+ 341 00e8 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 342              	.LVL52:
+ 157:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_3GAMMA_EN);
+ 343              		.loc 1 157 0
+ 344 00ec F220     		movs	r0, #242
+ 345 00ee FFF7FEFF 		bl	LCD_IO_WriteReg
+ 346              	.LVL53:
+ 158:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_gen, sizeof(datas_gen));
+ 347              		.loc 1 158 0
+ 348 00f2 2146     		mov	r1, r4
+ 349 00f4 2848     		ldr	r0, .L14+60
+ 350 00f6 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 351              	.LVL54:
+ 159:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_COLUMN_ADDR);
+ 352              		.loc 1 159 0
+ 353 00fa 2A20     		movs	r0, #42
+ 354 00fc FFF7FEFF 		bl	LCD_IO_WriteReg
+ 355              	.LVL55:
+ 160:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_caddr, sizeof(datas_caddr));
+ 356              		.loc 1 160 0
+ 357 0100 0421     		movs	r1, #4
+ 358 0102 2648     		ldr	r0, .L14+64
+ 359 0104 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 360              	.LVL56:
+ 161:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_PAGE_ADDR);
+ 361              		.loc 1 161 0
+ 362 0108 2B20     		movs	r0, #43
+ 363 010a FFF7FEFF 		bl	LCD_IO_WriteReg
+ 364              	.LVL57:
+ 162:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_paddr, sizeof(datas_paddr));
+ 365              		.loc 1 162 0
+ 366 010e 0421     		movs	r1, #4
+ 367 0110 2348     		ldr	r0, .L14+68
+ 368 0112 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 369              	.LVL58:
+ 163:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_GAMMA);
+ 370              		.loc 1 163 0
+ 371 0116 2620     		movs	r0, #38
+ 372 0118 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 373              	.LVL59:
+ 164:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_gamma, sizeof(datas_gamma));
+ 374              		.loc 1 164 0
+ 375 011c 2146     		mov	r1, r4
+ 376 011e 2148     		ldr	r0, .L14+72
+ 377 0120 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 378              	.LVL60:
+ 165:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_PGAMMA);
+ 379              		.loc 1 165 0
+ 380 0124 E020     		movs	r0, #224
+ 381 0126 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 382              	.LVL61:
+ 166:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_pgamma, sizeof(datas_pgamma));
+ 383              		.loc 1 166 0
+ 384 012a 0F21     		movs	r1, #15
+ 385 012c 1E48     		ldr	r0, .L14+76
+ 386 012e FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 387              	.LVL62:
+ 167:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_NGAMMA);
+ 388              		.loc 1 167 0
+ 389 0132 E120     		movs	r0, #225
+ 390 0134 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 391              	.LVL63:
+ 168:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas_ngamma, sizeof(datas_ngamma));
+ 392              		.loc 1 168 0
+ 393 0138 0F21     		movs	r1, #15
+ 394 013a 1C48     		ldr	r0, .L14+80
+ 395 013c FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 396              	.LVL64:
+ 169:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_SLEEP_OUT);
+ 397              		.loc 1 169 0
+ 398 0140 1120     		movs	r0, #17
+ 399 0142 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 400              	.LVL65:
+ 170:../src/ili9341.c **** 
+ 171:../src/ili9341.c ****   HAL_Delay(300);
+ 401              		.loc 1 171 0
+ 402 0146 4FF49670 		mov	r0, #300
+ 403 014a FFF7FEFF 		bl	mdelay
+ 404              	.LVL66:
+ 172:../src/ili9341.c **** 
+ 173:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_DISPLAY_ON);
+ 405              		.loc 1 173 0
+ 406 014e 2920     		movs	r0, #41
+ 407 0150 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 408              	.LVL67:
+ 174:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_GRAM);
+ 409              		.loc 1 174 0
+ 410 0154 2C20     		movs	r0, #44
+ 411 0156 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 412              	.LVL68:
+ 413 015a 38BD     		pop	{r3, r4, r5, pc}
+ 414              	.L15:
+ 415              		.align	2
+ 416              	.L14:
+ 417 015c 000E0E40 		.word	1074662912
+ 418 0160 00000000 		.word	.LANCHOR0
+ 419 0164 00000000 		.word	.LANCHOR1
+ 420 0168 00000000 		.word	.LANCHOR2
+ 421 016c 00000000 		.word	.LANCHOR3
+ 422 0170 00000000 		.word	.LANCHOR4
+ 423 0174 00000000 		.word	.LANCHOR5
+ 424 0178 00000000 		.word	.LANCHOR6
+ 425 017c 00000000 		.word	.LANCHOR7
+ 426 0180 00000000 		.word	.LANCHOR8
+ 427 0184 00000000 		.word	.LANCHOR9
+ 428 0188 00000000 		.word	.LANCHOR10
+ 429 018c 00000000 		.word	.LANCHOR11
+ 430 0190 00000000 		.word	.LANCHOR12
+ 431 0194 00000000 		.word	.LANCHOR13
+ 432 0198 00000000 		.word	.LANCHOR14
+ 433 019c 00000000 		.word	.LANCHOR15
+ 434 01a0 00000000 		.word	.LANCHOR16
+ 435 01a4 00000000 		.word	.LANCHOR17
+ 436 01a8 00000000 		.word	.LANCHOR18
+ 437 01ac 00000000 		.word	.LANCHOR19
+ 438              		.cfi_endproc
+ 439              	.LFE175:
+ 441              		.section	.text.SetCursorPosition,"ax",%progbits
+ 442              		.align	2
+ 443              		.global	SetCursorPosition
+ 444              		.thumb
+ 445              		.thumb_func
+ 447              	SetCursorPosition:
+ 448              	.LFB176:
+ 175:../src/ili9341.c **** }
+ 176:../src/ili9341.c **** 
+ 177:../src/ili9341.c **** void SetCursorPosition(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
+ 178:../src/ili9341.c **** {uint8_t datas[] = {0, 0, 0, 0};
+ 449              		.loc 1 178 0
+ 450              		.cfi_startproc
+ 451              		@ args = 0, pretend = 0, frame = 8
+ 452              		@ frame_needed = 0, uses_anonymous_args = 0
+ 453              	.LVL69:
+ 454 0000 30B5     		push	{r4, r5, lr}
+ 455              		.cfi_def_cfa_offset 12
+ 456              		.cfi_offset 4, -12
+ 457              		.cfi_offset 5, -8
+ 458              		.cfi_offset 14, -4
+ 459 0002 83B0     		sub	sp, sp, #12
+ 460              		.cfi_def_cfa_offset 24
+ 461 0004 0D46     		mov	r5, r1
+ 462 0006 1C46     		mov	r4, r3
+ 179:../src/ili9341.c ****   datas[0] = (x1 >> 8);
+ 463              		.loc 1 179 0
+ 464 0008 030A     		lsrs	r3, r0, #8
+ 465              	.LVL70:
+ 466 000a 8DF80430 		strb	r3, [sp, #4]
+ 180:../src/ili9341.c ****   datas[1] = (x1 & 0xFF);
+ 467              		.loc 1 180 0
+ 468 000e 8DF80500 		strb	r0, [sp, #5]
+ 181:../src/ili9341.c ****   datas[2] = (x2 >> 8);
+ 469              		.loc 1 181 0
+ 470 0012 130A     		lsrs	r3, r2, #8
+ 471 0014 8DF80630 		strb	r3, [sp, #6]
+ 182:../src/ili9341.c ****   datas[3] = (x2 & 0xFF);
+ 472              		.loc 1 182 0
+ 473 0018 8DF80720 		strb	r2, [sp, #7]
+ 183:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_COLUMN_ADDR);
+ 474              		.loc 1 183 0
+ 475 001c 2A20     		movs	r0, #42
+ 476              	.LVL71:
+ 477 001e FFF7FEFF 		bl	LCD_IO_WriteReg
+ 478              	.LVL72:
+ 184:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas, sizeof(datas));
+ 479              		.loc 1 184 0
+ 480 0022 0421     		movs	r1, #4
+ 481 0024 0DEB0100 		add	r0, sp, r1
+ 482 0028 FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 483              	.LVL73:
+ 185:../src/ili9341.c ****   datas[0] = (y1 >> 8);
+ 484              		.loc 1 185 0
+ 485 002c 2B0A     		lsrs	r3, r5, #8
+ 486 002e 8DF80430 		strb	r3, [sp, #4]
+ 186:../src/ili9341.c ****   datas[1] = (y1 & 0xFF);
+ 487              		.loc 1 186 0
+ 488 0032 8DF80550 		strb	r5, [sp, #5]
+ 187:../src/ili9341.c ****   datas[2] = (y2 >> 8);
+ 489              		.loc 1 187 0
+ 490 0036 230A     		lsrs	r3, r4, #8
+ 491 0038 8DF80630 		strb	r3, [sp, #6]
+ 188:../src/ili9341.c ****   datas[3] = (y2 & 0xFF);
+ 492              		.loc 1 188 0
+ 493 003c 8DF80740 		strb	r4, [sp, #7]
+ 189:../src/ili9341.c ****   LCD_IO_WriteReg(ILI9341_PAGE_ADDR);
+ 494              		.loc 1 189 0
+ 495 0040 2B20     		movs	r0, #43
+ 496 0042 FFF7FEFF 		bl	LCD_IO_WriteReg
+ 497              	.LVL74:
+ 190:../src/ili9341.c ****   LCD_IO_WriteMultipleData((uint8_t*)&datas, sizeof(datas));
+ 498              		.loc 1 190 0
+ 499 0046 0421     		movs	r1, #4
+ 500 0048 0DEB0100 		add	r0, sp, r1
+ 501 004c FFF7FEFF 		bl	LCD_IO_WriteMultipleData
+ 502              	.LVL75:
+ 191:../src/ili9341.c **** }
+ 503              		.loc 1 191 0
+ 504 0050 03B0     		add	sp, sp, #12
+ 505              		.cfi_def_cfa_offset 12
+ 506              		@ sp needed
+ 507 0052 30BD     		pop	{r4, r5, pc}
+ 508              		.cfi_endproc
+ 509              	.LFE176:
+ 511              		.global	datas_ngamma
+ 512              		.global	datas_pgamma
+ 513              		.global	datas_gamma
+ 514              		.global	datas_paddr
+ 515              		.global	datas_caddr
+ 516              		.global	datas_gen
+ 517              		.global	datas_dfc
+ 518              		.global	datas_frc
+ 519              		.global	datas_pform
+ 520              		.global	datas_mac
+ 521              		.global	datas_vcom2
+ 522              		.global	datas_vcom1
+ 523              		.global	datas_pw2
+ 524              		.global	datas_pw1
+ 525              		.global	datas_prc
+ 526              		.global	datas_pw_seq
+ 527              		.global	datas_dtcb
+ 528              		.global	datas_dtca
+ 529              		.global	datas_pwb
+ 530              		.global	datas_pwa
+ 531              		.section	.rodata.datas_caddr,"a",%progbits
+ 532              		.align	2
+ 533              		.set	.LANCHOR15,. + 0
+ 536              	datas_caddr:
+ 537 0000 00       		.byte	0
+ 538 0001 00       		.byte	0
+ 539 0002 00       		.byte	0
+ 540 0003 EF       		.byte	-17
+ 541              		.section	.rodata.datas_pgamma,"a",%progbits
+ 542              		.align	2
+ 543              		.set	.LANCHOR18,. + 0
+ 546              	datas_pgamma:
+ 547 0000 0F       		.byte	15
+ 548 0001 31       		.byte	49
+ 549 0002 2B       		.byte	43
+ 550 0003 0C       		.byte	12
+ 551 0004 0E       		.byte	14
+ 552 0005 08       		.byte	8
+ 553 0006 4E       		.byte	78
+ 554 0007 F1       		.byte	-15
+ 555 0008 37       		.byte	55
+ 556 0009 07       		.byte	7
+ 557 000a 10       		.byte	16
+ 558 000b 03       		.byte	3
+ 559 000c 0E       		.byte	14
+ 560 000d 09       		.byte	9
+ 561 000e 00       		.byte	0
+ 562              		.section	.rodata.datas_pwa,"a",%progbits
+ 563              		.align	2
+ 564              		.set	.LANCHOR0,. + 0
+ 567              	datas_pwa:
+ 568 0000 39       		.byte	57
+ 569 0001 2C       		.byte	44
+ 570 0002 00       		.byte	0
+ 571 0003 34       		.byte	52
+ 572 0004 02       		.byte	2
+ 573              		.section	.rodata.datas_pwb,"a",%progbits
+ 574              		.align	2
+ 575              		.set	.LANCHOR1,. + 0
+ 578              	datas_pwb:
+ 579 0000 00       		.byte	0
+ 580 0001 C1       		.byte	-63
+ 581 0002 30       		.byte	48
+ 582              		.section	.rodata.datas_paddr,"a",%progbits
+ 583              		.align	2
+ 584              		.set	.LANCHOR16,. + 0
+ 587              	datas_paddr:
+ 588 0000 00       		.byte	0
+ 589 0001 00       		.byte	0
+ 590 0002 01       		.byte	1
+ 591 0003 3F       		.byte	63
+ 592              		.section	.rodata.datas_mac,"a",%progbits
+ 593              		.align	2
+ 594              		.set	.LANCHOR10,. + 0
+ 597              	datas_mac:
+ 598 0000 48       		.byte	72
+ 599              		.section	.rodata.datas_gen,"a",%progbits
+ 600              		.align	2
+ 601              		.set	.LANCHOR14,. + 0
+ 604              	datas_gen:
+ 605 0000 00       		.space	1
+ 606              		.section	.rodata.datas_frc,"a",%progbits
+ 607              		.align	2
+ 608              		.set	.LANCHOR12,. + 0
+ 611              	datas_frc:
+ 612 0000 00       		.byte	0
+ 613 0001 18       		.byte	24
+ 614              		.section	.rodata.datas_gamma,"a",%progbits
+ 615              		.align	2
+ 616              		.set	.LANCHOR17,. + 0
+ 619              	datas_gamma:
+ 620 0000 01       		.byte	1
+ 621              		.section	.rodata.datas_prc,"a",%progbits
+ 622              		.align	2
+ 623              		.set	.LANCHOR5,. + 0
+ 626              	datas_prc:
+ 627 0000 20       		.byte	32
+ 628              		.section	.rodata.datas_pform,"a",%progbits
+ 629              		.align	2
+ 630              		.set	.LANCHOR11,. + 0
+ 633              	datas_pform:
+ 634 0000 55       		.byte	85
+ 635              		.section	.rodata.datas_vcom1,"a",%progbits
+ 636              		.align	2
+ 637              		.set	.LANCHOR8,. + 0
+ 640              	datas_vcom1:
+ 641 0000 3E       		.byte	62
+ 642 0001 28       		.byte	40
+ 643              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 644              		.align	2
+ 645              	.LC0:
+ 646 0000 4C43445F 		.ascii	"LCD_CS_LOW();\000"
+ 646      43535F4C 
+ 646      4F572829 
+ 646      3B00
+ 647              		.section	.rodata.datas_pw1,"a",%progbits
+ 648              		.align	2
+ 649              		.set	.LANCHOR6,. + 0
+ 652              	datas_pw1:
+ 653 0000 23       		.byte	35
+ 654              		.section	.rodata.datas_pw2,"a",%progbits
+ 655              		.align	2
+ 656              		.set	.LANCHOR7,. + 0
+ 659              	datas_pw2:
+ 660 0000 10       		.byte	16
+ 661              		.section	.rodata.datas_vcom2,"a",%progbits
+ 662              		.align	2
+ 663              		.set	.LANCHOR9,. + 0
+ 666              	datas_vcom2:
+ 667 0000 86       		.byte	-122
+ 668              		.section	.rodata.datas_dfc,"a",%progbits
+ 669              		.align	2
+ 670              		.set	.LANCHOR13,. + 0
+ 673              	datas_dfc:
+ 674 0000 08       		.byte	8
+ 675 0001 82       		.byte	-126
+ 676 0002 27       		.byte	39
+ 677              		.section	.rodata.datas_pw_seq,"a",%progbits
+ 678              		.align	2
+ 679              		.set	.LANCHOR4,. + 0
+ 682              	datas_pw_seq:
+ 683 0000 64       		.byte	100
+ 684 0001 03       		.byte	3
+ 685 0002 12       		.byte	18
+ 686 0003 81       		.byte	-127
+ 687              		.section	.rodata.datas_dtca,"a",%progbits
+ 688              		.align	2
+ 689              		.set	.LANCHOR2,. + 0
+ 692              	datas_dtca:
+ 693 0000 85       		.byte	-123
+ 694 0001 00       		.byte	0
+ 695 0002 78       		.byte	120
+ 696              		.section	.rodata.datas_dtcb,"a",%progbits
+ 697              		.align	2
+ 698              		.set	.LANCHOR3,. + 0
+ 701              	datas_dtcb:
+ 702 0000 0000     		.space	2
+ 703              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 704              		.align	2
+ 707              	cpu_irq_critical_section_counter:
+ 708 0000 00000000 		.space	4
+ 709              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 712              	cpu_irq_prev_interrupt_state:
+ 713 0000 00       		.space	1
+ 714              		.section	.rodata.datas_ngamma,"a",%progbits
+ 715              		.align	2
+ 716              		.set	.LANCHOR19,. + 0
+ 719              	datas_ngamma:
+ 720 0000 00       		.byte	0
+ 721 0001 0E       		.byte	14
+ 722 0002 14       		.byte	20
+ 723 0003 03       		.byte	3
+ 724 0004 11       		.byte	17
+ 725 0005 07       		.byte	7
+ 726 0006 31       		.byte	49
+ 727 0007 C1       		.byte	-63
+ 728 0008 48       		.byte	72
+ 729 0009 08       		.byte	8
+ 730 000a 0F       		.byte	15
+ 731 000b 0C       		.byte	12
+ 732 000c 31       		.byte	49
+ 733 000d 36       		.byte	54
+ 734 000e 0F       		.byte	15
+ 735              		.text
+ 736              	.Letext0:
+ 737              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 738              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 739              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 740              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pio.h"
+ 741              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_spi.h"
+ 742              		.file 8 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/lock.h"
+ 743              		.file 9 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_types.h"
+ 744              		.file 10 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/lib/gcc/arm-none-eabi/5.2.1/include/stddef.h"
+ 745              		.file 11 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/reent.h"
+ 746              		.file 12 "/home/bekeband/workspace/OLIMEX_Start/src/ioport.h"
+ 747              		.file 13 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 748              		.file 14 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 749              		.file 15 "/home/bekeband/workspace/OLIMEX_Start/src/stdio_serial.h"
+ 750              		.file 16 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/stdio.h"
+ 751              		.file 17 "/home/bekeband/workspace/OLIMEX_Start/src/spi.h"
+ 752              		.file 18 "../src/mdelay.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 ili9341.c
+     /tmp/ccL1SJno.s:20     .text.LCD_IO_WriteReg:00000000 $t
+     /tmp/ccL1SJno.s:25     .text.LCD_IO_WriteReg:00000000 LCD_IO_WriteReg
+     /tmp/ccL1SJno.s:66     .text.LCD_IO_WriteReg:00000020 $d
+     /tmp/ccL1SJno.s:73     .text.LCD_IO_WriteMultipleData:00000000 $t
+     /tmp/ccL1SJno.s:78     .text.LCD_IO_WriteMultipleData:00000000 LCD_IO_WriteMultipleData
+     /tmp/ccL1SJno.s:156    .text.LCD_IO_WriteMultipleData:00000048 $d
+     /tmp/ccL1SJno.s:163    .text.InitLCD:00000000 $t
+     /tmp/ccL1SJno.s:168    .text.InitLCD:00000000 InitLCD
+     /tmp/ccL1SJno.s:417    .text.InitLCD:0000015c $d
+     /tmp/ccL1SJno.s:442    .text.SetCursorPosition:00000000 $t
+     /tmp/ccL1SJno.s:447    .text.SetCursorPosition:00000000 SetCursorPosition
+     /tmp/ccL1SJno.s:719    .rodata.datas_ngamma:00000000 datas_ngamma
+     /tmp/ccL1SJno.s:546    .rodata.datas_pgamma:00000000 datas_pgamma
+     /tmp/ccL1SJno.s:619    .rodata.datas_gamma:00000000 datas_gamma
+     /tmp/ccL1SJno.s:587    .rodata.datas_paddr:00000000 datas_paddr
+     /tmp/ccL1SJno.s:536    .rodata.datas_caddr:00000000 datas_caddr
+     /tmp/ccL1SJno.s:604    .rodata.datas_gen:00000000 datas_gen
+     /tmp/ccL1SJno.s:673    .rodata.datas_dfc:00000000 datas_dfc
+     /tmp/ccL1SJno.s:611    .rodata.datas_frc:00000000 datas_frc
+     /tmp/ccL1SJno.s:633    .rodata.datas_pform:00000000 datas_pform
+     /tmp/ccL1SJno.s:597    .rodata.datas_mac:00000000 datas_mac
+     /tmp/ccL1SJno.s:666    .rodata.datas_vcom2:00000000 datas_vcom2
+     /tmp/ccL1SJno.s:640    .rodata.datas_vcom1:00000000 datas_vcom1
+     /tmp/ccL1SJno.s:659    .rodata.datas_pw2:00000000 datas_pw2
+     /tmp/ccL1SJno.s:652    .rodata.datas_pw1:00000000 datas_pw1
+     /tmp/ccL1SJno.s:626    .rodata.datas_prc:00000000 datas_prc
+     /tmp/ccL1SJno.s:682    .rodata.datas_pw_seq:00000000 datas_pw_seq
+     /tmp/ccL1SJno.s:701    .rodata.datas_dtcb:00000000 datas_dtcb
+     /tmp/ccL1SJno.s:692    .rodata.datas_dtca:00000000 datas_dtca
+     /tmp/ccL1SJno.s:578    .rodata.datas_pwb:00000000 datas_pwb
+     /tmp/ccL1SJno.s:567    .rodata.datas_pwa:00000000 datas_pwa
+     /tmp/ccL1SJno.s:532    .rodata.datas_caddr:00000000 $d
+     /tmp/ccL1SJno.s:542    .rodata.datas_pgamma:00000000 $d
+     /tmp/ccL1SJno.s:563    .rodata.datas_pwa:00000000 $d
+     /tmp/ccL1SJno.s:574    .rodata.datas_pwb:00000000 $d
+     /tmp/ccL1SJno.s:583    .rodata.datas_paddr:00000000 $d
+     /tmp/ccL1SJno.s:593    .rodata.datas_mac:00000000 $d
+     /tmp/ccL1SJno.s:600    .rodata.datas_gen:00000000 $d
+     /tmp/ccL1SJno.s:607    .rodata.datas_frc:00000000 $d
+     /tmp/ccL1SJno.s:615    .rodata.datas_gamma:00000000 $d
+     /tmp/ccL1SJno.s:622    .rodata.datas_prc:00000000 $d
+     /tmp/ccL1SJno.s:629    .rodata.datas_pform:00000000 $d
+     /tmp/ccL1SJno.s:636    .rodata.datas_vcom1:00000000 $d
+     /tmp/ccL1SJno.s:644    .rodata.str1.4:00000000 $d
+     /tmp/ccL1SJno.s:648    .rodata.datas_pw1:00000000 $d
+     /tmp/ccL1SJno.s:655    .rodata.datas_pw2:00000000 $d
+     /tmp/ccL1SJno.s:662    .rodata.datas_vcom2:00000000 $d
+     /tmp/ccL1SJno.s:669    .rodata.datas_dfc:00000000 $d
+     /tmp/ccL1SJno.s:678    .rodata.datas_pw_seq:00000000 $d
+     /tmp/ccL1SJno.s:688    .rodata.datas_dtca:00000000 $d
+     /tmp/ccL1SJno.s:697    .rodata.datas_dtcb:00000000 $d
+     /tmp/ccL1SJno.s:704    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccL1SJno.s:707    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccL1SJno.s:712    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccL1SJno.s:713    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccL1SJno.s:715    .rodata.datas_ngamma:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.pio.h.48.6839f7027cbf1ef96bb233af1f2246d9
+                           .group:00000000 wm4.sam_gpio.h.53.afc3161f12a06e30e82678b4b38e082b
+                           .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b430e20114e0742832c13f1ec6f047b0
+                           .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
+                           .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
+                           .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
+                           .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308
+                           .group:00000000 wm4.sysclk.h.240.cfab6246305f0088614c69f722fe0ee0
+                           .group:00000000 wm4.ioport_pio.h.51.69cc0e499f80def25a90c3a47be57436
+                           .group:00000000 wm4.sleep.h.48.6fafd9e21cd1e8977ba5f4188cfeedb9
+                           .group:00000000 wm4.uart.h.48.b5a287fb8eda9a91191279293146d597
+                           .group:00000000 wm4.usart.h.49.2fa521f11a7b28a2801472c5b574d455
+                           .group:00000000 wm4.conf_uart_serial.h.48.02d01bc75f6f0264c031579d7d1767aa
+                           .group:00000000 wm4.spi.h.48.c6a1dc9c34f3e748386531118c253aaa
+                           .group:00000000 wm4.ili9341.h.9.cac8b178c2ef0052b4326a2d6cea11e0
+
+UNDEFINED SYMBOLS
+puts
+spi_write
+mdelay

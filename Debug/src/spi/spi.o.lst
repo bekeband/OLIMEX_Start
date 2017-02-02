@@ -1,0 +1,1901 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"spi.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.spi_enable_clock,"ax",%progbits
+  20              		.align	2
+  21              		.global	spi_enable_clock
+  22              		.thumb
+  23              		.thumb_func
+  25              	spi_enable_clock:
+  26              	.LFB126:
+  27              		.file 1 "../src/spi/spi.c"
+   1:../src/spi/spi.c **** /**
+   2:../src/spi/spi.c ****  * \file
+   3:../src/spi/spi.c ****  *
+   4:../src/spi/spi.c ****  * \brief Serial Peripheral Interface (SPI) driver for SAM.
+   5:../src/spi/spi.c ****  *
+   6:../src/spi/spi.c ****  * Copyright (c) 2011-2016 Atmel Corporation. All rights reserved.
+   7:../src/spi/spi.c ****  *
+   8:../src/spi/spi.c ****  * \asf_license_start
+   9:../src/spi/spi.c ****  *
+  10:../src/spi/spi.c ****  * \page License
+  11:../src/spi/spi.c ****  *
+  12:../src/spi/spi.c ****  * Redistribution and use in source and binary forms, with or without
+  13:../src/spi/spi.c ****  * modification, are permitted provided that the following conditions are met:
+  14:../src/spi/spi.c ****  *
+  15:../src/spi/spi.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:../src/spi/spi.c ****  *    this list of conditions and the following disclaimer.
+  17:../src/spi/spi.c ****  *
+  18:../src/spi/spi.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:../src/spi/spi.c ****  *    this list of conditions and the following disclaimer in the documentation
+  20:../src/spi/spi.c ****  *    and/or other materials provided with the distribution.
+  21:../src/spi/spi.c ****  *
+  22:../src/spi/spi.c ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:../src/spi/spi.c ****  *    from this software without specific prior written permission.
+  24:../src/spi/spi.c ****  *
+  25:../src/spi/spi.c ****  * 4. This software may only be redistributed and used in connection with an
+  26:../src/spi/spi.c ****  *    Atmel microcontroller product.
+  27:../src/spi/spi.c ****  *
+  28:../src/spi/spi.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:../src/spi/spi.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:../src/spi/spi.c ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:../src/spi/spi.c ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:../src/spi/spi.c ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:../src/spi/spi.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:../src/spi/spi.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:../src/spi/spi.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:../src/spi/spi.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:../src/spi/spi.c ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:../src/spi/spi.c ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:../src/spi/spi.c ****  *
+  40:../src/spi/spi.c ****  * \asf_license_stop
+  41:../src/spi/spi.c ****  *
+  42:../src/spi/spi.c ****  */
+  43:../src/spi/spi.c **** /*
+  44:../src/spi/spi.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:../src/spi/spi.c ****  */
+  46:../src/spi/spi.c **** 
+  47:../src/spi/spi.c **** #include "spi.h"
+  48:../src/spi/spi.c **** #include "sysclk.h"
+  49:../src/spi/spi.c **** 
+  50:../src/spi/spi.c **** /**
+  51:../src/spi/spi.c ****  * \defgroup sam_drivers_spi_group Serial Peripheral Interface (SPI)
+  52:../src/spi/spi.c ****  *
+  53:../src/spi/spi.c ****  * See \ref sam_spi_quickstart.
+  54:../src/spi/spi.c ****  *
+  55:../src/spi/spi.c ****  * The SPI circuit is a synchronous serial data link that provides communication
+  56:../src/spi/spi.c ****  * with external devices in Master or Slave mode. Connection to Peripheral DMA
+  57:../src/spi/spi.c ****  * Controller channel capabilities optimizes data transfers.
+  58:../src/spi/spi.c ****  *
+  59:../src/spi/spi.c ****  * @{
+  60:../src/spi/spi.c ****  */
+  61:../src/spi/spi.c **** #ifndef SPI_WPMR_WPKEY_PASSWD
+  62:../src/spi/spi.c **** #define SPI_WPMR_WPKEY_PASSWD SPI_WPMR_WPKEY((uint32_t) 0x535049)
+  63:../src/spi/spi.c **** #endif
+  64:../src/spi/spi.c **** 
+  65:../src/spi/spi.c **** /**
+  66:../src/spi/spi.c ****  * \brief Enable SPI clock.
+  67:../src/spi/spi.c ****  *
+  68:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+  69:../src/spi/spi.c ****  */
+  70:../src/spi/spi.c **** void spi_enable_clock(Spi *p_spi)
+  71:../src/spi/spi.c **** {
+  28              		.loc 1 71 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  37              	.LVL1:
+  38              	.LBB10:
+  39              	.LBB11:
+  40              		.file 2 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \file
+   3:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   4:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Chip-specific system clock management functions.
+   5:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   6:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
+   7:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+   8:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \asf_license_start
+   9:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  10:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page License
+  11:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  12:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Redistribution and use in source and binary forms, with or without
+  13:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * modification, are permitted provided that the following conditions are met:
+  14:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  15:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  18:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    this list of conditions and the following disclaimer in the documentation
+  20:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    and/or other materials provided with the distribution.
+  21:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  22:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    from this software without specific prior written permission.
+  24:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  25:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * 4. This software may only be redistributed and used in connection with an
+  26:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    Atmel microcontroller product.
+  27:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  28:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  40:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \asf_license_stop
+  41:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  42:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /*
+  44:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+  46:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  47:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CHIP_SYSCLK_H_INCLUDED
+  48:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define CHIP_SYSCLK_H_INCLUDED
+  49:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  50:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (SAM3S8 || SAM3SD8)
+  51:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <osc.h>
+  52:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <pll.h>
+  53:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #else
+  54:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <osc.h>
+  55:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # include <pll.h>
+  56:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+  57:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  58:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+  59:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page sysclk_quickstart Quick Start Guide for the System Clock Management service (SAM3S)
+  60:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  61:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This is the quick start guide for the \ref sysclk_group "System Clock Management"
+  62:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * service, with step-by-step instructions on how to configure and use the service for
+  63:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * specific use cases.
+  64:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  65:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_usecases System Clock Management use cases
+  66:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * - \ref sysclk_quickstart_basic
+  67:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * - \ref sysclk_quickstart_use_case_2
+  68:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  69:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_basic Basic usage of the System Clock Management service
+  70:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This section will present a basic use case for the System Clock Management service.
+  71:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This use case will configure the main system clock to 64MHz, using an internal PLL
+  72:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * module to multiply the frequency of a crystal attached to the microcontroller.
+  73:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  74:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_prereq Prerequisites
+  75:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  - None
+  76:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  77:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_setup_steps Initialization code
+  78:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Add to the application initialization code:
+  79:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \code
+  80:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	sysclk_init();
+  81:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+  82:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  83:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_setup_steps_workflow Workflow
+  84:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * -# Configure the system clocks according to the settings in conf_clock.h:
+  85:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code sysclk_init(); \endcode
+  86:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+  87:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_example_code Example code
+  88:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   Add or uncomment the following in your conf_clock.h header file, commenting out all other
+  89:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   definitions of the same symbol(s):
+  90:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+  91:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLLACK
+  92:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  93:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll0 = (Fclk * PLL_mul) / PLL_div
+  94:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_SOURCE          PLL_SRC_MAINCK_XTAL
+  95:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+  96:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_DIV             1
+  97:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+  98:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fbus = Fsys / BUS_div
+  99:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_PRES          SYSCLK_PRES_1
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_1_example_workflow Workflow
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main system clock to use the output of the PLL module as its source:
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          SYSCLK_SRC_PLLACK \endcode
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL module to use the fast external fast crystal oscillator as its source:
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL0_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL module to multiply the external fast crystal oscillator frequency up to 64
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_DIV             1
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \note For user boards, \c BOARD_FREQ_MAINCK_XTAL should be defined in the board \c conf_board.
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *         file as the frequency of the fast crystal attached to the microcontroller.
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main clock to run at the full 64MHz, disable scaling of the main system clock 
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_SYSCLK_PRES         SYSCLK_PRES_1
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \note Some dividers are powers of two, while others are integer division factors. Refer to th
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *          formulas in the conf_clock.h template commented above each division define.
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \page sysclk_quickstart_use_case_2 Advanced use case - Peripheral Bus Clock Management (SAM3S)
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \section sysclk_quickstart_use_case_2 Advanced use case - Peripheral Bus Clock Management
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This section will present a more advanced use case for the System Clock Management service.
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * This use case will configure the main system clock to 64MHz, using an internal PLL
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * module to multiply the frequency of a crystal attached to the microcontroller. The USB clock
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * will be configured via a separate PLL module.
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_prereq Prerequisites
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  - None
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_setup_steps Initialization code
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Add to the application initialization code:
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \code
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	sysclk_init();
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_setup_steps_workflow Workflow
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * -# Configure the system clocks according to the settings in conf_clock.h:
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code sysclk_init(); \endcode
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_example_code Example code
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   Add or uncomment the following in your conf_clock.h header file, commenting out all other
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   definitions of the same symbol(s):
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLLACK
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll0 = (Fclk * PLL_mul) / PLL_div
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_SOURCE          PLL_SRC_MAINCK_XTAL
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL0_DIV             1
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fbus = Fsys / BUS_div
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_SYSCLK_PRES          SYSCLK_PRES_1
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fusb = Fsys / USB_div
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_USBCLK_SOURCE        USBCLK_SRC_PLL1
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_USBCLK_DIV           1
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   // Fpll1 = (Fclk * PLL_mul) / PLL_div
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_SOURCE          PLL_SRC_MAINCK_XTAL
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_MUL             (48000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	   #define CONFIG_PLL1_DIV             1
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \subsection sysclk_quickstart_use_case_2_example_workflow Workflow
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main system clock to use the output of the PLL0 module as its source:
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          SYSCLK_SRC_PLLACK \endcode
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL0 module to use the fast external fast crystal oscillator as its source:
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL0_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL0 module to multiply the external fast crystal oscillator frequency up to 6
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_MUL             (64000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL0_DIV             1
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \note For user boards, \c BOARD_FREQ_MAINCK_XTAL should be defined in the board \c conf_board.
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *         file as the frequency of the fast crystal attached to the microcontroller.
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the main clock to run at the full 64MHz, disable scaling of the main system clock 
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \code
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_SYSCLK_PRES         SYSCLK_PRES_1
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *    \note Some dividers are powers of two, while others are integer division factors. Refer to th
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *          formulas in the conf_clock.h template commented above each division define.
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the USB module clock to use the output of the PLL1 module as its source:
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_SYSCLK_SOURCE          USBCLK_SRC_PLL1 \endcode
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL1 module to use the fast external fast crystal oscillator as its source:
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code #define CONFIG_PLL1_SOURCE            PLL_SRC_MAINCK_XTAL \endcode
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *  -# Configure the PLL1 module to multiply the external fast crystal oscillator frequency up to 4
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   \code
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL1_MUL             (48000000UL / BOARD_FREQ_MAINCK_XTAL)
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	#define CONFIG_PLL1_DIV             1
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** \endcode
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /// @cond 0
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**INDENT-OFF**/
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __cplusplus
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** extern "C" {
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**INDENT-ON**/
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /// @endcond
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 206:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \weakgroup sysclk_group
+ 207:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * @{
+ 208:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 209:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 210:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Configuration Symbols
+ 211:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 212:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 213:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_SYSCLK_SOURCE
+ 214:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Initial/static main system clock source
+ 215:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 216:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The main system clock will be configured to use this clock during
+ 217:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * initialization.
+ 218:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 219:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CONFIG_SYSCLK_SOURCE
+ 220:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_SYSCLK_SOURCE   SYSCLK_SRC_MAINCK_4M_RC
+ 221:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 222:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 223:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_SYSCLK_PRES
+ 224:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Initial CPU clock divider (mck)
+ 225:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 226:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The MCK will run at
+ 227:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \f[
+ 228:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *   f_{MCK} = \frac{f_{sys}}{\mathrm{CONFIG\_SYSCLK\_PRES}}\,\mbox{Hz}
+ 229:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \f]
+ 230:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * after initialization.
+ 231:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 232:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifndef CONFIG_SYSCLK_PRES
+ 233:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_SYSCLK_PRES  0
+ 234:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 235:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 236:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 237:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 238:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Master Clock Sources (MCK)
+ 239:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 240:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_RC              0       //!< Internal 32kHz RC oscillator as master source 
+ 241:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_XTAL            1       //!< External 32kHz crystal oscillator as master so
+ 242:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_SLCK_BYPASS          2       //!< External 32kHz bypass oscillator as master sou
+ 243:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_4M_RC         3       //!< Internal 4MHz RC oscillator as master source c
+ 244:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_8M_RC         4       //!< Internal 8MHz RC oscillator as master source c
+ 245:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_12M_RC        5       //!< Internal 12MHz RC oscillator as master source 
+ 246:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_XTAL          6       //!< External crystal oscillator as master source c
+ 247:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_MAINCK_BYPASS        7       //!< External bypass oscillator as master source cl
+ 248:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_PLLACK               8       //!< Use PLLACK as master source clock
+ 249:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_SRC_PLLBCK               9       //!< Use PLLBCK as master source clock
+ 250:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 251:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 252:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Master Clock Prescalers (MCK)
+ 253:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 254:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_1           PMC_MCKR_PRES_CLK_1     //!< Set master clock prescaler to 1
+ 255:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_2           PMC_MCKR_PRES_CLK_2     //!< Set master clock prescaler to 2
+ 256:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_4           PMC_MCKR_PRES_CLK_4     //!< Set master clock prescaler to 4
+ 257:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_8           PMC_MCKR_PRES_CLK_8     //!< Set master clock prescaler to 8
+ 258:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_16          PMC_MCKR_PRES_CLK_16    //!< Set master clock prescaler to 16
+ 259:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_32          PMC_MCKR_PRES_CLK_32    //!< Set master clock prescaler to 32
+ 260:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_64          PMC_MCKR_PRES_CLK_64    //!< Set master clock prescaler to 64
+ 261:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define SYSCLK_PRES_3           PMC_MCKR_PRES_CLK_3     //!< Set master clock prescaler to 3
+ 262:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 263:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 264:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name USB Clock Sources
+ 265:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 266:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define USBCLK_SRC_PLL0       0     //!< Use PLLA
+ 267:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #define USBCLK_SRC_PLL1       1     //!< Use PLLB
+ 268:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 269:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 270:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 271:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_USBCLK_SOURCE
+ 272:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Configuration symbol for the USB generic clock source
+ 273:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 274:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Sets the clock source to use for the USB. The source must also be properly
+ 275:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configured.
+ 276:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 277:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Define this to one of the \c USBCLK_SRC_xxx settings. Leave it undefined if
+ 278:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * USB is not required.
+ 279:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 280:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __DOXYGEN__
+ 281:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_USBCLK_SOURCE
+ 282:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 283:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 284:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 285:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \def CONFIG_USBCLK_DIV
+ 286:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Configuration symbol for the USB generic clock divider setting
+ 287:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 288:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Sets the clock division for the USB generic clock. If a USB clock source is
+ 289:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * selected with CONFIG_USBCLK_SOURCE, this configuration symbol must also be
+ 290:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * defined.
+ 291:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 292:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef __DOXYGEN__
+ 293:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** # define CONFIG_USBCLK_DIV
+ 294:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 295:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 296:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 297:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \name Querying the system clock
+ 298:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 299:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * The following functions may be used to query the current frequency of
+ 300:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * the system clock and the CPU and bus clocks derived from it.
+ 301:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * sysclk_get_main_hz() and sysclk_get_cpu_hz() can be assumed to be
+ 302:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * available on all platforms, although some platforms may define
+ 303:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * additional accessors for various chip-internal bus clocks. These are
+ 304:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * usually not intended to be queried directly by generic code.
+ 305:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 306:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 307:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 308:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 309:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Return the current rate in Hz of the main system clock
+ 310:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 311:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \todo This function assumes that the main clock source never changes
+ 312:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * once it's been set up, and that PLL0 always runs at the compile-time
+ 313:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configured default rate. While this is probably the most common
+ 314:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * configuration, which we want to support as a special case for
+ 315:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * performance reasons, we will at some point need to support more
+ 316:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * dynamic setups as well.
+ 317:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 318:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (defined CONFIG_SYSCLK_DEFAULT_RETURNS_SLOW_OSC)
+ 319:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** extern uint32_t sysclk_initialized;
+ 320:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 321:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_main_hz(void)
+ 322:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 323:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #if (defined CONFIG_SYSCLK_DEFAULT_RETURNS_SLOW_OSC)
+ 324:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	if (!sysclk_initialized ) {
+ 325:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_4M_RC_HZ;
+ 326:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 327:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 328:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 329:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* Config system clock setting */
+ 330:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_RC) {
+ 331:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_RC_HZ;
+ 332:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_XTAL) {
+ 333:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_XTAL_HZ;
+ 334:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_SLCK_BYPASS) {
+ 335:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_SLCK_32K_BYPASS_HZ;
+ 336:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_4M_RC) {
+ 337:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_4M_RC_HZ;
+ 338:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_8M_RC) {
+ 339:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_8M_RC_HZ;
+ 340:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_12M_RC) {
+ 341:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_12M_RC_HZ;
+ 342:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_XTAL) {
+ 343:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_XTAL_HZ;
+ 344:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	} else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_MAINCK_BYPASS) {
+ 345:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return OSC_MAINCK_BYPASS_HZ;
+ 346:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 347:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef CONFIG_PLL0_SOURCE
+ 348:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_PLLACK) {
+ 349:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return pll_get_default_rate(0);
+ 350:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 351:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 352:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 353:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #ifdef CONFIG_PLL1_SOURCE
+ 354:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else if (CONFIG_SYSCLK_SOURCE == SYSCLK_SRC_PLLBCK) {
+ 355:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return pll_get_default_rate(1);
+ 356:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 357:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** #endif
+ 358:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	else {
+ 359:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		/* unhandled_case(CONFIG_SYSCLK_SOURCE); */
+ 360:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		return 0;
+ 361:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	}
+ 362:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 363:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 364:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 365:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Return the current rate in Hz of the CPU clock
+ 366:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 367:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \todo This function assumes that the CPU always runs at the system
+ 368:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clock frequency. We want to support at least two more scenarios:
+ 369:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * Fixed CPU/bus clock dividers (config symbols) and dynamic CPU/bus
+ 370:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clock dividers (which may change at run time). Ditto for all the bus
+ 371:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * clocks.
+ 372:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 373:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the CPU clock, in Hz.
+ 374:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 375:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_cpu_hz(void)
+ 376:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 377:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* CONFIG_SYSCLK_PRES is the register value for setting the expected */
+ 378:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* prescaler, not an immediate value. */
+ 379:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_main_hz() /
+ 380:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		((CONFIG_SYSCLK_PRES == SYSCLK_PRES_3) ? 3 :
+ 381:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 			(1 << (CONFIG_SYSCLK_PRES >> PMC_MCKR_PRES_Pos)));
+ 382:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 383:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 384:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 385:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Retrieves the current rate in Hz of the peripheral clocks.
+ 386:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 387:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the peripheral clocks, in Hz.
+ 388:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 389:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_peripheral_hz(void)
+ 390:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 391:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* CONFIG_SYSCLK_PRES is the register value for setting the expected */
+ 392:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	/* prescaler, not an immediate value. */
+ 393:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_main_hz() /
+ 394:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 		((CONFIG_SYSCLK_PRES == SYSCLK_PRES_3) ? 3 :
+ 395:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 			(1 << (CONFIG_SYSCLK_PRES >> PMC_MCKR_PRES_Pos)));
+ 396:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 397:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 398:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 399:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Retrieves the current rate in Hz of the Peripheral Bus clock attached
+ 400:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *        to the specified peripheral.
+ 401:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 402:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \param module Pointer to the module's base address.
+ 403:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 404:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \return Frequency of the bus attached to the specified peripheral, in Hz.
+ 405:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 406:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline uint32_t sysclk_get_peripheral_bus_hz(const volatile void *module)
+ 407:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 408:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	UNUSED(module);
+ 409:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	return sysclk_get_peripheral_hz();
+ 410:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 411:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@}
+ 412:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 413:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //! \name Enabling and disabling synchronous clocks
+ 414:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** //@{
+ 415:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 416:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 417:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Enable a peripheral's clock.
+ 418:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 419:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \param ul_id Id (number) of the peripheral clock.
+ 420:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 421:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline void sysclk_enable_peripheral_clock(uint32_t ul_id)
+ 422:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 423:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	pmc_enable_periph_clk(ul_id);
+  41              		.loc 2 423 0
+  42 0002 1520     		movs	r0, #21
+  43              	.LVL2:
+  44 0004 FFF7FEFF 		bl	pmc_enable_periph_clk
+  45              	.LVL3:
+  46 0008 08BD     		pop	{r3, pc}
+  47              	.LBE11:
+  48              	.LBE10:
+  49              		.cfi_endproc
+  50              	.LFE126:
+  52 000a 00BF     		.section	.text.spi_disable_clock,"ax",%progbits
+  53              		.align	2
+  54              		.global	spi_disable_clock
+  55              		.thumb
+  56              		.thumb_func
+  58              	spi_disable_clock:
+  59              	.LFB127:
+  72:../src/spi/spi.c **** #if (SAM4S || SAM3S || SAM3N || SAM3U || SAM4E || SAM4N || SAMG51|| SAMG53|| SAMG54)
+  73:../src/spi/spi.c **** 	UNUSED(p_spi);
+  74:../src/spi/spi.c **** 	sysclk_enable_peripheral_clock(ID_SPI);
+  75:../src/spi/spi.c **** #elif (SAM3XA || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || SAME70 || SAMS70)
+  76:../src/spi/spi.c **** 	if (p_spi == SPI0) {
+  77:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_SPI0);
+  78:../src/spi/spi.c **** 	}
+  79:../src/spi/spi.c **** 	#ifdef SPI1
+  80:../src/spi/spi.c **** 	else if (p_spi == SPI1) {
+  81:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_SPI1);
+  82:../src/spi/spi.c **** 	}
+  83:../src/spi/spi.c **** 	#endif
+  84:../src/spi/spi.c **** #elif (SAMG55)
+  85:../src/spi/spi.c **** 	if (p_spi == SPI0) {
+  86:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM0);
+  87:../src/spi/spi.c **** 	}
+  88:../src/spi/spi.c **** 	#ifdef SPI1
+  89:../src/spi/spi.c **** 	else if (p_spi == SPI1) {
+  90:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM1);
+  91:../src/spi/spi.c **** 	}
+  92:../src/spi/spi.c **** 	#endif
+  93:../src/spi/spi.c **** 	#ifdef SPI2
+  94:../src/spi/spi.c **** 	else if (p_spi == SPI2) {
+  95:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM2);
+  96:../src/spi/spi.c **** 	}
+  97:../src/spi/spi.c **** 	#endif
+  98:../src/spi/spi.c **** 	#ifdef SPI3
+  99:../src/spi/spi.c **** 	else if (p_spi == SPI3) {
+ 100:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM3);
+ 101:../src/spi/spi.c **** 	}
+ 102:../src/spi/spi.c **** 	#endif
+ 103:../src/spi/spi.c **** 	#ifdef SPI4
+ 104:../src/spi/spi.c **** 	else if (p_spi == SPI4) {
+ 105:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM4);
+ 106:../src/spi/spi.c **** 	}
+ 107:../src/spi/spi.c **** 	#endif
+ 108:../src/spi/spi.c **** 	#ifdef SPI5
+ 109:../src/spi/spi.c **** 	else if (p_spi == SPI5) {
+ 110:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM5);
+ 111:../src/spi/spi.c **** 	}
+ 112:../src/spi/spi.c **** 	#endif
+ 113:../src/spi/spi.c **** 	#ifdef SPI6
+ 114:../src/spi/spi.c **** 	else if (p_spi == SPI6) {
+ 115:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM6);
+ 116:../src/spi/spi.c **** 	}
+ 117:../src/spi/spi.c **** 	#endif
+ 118:../src/spi/spi.c **** 	#ifdef SPI7
+ 119:../src/spi/spi.c **** 	else if (p_spi == SPI7) {
+ 120:../src/spi/spi.c **** 		sysclk_enable_peripheral_clock(ID_FLEXCOM7);
+ 121:../src/spi/spi.c **** 	}
+ 122:../src/spi/spi.c **** 	#endif
+ 123:../src/spi/spi.c **** #elif SAM4L
+ 124:../src/spi/spi.c **** 	sysclk_enable_peripheral_clock(p_spi);
+ 125:../src/spi/spi.c **** #endif
+ 126:../src/spi/spi.c **** }
+ 127:../src/spi/spi.c **** 
+ 128:../src/spi/spi.c **** /**
+ 129:../src/spi/spi.c ****  * \brief Disable SPI clock.
+ 130:../src/spi/spi.c ****  *
+ 131:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 132:../src/spi/spi.c ****  */
+ 133:../src/spi/spi.c **** void spi_disable_clock(Spi *p_spi)
+ 134:../src/spi/spi.c **** {
+  60              		.loc 1 134 0
+  61              		.cfi_startproc
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64              	.LVL4:
+  65 0000 08B5     		push	{r3, lr}
+  66              		.cfi_def_cfa_offset 8
+  67              		.cfi_offset 3, -8
+  68              		.cfi_offset 14, -4
+  69              	.LVL5:
+  70              	.LBB12:
+  71              	.LBB13:
+ 424:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** }
+ 425:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 
+ 426:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** /**
+ 427:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \brief Disable a peripheral's clock.
+ 428:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  *
+ 429:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  * \param ul_id Id (number) of the peripheral clock.
+ 430:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h ****  */
+ 431:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** static inline void sysclk_disable_peripheral_clock(uint32_t ul_id)
+ 432:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** {
+ 433:/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h **** 	pmc_disable_periph_clk(ul_id);
+  72              		.loc 2 433 0
+  73 0002 1520     		movs	r0, #21
+  74              	.LVL6:
+  75 0004 FFF7FEFF 		bl	pmc_disable_periph_clk
+  76              	.LVL7:
+  77 0008 08BD     		pop	{r3, pc}
+  78              	.LBE13:
+  79              	.LBE12:
+  80              		.cfi_endproc
+  81              	.LFE127:
+  83 000a 00BF     		.section	.text.spi_set_peripheral_chip_select_value,"ax",%progbits
+  84              		.align	2
+  85              		.global	spi_set_peripheral_chip_select_value
+  86              		.thumb
+  87              		.thumb_func
+  89              	spi_set_peripheral_chip_select_value:
+  90              	.LFB128:
+ 135:../src/spi/spi.c **** #if (SAM4S || SAM3S || SAM3N || SAM3U || SAM4E || SAM4N || SAMG51|| SAMG53|| SAMG54)
+ 136:../src/spi/spi.c **** 	UNUSED(p_spi);
+ 137:../src/spi/spi.c **** 	sysclk_disable_peripheral_clock(ID_SPI);
+ 138:../src/spi/spi.c **** #elif (SAM3XA || SAM4C || SAM4CP || SAM4CM || SAMV71 || SAMV70 || SAME70 || SAMS70)
+ 139:../src/spi/spi.c **** 	if (p_spi == SPI0) {
+ 140:../src/spi/spi.c **** 		sysclk_disable_peripheral_clock(ID_SPI0);
+ 141:../src/spi/spi.c **** 	}
+ 142:../src/spi/spi.c **** 	#ifdef SPI1
+ 143:../src/spi/spi.c **** 	else if (p_spi == SPI1) {
+ 144:../src/spi/spi.c **** 		sysclk_disable_peripheral_clock(ID_SPI1);
+ 145:../src/spi/spi.c **** 	}
+ 146:../src/spi/spi.c **** 	#endif
+ 147:../src/spi/spi.c **** #elif (SAMG55)
+ 148:../src/spi/spi.c **** 	if (p_spi == SPI0) {
+ 149:../src/spi/spi.c **** 		sysclk_disable_peripheral_clock(ID_FLEXCOM0);
+ 150:../src/spi/spi.c **** 	}
+ 151:../src/spi/spi.c **** 	#ifdef SPI1
+ 152:../src/spi/spi.c **** 	else if (p_spi == SPI1) {
+ 153:../src/spi/spi.c **** 		sysclk_disable_peripheral_clock(ID_FLEXCOM1);
+ 154:../src/spi/spi.c **** 	}
+ 155:../src/spi/spi.c **** 	#endif
+ 156:../src/spi/spi.c **** 	#ifdef SPI2
+ 157:../src/spi/spi.c **** 		else if (p_spi == SPI2) {
+ 158:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM2);
+ 159:../src/spi/spi.c **** 		}
+ 160:../src/spi/spi.c **** 	#endif
+ 161:../src/spi/spi.c **** 	#ifdef SPI3
+ 162:../src/spi/spi.c **** 		else if (p_spi == SPI3) {
+ 163:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM3);
+ 164:../src/spi/spi.c **** 		}
+ 165:../src/spi/spi.c **** 	#endif
+ 166:../src/spi/spi.c **** 	#ifdef SPI4
+ 167:../src/spi/spi.c **** 		else if (p_spi == SPI4) {
+ 168:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM4);
+ 169:../src/spi/spi.c **** 		}
+ 170:../src/spi/spi.c **** 	#endif
+ 171:../src/spi/spi.c **** 	#ifdef SPI5
+ 172:../src/spi/spi.c **** 		else if (p_spi == SPI5) {
+ 173:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM5);
+ 174:../src/spi/spi.c **** 		}
+ 175:../src/spi/spi.c **** 	#endif
+ 176:../src/spi/spi.c **** 	#ifdef SPI6
+ 177:../src/spi/spi.c **** 		else if (p_spi == SPI6) {
+ 178:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM6);
+ 179:../src/spi/spi.c **** 		}
+ 180:../src/spi/spi.c **** 	#endif
+ 181:../src/spi/spi.c **** 	#ifdef SPI7
+ 182:../src/spi/spi.c **** 		else if (p_spi == SPI7) {
+ 183:../src/spi/spi.c **** 			sysclk_disable_peripheral_clock(ID_FLEXCOM7);
+ 184:../src/spi/spi.c **** 		}
+ 185:../src/spi/spi.c **** 	#endif
+ 186:../src/spi/spi.c **** #elif SAM4L
+ 187:../src/spi/spi.c **** 	sysclk_disable_peripheral_clock(p_spi);
+ 188:../src/spi/spi.c **** #endif
+ 189:../src/spi/spi.c **** }
+ 190:../src/spi/spi.c **** 
+ 191:../src/spi/spi.c **** /**
+ 192:../src/spi/spi.c ****  * \brief Set Peripheral Chip Select (PCS) value.
+ 193:../src/spi/spi.c ****  *
+ 194:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 195:../src/spi/spi.c ****  * \param ul_value Peripheral Chip Select value.
+ 196:../src/spi/spi.c ****  *                 If PCS decode mode is not used, use \ref spi_get_pcs to build
+ 197:../src/spi/spi.c ****  *                 the value to use.
+ 198:../src/spi/spi.c ****  *                 On reset the decode mode is not enabled.
+ 199:../src/spi/spi.c ****  *                 The decode mode can be enabled/disabled by follow functions:
+ 200:../src/spi/spi.c ****  *                 \ref spi_enable_peripheral_select_decode,
+ 201:../src/spi/spi.c ****  *                 \ref spi_disable_peripheral_select_decode.
+ 202:../src/spi/spi.c ****  */
+ 203:../src/spi/spi.c **** void spi_set_peripheral_chip_select_value(Spi *p_spi, uint32_t ul_value)
+ 204:../src/spi/spi.c **** {
+  91              		.loc 1 204 0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 0
+  94              		@ frame_needed = 0, uses_anonymous_args = 0
+  95              		@ link register save eliminated.
+  96              	.LVL8:
+ 205:../src/spi/spi.c **** 	p_spi->SPI_MR &= (~SPI_MR_PCS_Msk);
+  97              		.loc 1 205 0
+  98 0000 4368     		ldr	r3, [r0, #4]
+  99 0002 23F47023 		bic	r3, r3, #983040
+ 100 0006 4360     		str	r3, [r0, #4]
+ 206:../src/spi/spi.c **** 	p_spi->SPI_MR |= SPI_MR_PCS(ul_value);
+ 101              		.loc 1 206 0
+ 102 0008 4368     		ldr	r3, [r0, #4]
+ 103 000a 0904     		lsls	r1, r1, #16
+ 104              	.LVL9:
+ 105 000c 01F47021 		and	r1, r1, #983040
+ 106 0010 1943     		orrs	r1, r1, r3
+ 107 0012 4160     		str	r1, [r0, #4]
+ 108 0014 7047     		bx	lr
+ 109              		.cfi_endproc
+ 110              	.LFE128:
+ 112 0016 00BF     		.section	.text.spi_set_delay_between_chip_select,"ax",%progbits
+ 113              		.align	2
+ 114              		.global	spi_set_delay_between_chip_select
+ 115              		.thumb
+ 116              		.thumb_func
+ 118              	spi_set_delay_between_chip_select:
+ 119              	.LFB129:
+ 207:../src/spi/spi.c **** }
+ 208:../src/spi/spi.c **** 
+ 209:../src/spi/spi.c **** /**
+ 210:../src/spi/spi.c ****  * \brief Set delay between chip selects (in number of MCK clocks).
+ 211:../src/spi/spi.c ****  *  If DLYBCS <= 6, 6 MCK clocks will be inserted by default.
+ 212:../src/spi/spi.c ****  *
+ 213:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 214:../src/spi/spi.c ****  * \param ul_delay Delay between chip selects (in number of MCK clocks).
+ 215:../src/spi/spi.c ****  */
+ 216:../src/spi/spi.c **** void spi_set_delay_between_chip_select(Spi *p_spi, uint32_t ul_delay)
+ 217:../src/spi/spi.c **** {
+ 120              		.loc 1 217 0
+ 121              		.cfi_startproc
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124              		@ link register save eliminated.
+ 125              	.LVL10:
+ 218:../src/spi/spi.c **** 	p_spi->SPI_MR &= (~SPI_MR_DLYBCS_Msk);
+ 126              		.loc 1 218 0
+ 127 0000 4368     		ldr	r3, [r0, #4]
+ 128 0002 23F07F43 		bic	r3, r3, #-16777216
+ 129 0006 4360     		str	r3, [r0, #4]
+ 219:../src/spi/spi.c **** 	p_spi->SPI_MR |= SPI_MR_DLYBCS(ul_delay);
+ 130              		.loc 1 219 0
+ 131 0008 4368     		ldr	r3, [r0, #4]
+ 132 000a 43EA0161 		orr	r1, r3, r1, lsl #24
+ 133              	.LVL11:
+ 134 000e 4160     		str	r1, [r0, #4]
+ 135 0010 7047     		bx	lr
+ 136              		.cfi_endproc
+ 137              	.LFE129:
+ 139 0012 00BF     		.section	.text.spi_read,"ax",%progbits
+ 140              		.align	2
+ 141              		.global	spi_read
+ 142              		.thumb
+ 143              		.thumb_func
+ 145              	spi_read:
+ 146              	.LFB130:
+ 220:../src/spi/spi.c **** }
+ 221:../src/spi/spi.c **** 
+ 222:../src/spi/spi.c **** /**
+ 223:../src/spi/spi.c ****  * \brief Read the received data and it's peripheral chip select value.
+ 224:../src/spi/spi.c ****  * While SPI works in fixed peripheral select mode, the peripheral chip select
+ 225:../src/spi/spi.c ****  * value is meaningless.
+ 226:../src/spi/spi.c ****  *
+ 227:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 228:../src/spi/spi.c ****  * \param data Pointer to the location where to store the received data word.
+ 229:../src/spi/spi.c ****  * \param p_pcs Pointer to fill Peripheral Chip Select Value.
+ 230:../src/spi/spi.c ****  *
+ 231:../src/spi/spi.c ****  * \retval SPI_OK on Success.
+ 232:../src/spi/spi.c ****  * \retval SPI_ERROR_TIMEOUT on Time-out.
+ 233:../src/spi/spi.c ****  */
+ 234:../src/spi/spi.c **** spi_status_t spi_read(Spi *p_spi, uint16_t *us_data, uint8_t *p_pcs)
+ 235:../src/spi/spi.c **** {
+ 147              		.loc 1 235 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 151              		@ link register save eliminated.
+ 152              	.LVL12:
+ 153 0000 10B4     		push	{r4}
+ 154              		.cfi_def_cfa_offset 4
+ 155              		.cfi_offset 4, -4
+ 156              	.LVL13:
+ 236:../src/spi/spi.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 157              		.loc 1 236 0
+ 158 0002 0C4B     		ldr	r3, .L15
+ 237:../src/spi/spi.c **** 	static uint32_t reg_value;
+ 238:../src/spi/spi.c **** 
+ 239:../src/spi/spi.c **** 	while (!(p_spi->SPI_SR & SPI_SR_RDRF)) {
+ 159              		.loc 1 239 0
+ 160 0004 02E0     		b	.L8
+ 161              	.LVL14:
+ 162              	.L10:
+ 240:../src/spi/spi.c **** 		if (!timeout--) {
+ 163              		.loc 1 240 0
+ 164 0006 5C1E     		subs	r4, r3, #1
+ 165              	.LVL15:
+ 166 0008 8BB1     		cbz	r3, .L13
+ 167 000a 2346     		mov	r3, r4
+ 168              	.LVL16:
+ 169              	.L8:
+ 239:../src/spi/spi.c **** 		if (!timeout--) {
+ 170              		.loc 1 239 0
+ 171 000c 0469     		ldr	r4, [r0, #16]
+ 172 000e 14F0010F 		tst	r4, #1
+ 173 0012 F8D0     		beq	.L10
+ 241:../src/spi/spi.c **** 			return SPI_ERROR_TIMEOUT;
+ 242:../src/spi/spi.c **** 		}
+ 243:../src/spi/spi.c **** 	}
+ 244:../src/spi/spi.c **** 
+ 245:../src/spi/spi.c **** 	reg_value = p_spi->SPI_RDR;
+ 174              		.loc 1 245 0
+ 175 0014 8468     		ldr	r4, [r0, #8]
+ 176              	.LVL17:
+ 177              	.LBB14:
+ 178              	.LBB15:
+ 179              		.file 3 "/home/bekeband/workspace/OLIMEX_Start/src/spi.h"
+   1:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+   2:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \file
+   3:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+   4:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Serial Peripheral Interface (SPI) driver for SAM.
+   5:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+   6:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * Copyright (c) 2011-2016 Atmel Corporation. All rights reserved.
+   7:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+   8:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \asf_license_start
+   9:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  10:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \page License
+  11:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  12:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * Redistribution and use in source and binary forms, with or without
+  13:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * modification, are permitted provided that the following conditions are met:
+  14:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  15:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * 1. Redistributions of source code must retain the above copyright notice,
+  16:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *    this list of conditions and the following disclaimer.
+  17:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  18:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  19:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *    this list of conditions and the following disclaimer in the documentation
+  20:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *    and/or other materials provided with the distribution.
+  21:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  22:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * 3. The name of Atmel may not be used to endorse or promote products derived
+  23:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *    from this software without specific prior written permission.
+  24:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  25:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * 4. This software may only be redistributed and used in connection with an
+  26:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *    Atmel microcontroller product.
+  27:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  28:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  29:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  30:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+  31:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+  32:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  33:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  34:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  35:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  36:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  37:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  38:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * POSSIBILITY OF SUCH DAMAGE.
+  39:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  40:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \asf_license_stop
+  41:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  42:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+  43:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /*
+  44:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
+  45:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+  46:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  47:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #ifndef SPI_H_INCLUDED
+  48:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #define SPI_H_INCLUDED
+  49:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  50:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #include "compiler.h"
+  51:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  52:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /// @cond 0
+  53:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**INDENT-OFF**/
+  54:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #ifdef __cplusplus
+  55:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** extern "C" {
+  56:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #endif
+  57:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**INDENT-ON**/
+  58:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /// @endcond
+  59:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  60:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /** Time-out value (number of attempts). */
+  61:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #define SPI_TIMEOUT       150000
+  62:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  63:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /** Status codes used by the SPI driver. */
+  64:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** typedef enum
+  65:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+  66:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR = -1,
+  67:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_OK = 0,
+  68:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR_TIMEOUT = 1,
+  69:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR_ARGUMENT,
+  70:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR_OVERRUN,
+  71:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR_MODE_FAULT,
+  72:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_ERROR_OVERRUN_AND_MODE_FAULT
+  73:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** } spi_status_t;
+  74:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  75:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /** SPI Chip Select behavior modes while transferring. */
+  76:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** typedef enum spi_cs_behavior {
+  77:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	/** CS does not rise until a new transfer is requested on different chip select. */
+  78:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_CS_KEEP_LOW = SPI_CSR_CSAAT,
+  79:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	/** CS rises if there is no more data to transfer. */
+  80:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_CS_RISE_NO_TX = 0,
+  81:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	/** CS is de-asserted systematically during a time DLYBCS. */
+  82:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	SPI_CS_RISE_FORCED = SPI_CSR_CSNAAT
+  83:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** } spi_cs_behavior_t;
+  84:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  85:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+  86:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Generate Peripheral Chip Select Value from Chip Select ID
+  87:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \note When chip select n is working, PCS bit n is set to low level.
+  88:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  89:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param chip_sel_id The chip select number used
+  90:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+  91:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** #define spi_get_pcs(chip_sel_id) ((~(1u<<(chip_sel_id)))&0xF)
+  92:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+  93:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+  94:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Reset SPI and set it to Slave mode.
+  95:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+  96:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+  97:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+  98:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_reset(Spi *p_spi)
+  99:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 100:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_CR = SPI_CR_SWRST;
+ 101:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 102:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 103:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 104:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Enable SPI.
+ 105:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 106:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 107:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 108:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_enable(Spi *p_spi)
+ 109:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 110:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_CR = SPI_CR_SPIEN;
+ 111:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 112:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 113:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 114:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Disable SPI.
+ 115:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 116:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \note CS is de-asserted, which indicates that the last data is done, and user
+ 117:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * should check TX_EMPTY before disabling SPI.
+ 118:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 119:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 120:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 121:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_disable(Spi *p_spi)
+ 122:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 123:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_CR = SPI_CR_SPIDIS;
+ 124:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 125:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 126:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 127:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Issue a LASTXFER command.
+ 128:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *  The next transfer is the last transfer and after that CS is de-asserted.
+ 129:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 130:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 131:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 132:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_set_lastxfer(Spi *p_spi)
+ 133:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 134:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_CR = SPI_CR_LASTXFER;
+ 135:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 136:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 137:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 138:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Set SPI to Master mode.
+ 139:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 140:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 141:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 142:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_set_master_mode(Spi *p_spi)
+ 143:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 144:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_MR |= SPI_MR_MSTR;
+ 145:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 146:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 147:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 148:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Set SPI to Slave mode.
+ 149:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 150:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 151:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 152:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_set_slave_mode(Spi *p_spi)
+ 153:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 154:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_MR &= (~SPI_MR_MSTR);
+ 155:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 156:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 157:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 158:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Get SPI work mode.
+ 159:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 160:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 161:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 162:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \return 1 for master mode, 0 for slave mode.
+ 163:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 164:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline uint32_t spi_get_mode(Spi *p_spi)
+ 165:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 166:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	if (p_spi->SPI_MR & SPI_MR_MSTR) {
+ 167:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 1;
+ 168:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	} else {
+ 169:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 0;
+ 170:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	}
+ 171:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 172:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 173:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 174:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Set Variable Peripheral Select.
+ 175:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * Peripheral Chip Select can be controlled by SPI_TDR.
+ 176:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 177:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 178:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 179:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_set_variable_peripheral_select(Spi *p_spi)
+ 180:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 181:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_MR |= SPI_MR_PS;
+ 182:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 183:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 184:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 185:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Set Fixed Peripheral Select.
+ 186:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *  Peripheral Chip Select is controlled by SPI_MR.
+ 187:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 188:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 189:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 190:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline void spi_set_fixed_peripheral_select(Spi *p_spi)
+ 191:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 192:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	p_spi->SPI_MR &= (~SPI_MR_PS);
+ 193:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
+ 194:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 
+ 195:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** /**
+ 196:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \brief Get Peripheral Select mode.
+ 197:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 198:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \param p_spi Pointer to an SPI instance.
+ 199:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  *
+ 200:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  * \return 1 for Variable mode, 0 for fixed mode.
+ 201:/home/bekeband/workspace/OLIMEX_Start/src/spi.h ****  */
+ 202:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** static inline uint32_t spi_get_peripheral_select_mode(Spi *p_spi)
+ 203:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	if (p_spi->SPI_MR & SPI_MR_PS) {
+ 180              		.loc 3 204 0
+ 181 0016 4368     		ldr	r3, [r0, #4]
+ 182              	.LVL18:
+ 183 0018 13F00203 		ands	r3, r3, #2
+ 184 001c 00D0     		beq	.L11
+ 205:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 1;
+ 185              		.loc 3 205 0
+ 186 001e 0123     		movs	r3, #1
+ 187              	.L11:
+ 188              	.LVL19:
+ 189              	.LBE15:
+ 190              	.LBE14:
+ 246:../src/spi/spi.c **** 	if (spi_get_peripheral_select_mode(p_spi)) {
+ 191              		.loc 1 246 0
+ 192 0020 13B1     		cbz	r3, .L12
+ 247:../src/spi/spi.c **** 		*p_pcs = (uint8_t) ((reg_value & SPI_RDR_PCS_Msk) >> SPI_RDR_PCS_Pos);
+ 193              		.loc 1 247 0
+ 194 0022 C4F30343 		ubfx	r3, r4, #16, #4
+ 195 0026 1370     		strb	r3, [r2]
+ 196              	.L12:
+ 248:../src/spi/spi.c **** 	}
+ 249:../src/spi/spi.c **** 	*us_data = (uint16_t) (reg_value & SPI_RDR_RD_Msk);
+ 197              		.loc 1 249 0
+ 198 0028 0C80     		strh	r4, [r1]	@ movhi
+ 250:../src/spi/spi.c **** 
+ 251:../src/spi/spi.c **** 	return SPI_OK;
+ 199              		.loc 1 251 0
+ 200 002a 0020     		movs	r0, #0
+ 201              	.LVL20:
+ 202 002c 00E0     		b	.L9
+ 203              	.LVL21:
+ 204              	.L13:
+ 241:../src/spi/spi.c **** 		}
+ 205              		.loc 1 241 0
+ 206 002e 0120     		movs	r0, #1
+ 207              	.LVL22:
+ 208              	.L9:
+ 252:../src/spi/spi.c **** }
+ 209              		.loc 1 252 0
+ 210 0030 10BC     		pop	{r4}
+ 211              		.cfi_restore 4
+ 212              		.cfi_def_cfa_offset 0
+ 213 0032 7047     		bx	lr
+ 214              	.L16:
+ 215              		.align	2
+ 216              	.L15:
+ 217 0034 F0490200 		.word	150000
+ 218              		.cfi_endproc
+ 219              	.LFE130:
+ 221              		.section	.text.spi_write,"ax",%progbits
+ 222              		.align	2
+ 223              		.global	spi_write
+ 224              		.thumb
+ 225              		.thumb_func
+ 227              	spi_write:
+ 228              	.LFB131:
+ 253:../src/spi/spi.c **** 
+ 254:../src/spi/spi.c **** /**
+ 255:../src/spi/spi.c ****  * \brief Write the transmitted data with specified peripheral chip select value.
+ 256:../src/spi/spi.c ****  *
+ 257:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 258:../src/spi/spi.c ****  * \param us_data The data to transmit.
+ 259:../src/spi/spi.c ****  * \param uc_pcs Peripheral Chip Select Value while SPI works in peripheral select
+ 260:../src/spi/spi.c ****  * mode, otherwise it's meaningless.
+ 261:../src/spi/spi.c ****  * \param uc_last Indicate whether this data is the last one while SPI is working
+ 262:../src/spi/spi.c ****  * in variable peripheral select mode.
+ 263:../src/spi/spi.c ****  *
+ 264:../src/spi/spi.c ****  * \retval SPI_OK on Success.
+ 265:../src/spi/spi.c ****  * \retval SPI_ERROR_TIMEOUT on Time-out.
+ 266:../src/spi/spi.c ****  */
+ 267:../src/spi/spi.c **** spi_status_t spi_write(Spi *p_spi, uint16_t us_data,
+ 268:../src/spi/spi.c **** 		uint8_t uc_pcs, uint8_t uc_last)
+ 269:../src/spi/spi.c **** {
+ 229              		.loc 1 269 0
+ 230              		.cfi_startproc
+ 231              		@ args = 0, pretend = 0, frame = 0
+ 232              		@ frame_needed = 0, uses_anonymous_args = 0
+ 233              		@ link register save eliminated.
+ 234              	.LVL23:
+ 235 0000 30B4     		push	{r4, r5}
+ 236              		.cfi_def_cfa_offset 8
+ 237              		.cfi_offset 4, -8
+ 238              		.cfi_offset 5, -4
+ 239              	.LVL24:
+ 270:../src/spi/spi.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 240              		.loc 1 270 0
+ 241 0002 0E4C     		ldr	r4, .L26
+ 271:../src/spi/spi.c **** 	uint32_t value;
+ 272:../src/spi/spi.c **** 
+ 273:../src/spi/spi.c **** 	while (!(p_spi->SPI_SR & SPI_SR_TDRE)) {
+ 242              		.loc 1 273 0
+ 243 0004 02E0     		b	.L18
+ 244              	.LVL25:
+ 245              	.L20:
+ 274:../src/spi/spi.c **** 		if (!timeout--) {
+ 246              		.loc 1 274 0
+ 247 0006 651E     		subs	r5, r4, #1
+ 248              	.LVL26:
+ 249 0008 A4B1     		cbz	r4, .L24
+ 250 000a 2C46     		mov	r4, r5
+ 251              	.LVL27:
+ 252              	.L18:
+ 273:../src/spi/spi.c **** 		if (!timeout--) {
+ 253              		.loc 1 273 0
+ 254 000c 0569     		ldr	r5, [r0, #16]
+ 255 000e 15F0020F 		tst	r5, #2
+ 256 0012 F8D0     		beq	.L20
+ 257              	.LVL28:
+ 258              	.LBB16:
+ 259              	.LBB17:
+ 204:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 1;
+ 260              		.loc 3 204 0
+ 261 0014 4468     		ldr	r4, [r0, #4]
+ 262              	.LVL29:
+ 263 0016 14F00204 		ands	r4, r4, #2
+ 264 001a 00D0     		beq	.L21
+ 265              		.loc 3 205 0
+ 266 001c 0124     		movs	r4, #1
+ 267              	.L21:
+ 268              	.LVL30:
+ 269              	.LBE17:
+ 270              	.LBE16:
+ 275:../src/spi/spi.c **** 			return SPI_ERROR_TIMEOUT;
+ 276:../src/spi/spi.c **** 		}
+ 277:../src/spi/spi.c **** 	}
+ 278:../src/spi/spi.c **** 
+ 279:../src/spi/spi.c **** 	if (spi_get_peripheral_select_mode(p_spi)) {
+ 271              		.loc 1 279 0
+ 272 001e 34B1     		cbz	r4, .L23
+ 280:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data) | SPI_TDR_PCS(uc_pcs);
+ 273              		.loc 1 280 0
+ 274 0020 1204     		lsls	r2, r2, #16
+ 275              	.LVL31:
+ 276 0022 02F47022 		and	r2, r2, #983040
+ 277 0026 1143     		orrs	r1, r1, r2
+ 278              	.LVL32:
+ 281:../src/spi/spi.c **** 		if (uc_last) {
+ 279              		.loc 1 281 0
+ 280 0028 0BB1     		cbz	r3, .L23
+ 282:../src/spi/spi.c **** 			value |= SPI_TDR_LASTXFER;
+ 281              		.loc 1 282 0
+ 282 002a 41F08071 		orr	r1, r1, #16777216
+ 283              	.LVL33:
+ 284              	.L23:
+ 283:../src/spi/spi.c **** 		}
+ 284:../src/spi/spi.c **** 	} else {
+ 285:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data);
+ 286:../src/spi/spi.c **** 	}
+ 287:../src/spi/spi.c **** 
+ 288:../src/spi/spi.c **** 	p_spi->SPI_TDR = value;
+ 285              		.loc 1 288 0
+ 286 002e C160     		str	r1, [r0, #12]
+ 289:../src/spi/spi.c **** 
+ 290:../src/spi/spi.c **** 	return SPI_OK;
+ 287              		.loc 1 290 0
+ 288 0030 0020     		movs	r0, #0
+ 289              	.LVL34:
+ 290 0032 00E0     		b	.L19
+ 291              	.LVL35:
+ 292              	.L24:
+ 275:../src/spi/spi.c **** 		}
+ 293              		.loc 1 275 0
+ 294 0034 0120     		movs	r0, #1
+ 295              	.LVL36:
+ 296              	.L19:
+ 291:../src/spi/spi.c **** }
+ 297              		.loc 1 291 0
+ 298 0036 30BC     		pop	{r4, r5}
+ 299              		.cfi_restore 5
+ 300              		.cfi_restore 4
+ 301              		.cfi_def_cfa_offset 0
+ 302 0038 7047     		bx	lr
+ 303              	.L27:
+ 304 003a 00BF     		.align	2
+ 305              	.L26:
+ 306 003c F0490200 		.word	150000
+ 307              		.cfi_endproc
+ 308              	.LFE131:
+ 310              		.section	.text.spi_set_clock_polarity,"ax",%progbits
+ 311              		.align	2
+ 312              		.global	spi_set_clock_polarity
+ 313              		.thumb
+ 314              		.thumb_func
+ 316              	spi_set_clock_polarity:
+ 317              	.LFB132:
+ 292:../src/spi/spi.c **** 
+ 293:../src/spi/spi.c **** /**
+ 294:../src/spi/spi.c ****  * \brief Set clock default state.
+ 295:../src/spi/spi.c ****  *
+ 296:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 297:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 298:../src/spi/spi.c ****  * \param ul_polarity Default clock state is logical one(high)/zero(low).
+ 299:../src/spi/spi.c ****  */
+ 300:../src/spi/spi.c **** void spi_set_clock_polarity(Spi *p_spi, uint32_t ul_pcs_ch,
+ 301:../src/spi/spi.c **** 		uint32_t ul_polarity)
+ 302:../src/spi/spi.c **** {
+ 318              		.loc 1 302 0
+ 319              		.cfi_startproc
+ 320              		@ args = 0, pretend = 0, frame = 0
+ 321              		@ frame_needed = 0, uses_anonymous_args = 0
+ 322              		@ link register save eliminated.
+ 323              	.LVL37:
+ 303:../src/spi/spi.c **** 	if (ul_polarity) {
+ 324              		.loc 1 303 0
+ 325 0000 3AB1     		cbz	r2, .L29
+ 304:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CPOL;
+ 326              		.loc 1 304 0
+ 327 0002 0C31     		adds	r1, r1, #12
+ 328              	.LVL38:
+ 329 0004 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 330 0008 43F00103 		orr	r3, r3, #1
+ 331 000c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 332 0010 7047     		bx	lr
+ 333              	.LVL39:
+ 334              	.L29:
+ 305:../src/spi/spi.c **** 	} else {
+ 306:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CPOL);
+ 335              		.loc 1 306 0
+ 336 0012 0C31     		adds	r1, r1, #12
+ 337              	.LVL40:
+ 338 0014 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 339 0018 23F00103 		bic	r3, r3, #1
+ 340 001c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 341 0020 7047     		bx	lr
+ 342              		.cfi_endproc
+ 343              	.LFE132:
+ 345 0022 00BF     		.section	.text.spi_set_clock_phase,"ax",%progbits
+ 346              		.align	2
+ 347              		.global	spi_set_clock_phase
+ 348              		.thumb
+ 349              		.thumb_func
+ 351              	spi_set_clock_phase:
+ 352              	.LFB133:
+ 307:../src/spi/spi.c **** 	}
+ 308:../src/spi/spi.c **** }
+ 309:../src/spi/spi.c **** 
+ 310:../src/spi/spi.c **** /**
+ 311:../src/spi/spi.c ****  * \brief Set Data Capture Phase.
+ 312:../src/spi/spi.c ****  *
+ 313:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 314:../src/spi/spi.c ****  *  \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 315:../src/spi/spi.c ****  *  \param ul_phase Data capture on the rising/falling edge of clock.
+ 316:../src/spi/spi.c ****  */
+ 317:../src/spi/spi.c **** void spi_set_clock_phase(Spi *p_spi, uint32_t ul_pcs_ch, uint32_t ul_phase)
+ 318:../src/spi/spi.c **** {
+ 353              		.loc 1 318 0
+ 354              		.cfi_startproc
+ 355              		@ args = 0, pretend = 0, frame = 0
+ 356              		@ frame_needed = 0, uses_anonymous_args = 0
+ 357              		@ link register save eliminated.
+ 358              	.LVL41:
+ 319:../src/spi/spi.c **** 	if (ul_phase) {
+ 359              		.loc 1 319 0
+ 360 0000 3AB1     		cbz	r2, .L32
+ 320:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_NCPHA;
+ 361              		.loc 1 320 0
+ 362 0002 0C31     		adds	r1, r1, #12
+ 363              	.LVL42:
+ 364 0004 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 365 0008 43F00203 		orr	r3, r3, #2
+ 366 000c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 367 0010 7047     		bx	lr
+ 368              	.LVL43:
+ 369              	.L32:
+ 321:../src/spi/spi.c **** 	} else {
+ 322:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_NCPHA);
+ 370              		.loc 1 322 0
+ 371 0012 0C31     		adds	r1, r1, #12
+ 372              	.LVL44:
+ 373 0014 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 374 0018 23F00203 		bic	r3, r3, #2
+ 375 001c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 376 0020 7047     		bx	lr
+ 377              		.cfi_endproc
+ 378              	.LFE133:
+ 380 0022 00BF     		.section	.text.spi_configure_cs_behavior,"ax",%progbits
+ 381              		.align	2
+ 382              		.global	spi_configure_cs_behavior
+ 383              		.thumb
+ 384              		.thumb_func
+ 386              	spi_configure_cs_behavior:
+ 387              	.LFB134:
+ 323:../src/spi/spi.c **** 	}
+ 324:../src/spi/spi.c **** }
+ 325:../src/spi/spi.c **** 
+ 326:../src/spi/spi.c **** /**
+ 327:../src/spi/spi.c ****  * \brief Configure CS behavior for SPI transfer (\ref spi_cs_behavior_t).
+ 328:../src/spi/spi.c ****  *
+ 329:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 330:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 331:../src/spi/spi.c ****  * \param ul_cs_behavior Behavior of the Chip Select after transfer.
+ 332:../src/spi/spi.c ****  */
+ 333:../src/spi/spi.c **** void spi_configure_cs_behavior(Spi *p_spi, uint32_t ul_pcs_ch,
+ 334:../src/spi/spi.c **** 		uint32_t ul_cs_behavior)
+ 335:../src/spi/spi.c **** {
+ 388              		.loc 1 335 0
+ 389              		.cfi_startproc
+ 390              		@ args = 0, pretend = 0, frame = 0
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392              		@ link register save eliminated.
+ 393              	.LVL45:
+ 336:../src/spi/spi.c **** 	if (ul_cs_behavior == SPI_CS_RISE_FORCED) {
+ 394              		.loc 1 336 0
+ 395 0000 042A     		cmp	r2, #4
+ 396 0002 0DD1     		bne	.L35
+ 337:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
+ 397              		.loc 1 337 0
+ 398 0004 0C31     		adds	r1, r1, #12
+ 399              	.LVL46:
+ 400 0006 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 401 000a 23F00803 		bic	r3, r3, #8
+ 402 000e 40F82130 		str	r3, [r0, r1, lsl #2]
+ 338:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSNAAT;
+ 403              		.loc 1 338 0
+ 404 0012 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 405 0016 43F00403 		orr	r3, r3, #4
+ 406 001a 40F82130 		str	r3, [r0, r1, lsl #2]
+ 407 001e 7047     		bx	lr
+ 408              	.LVL47:
+ 409              	.L35:
+ 339:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_RISE_NO_TX) {
+ 410              		.loc 1 339 0
+ 411 0020 6AB9     		cbnz	r2, .L37
+ 340:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
+ 412              		.loc 1 340 0
+ 413 0022 0C31     		adds	r1, r1, #12
+ 414              	.LVL48:
+ 415 0024 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 416 0028 23F00803 		bic	r3, r3, #8
+ 417 002c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 341:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSNAAT);
+ 418              		.loc 1 341 0
+ 419 0030 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 420 0034 23F00403 		bic	r3, r3, #4
+ 421 0038 40F82130 		str	r3, [r0, r1, lsl #2]
+ 422 003c 7047     		bx	lr
+ 423              	.LVL49:
+ 424              	.L37:
+ 342:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_KEEP_LOW) {
+ 425              		.loc 1 342 0
+ 426 003e 082A     		cmp	r2, #8
+ 427 0040 06D1     		bne	.L34
+ 343:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSAAT;
+ 428              		.loc 1 343 0
+ 429 0042 0C31     		adds	r1, r1, #12
+ 430              	.LVL50:
+ 431 0044 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 432 0048 43F00803 		orr	r3, r3, #8
+ 433 004c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 434              	.LVL51:
+ 435              	.L34:
+ 436 0050 7047     		bx	lr
+ 437              		.cfi_endproc
+ 438              	.LFE134:
+ 440 0052 00BF     		.section	.text.spi_set_bits_per_transfer,"ax",%progbits
+ 441              		.align	2
+ 442              		.global	spi_set_bits_per_transfer
+ 443              		.thumb
+ 444              		.thumb_func
+ 446              	spi_set_bits_per_transfer:
+ 447              	.LFB135:
+ 344:../src/spi/spi.c **** 	}
+ 345:../src/spi/spi.c **** }
+ 346:../src/spi/spi.c **** 
+ 347:../src/spi/spi.c **** /**
+ 348:../src/spi/spi.c ****  * \brief Set number of bits per transfer.
+ 349:../src/spi/spi.c ****  *
+ 350:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 351:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 352:../src/spi/spi.c ****  * \param ul_bits Number of bits (8~16), use the pattern defined
+ 353:../src/spi/spi.c ****  *        in the device header file.
+ 354:../src/spi/spi.c ****  */
+ 355:../src/spi/spi.c **** void spi_set_bits_per_transfer(Spi *p_spi, uint32_t ul_pcs_ch,
+ 356:../src/spi/spi.c **** 		uint32_t ul_bits)
+ 357:../src/spi/spi.c **** {
+ 448              		.loc 1 357 0
+ 449              		.cfi_startproc
+ 450              		@ args = 0, pretend = 0, frame = 0
+ 451              		@ frame_needed = 0, uses_anonymous_args = 0
+ 452              		@ link register save eliminated.
+ 453              	.LVL52:
+ 358:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_BITS_Msk);
+ 454              		.loc 1 358 0
+ 455 0000 0C31     		adds	r1, r1, #12
+ 456              	.LVL53:
+ 457 0002 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 458 0006 23F0F003 		bic	r3, r3, #240
+ 459 000a 40F82130 		str	r3, [r0, r1, lsl #2]
+ 359:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= ul_bits;
+ 460              		.loc 1 359 0
+ 461 000e 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 462 0012 1A43     		orrs	r2, r2, r3
+ 463              	.LVL54:
+ 464 0014 40F82120 		str	r2, [r0, r1, lsl #2]
+ 465 0018 7047     		bx	lr
+ 466              		.cfi_endproc
+ 467              	.LFE135:
+ 469 001a 00BF     		.section	.text.spi_calc_baudrate_div,"ax",%progbits
+ 470              		.align	2
+ 471              		.global	spi_calc_baudrate_div
+ 472              		.thumb
+ 473              		.thumb_func
+ 475              	spi_calc_baudrate_div:
+ 476              	.LFB136:
+ 360:../src/spi/spi.c **** }
+ 361:../src/spi/spi.c **** 
+ 362:../src/spi/spi.c **** /**
+ 363:../src/spi/spi.c ****  * \brief Calculate the baudrate divider.
+ 364:../src/spi/spi.c ****  *
+ 365:../src/spi/spi.c ****  * \param baudrate Baudrate value.
+ 366:../src/spi/spi.c ****  * \param mck      SPI module input clock frequency (MCK clock, Hz).
+ 367:../src/spi/spi.c ****  *
+ 368:../src/spi/spi.c ****  * \return Divider or error code.
+ 369:../src/spi/spi.c ****  *   \retval > 0  Success.
+ 370:../src/spi/spi.c ****  *   \retval < 0  Error.
+ 371:../src/spi/spi.c ****  */
+ 372:../src/spi/spi.c **** int16_t spi_calc_baudrate_div(const uint32_t baudrate, uint32_t mck)
+ 373:../src/spi/spi.c **** {
+ 477              		.loc 1 373 0
+ 478              		.cfi_startproc
+ 479              		@ args = 0, pretend = 0, frame = 0
+ 480              		@ frame_needed = 0, uses_anonymous_args = 0
+ 481              		@ link register save eliminated.
+ 482              	.LVL55:
+ 374:../src/spi/spi.c **** 	int baud_div = div_ceil(mck, baudrate);
+ 483              		.loc 1 374 0
+ 484 0000 0144     		add	r1, r1, r0
+ 485              	.LVL56:
+ 486 0002 0139     		subs	r1, r1, #1
+ 487 0004 B1FBF0F0 		udiv	r0, r1, r0
+ 488              	.LVL57:
+ 375:../src/spi/spi.c **** 
+ 376:../src/spi/spi.c **** 	/* The value of baud_div is from 1 to 255 in the SCBR field. */
+ 377:../src/spi/spi.c **** 	if (baud_div <= 0 || baud_div > 255) {
+ 489              		.loc 1 377 0
+ 490 0008 431E     		subs	r3, r0, #1
+ 491 000a FE2B     		cmp	r3, #254
+ 492 000c 01D8     		bhi	.L41
+ 378:../src/spi/spi.c **** 		return -1;
+ 379:../src/spi/spi.c **** 	}
+ 380:../src/spi/spi.c **** 
+ 381:../src/spi/spi.c **** 	return baud_div;
+ 493              		.loc 1 381 0
+ 494 000e 80B2     		uxth	r0, r0
+ 495              	.LVL58:
+ 496 0010 01E0     		b	.L40
+ 497              	.LVL59:
+ 498              	.L41:
+ 378:../src/spi/spi.c **** 		return -1;
+ 499              		.loc 1 378 0
+ 500 0012 4FF6FF70 		movw	r0, #65535
+ 501              	.LVL60:
+ 502              	.L40:
+ 382:../src/spi/spi.c **** }
+ 503              		.loc 1 382 0
+ 504 0016 00B2     		sxth	r0, r0
+ 505 0018 7047     		bx	lr
+ 506              		.cfi_endproc
+ 507              	.LFE136:
+ 509 001a 00BF     		.section	.text.spi_set_baudrate_div,"ax",%progbits
+ 510              		.align	2
+ 511              		.global	spi_set_baudrate_div
+ 512              		.thumb
+ 513              		.thumb_func
+ 515              	spi_set_baudrate_div:
+ 516              	.LFB137:
+ 383:../src/spi/spi.c **** 
+ 384:../src/spi/spi.c **** /**
+ 385:../src/spi/spi.c ****  * \brief Set Serial Clock Baud Rate divider value (SCBR).
+ 386:../src/spi/spi.c ****  *
+ 387:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 388:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 389:../src/spi/spi.c ****  * \param uc_baudrate_divider Baudrate divider from MCK.
+ 390:../src/spi/spi.c ****  *
+ 391:../src/spi/spi.c ****  * \return
+ 392:../src/spi/spi.c ****  * \retval is 0 Success.
+ 393:../src/spi/spi.c ****  * \retval is -1 Error.
+ 394:../src/spi/spi.c ****  */
+ 395:../src/spi/spi.c **** int16_t spi_set_baudrate_div(Spi *p_spi, uint32_t ul_pcs_ch,
+ 396:../src/spi/spi.c **** 		uint8_t uc_baudrate_divider)
+ 397:../src/spi/spi.c **** {
+ 517              		.loc 1 397 0
+ 518              		.cfi_startproc
+ 519              		@ args = 0, pretend = 0, frame = 0
+ 520              		@ frame_needed = 0, uses_anonymous_args = 0
+ 521              		@ link register save eliminated.
+ 522              	.LVL61:
+ 398:../src/spi/spi.c ****     /* Programming the SCBR field to 0 is forbidden */
+ 399:../src/spi/spi.c ****     if (!uc_baudrate_divider)
+ 523              		.loc 1 399 0
+ 524 0000 82B1     		cbz	r2, .L44
+ 397:../src/spi/spi.c ****     /* Programming the SCBR field to 0 is forbidden */
+ 525              		.loc 1 397 0
+ 526 0002 10B4     		push	{r4}
+ 527              		.cfi_def_cfa_offset 4
+ 528              		.cfi_offset 4, -4
+ 529 0004 1446     		mov	r4, r2
+ 400:../src/spi/spi.c ****         return -1;
+ 401:../src/spi/spi.c **** 
+ 402:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_SCBR_Msk);
+ 530              		.loc 1 402 0
+ 531 0006 0C31     		adds	r1, r1, #12
+ 532              	.LVL62:
+ 533 0008 50F82130 		ldr	r3, [r0, r1, lsl #2]
+ 534 000c 23F47F43 		bic	r3, r3, #65280
+ 535 0010 40F82130 		str	r3, [r0, r1, lsl #2]
+ 403:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_SCBR(uc_baudrate_divider);
+ 536              		.loc 1 403 0
+ 537 0014 50F82120 		ldr	r2, [r0, r1, lsl #2]
+ 538              	.LVL63:
+ 539 0018 42EA0422 		orr	r2, r2, r4, lsl #8
+ 540 001c 40F82120 		str	r2, [r0, r1, lsl #2]
+ 404:../src/spi/spi.c ****     return 0;
+ 541              		.loc 1 404 0
+ 542 0020 0020     		movs	r0, #0
+ 543              	.LVL64:
+ 544 0022 03E0     		b	.L43
+ 545              	.LVL65:
+ 546              	.L44:
+ 547              		.cfi_def_cfa_offset 0
+ 548              		.cfi_restore 4
+ 400:../src/spi/spi.c ****         return -1;
+ 549              		.loc 1 400 0
+ 550 0024 4FF6FF70 		movw	r0, #65535
+ 551              	.LVL66:
+ 405:../src/spi/spi.c **** }
+ 552              		.loc 1 405 0
+ 553 0028 00B2     		sxth	r0, r0
+ 554 002a 7047     		bx	lr
+ 555              	.LVL67:
+ 556              	.L43:
+ 557              		.cfi_def_cfa_offset 4
+ 558              		.cfi_offset 4, -4
+ 559 002c 00B2     		sxth	r0, r0
+ 560 002e 10BC     		pop	{r4}
+ 561              		.cfi_restore 4
+ 562              		.cfi_def_cfa_offset 0
+ 563 0030 7047     		bx	lr
+ 564              		.cfi_endproc
+ 565              	.LFE137:
+ 567 0032 00BF     		.section	.text.spi_set_transfer_delay,"ax",%progbits
+ 568              		.align	2
+ 569              		.global	spi_set_transfer_delay
+ 570              		.thumb
+ 571              		.thumb_func
+ 573              	spi_set_transfer_delay:
+ 574              	.LFB138:
+ 406:../src/spi/spi.c **** 
+ 407:../src/spi/spi.c **** /**
+ 408:../src/spi/spi.c ****  * \brief Configure timing for SPI transfer.
+ 409:../src/spi/spi.c ****  *
+ 410:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 411:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 412:../src/spi/spi.c ****  * \param uc_dlybs Delay before SPCK (in number of MCK clocks).
+ 413:../src/spi/spi.c ****  * \param uc_dlybct Delay between consecutive transfers (in number of MCK clocks).
+ 414:../src/spi/spi.c ****  */
+ 415:../src/spi/spi.c **** void spi_set_transfer_delay(Spi *p_spi, uint32_t ul_pcs_ch,
+ 416:../src/spi/spi.c **** 		uint8_t uc_dlybs, uint8_t uc_dlybct)
+ 417:../src/spi/spi.c **** {
+ 575              		.loc 1 417 0
+ 576              		.cfi_startproc
+ 577              		@ args = 0, pretend = 0, frame = 0
+ 578              		@ frame_needed = 0, uses_anonymous_args = 0
+ 579              		@ link register save eliminated.
+ 580              	.LVL68:
+ 581 0000 10B4     		push	{r4}
+ 582              		.cfi_def_cfa_offset 4
+ 583              		.cfi_offset 4, -4
+ 418:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= ~(SPI_CSR_DLYBS_Msk | SPI_CSR_DLYBCT_Msk);
+ 584              		.loc 1 418 0
+ 585 0002 0C31     		adds	r1, r1, #12
+ 586              	.LVL69:
+ 587 0004 50F82140 		ldr	r4, [r0, r1, lsl #2]
+ 588 0008 A4B2     		uxth	r4, r4
+ 589 000a 40F82140 		str	r4, [r0, r1, lsl #2]
+ 419:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
+ 590              		.loc 1 419 0
+ 591 000e 50F82140 		ldr	r4, [r0, r1, lsl #2]
+ 420:../src/spi/spi.c **** 			| SPI_CSR_DLYBCT(uc_dlybct);
+ 592              		.loc 1 420 0
+ 593 0012 1B06     		lsls	r3, r3, #24
+ 594              	.LVL70:
+ 595 0014 43EA0242 		orr	r2, r3, r2, lsl #16
+ 596              	.LVL71:
+ 419:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
+ 597              		.loc 1 419 0
+ 598 0018 44EA0203 		orr	r3, r4, r2
+ 599 001c 40F82130 		str	r3, [r0, r1, lsl #2]
+ 421:../src/spi/spi.c **** }
+ 600              		.loc 1 421 0
+ 601 0020 10BC     		pop	{r4}
+ 602              		.cfi_restore 4
+ 603              		.cfi_def_cfa_offset 0
+ 604 0022 7047     		bx	lr
+ 605              		.cfi_endproc
+ 606              	.LFE138:
+ 608              		.section	.text.spi_set_writeprotect,"ax",%progbits
+ 609              		.align	2
+ 610              		.global	spi_set_writeprotect
+ 611              		.thumb
+ 612              		.thumb_func
+ 614              	spi_set_writeprotect:
+ 615              	.LFB139:
+ 422:../src/spi/spi.c **** 
+ 423:../src/spi/spi.c **** 
+ 424:../src/spi/spi.c **** /**
+ 425:../src/spi/spi.c ****  * \brief Enable or disable write protection of SPI registers.
+ 426:../src/spi/spi.c ****  *
+ 427:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 428:../src/spi/spi.c ****  * \param ul_enable 1 to enable, 0 to disable.
+ 429:../src/spi/spi.c ****  */
+ 430:../src/spi/spi.c **** void spi_set_writeprotect(Spi *p_spi, uint32_t ul_enable)
+ 431:../src/spi/spi.c **** {
+ 616              		.loc 1 431 0
+ 617              		.cfi_startproc
+ 618              		@ args = 0, pretend = 0, frame = 0
+ 619              		@ frame_needed = 0, uses_anonymous_args = 0
+ 620              		@ link register save eliminated.
+ 621              	.LVL72:
+ 432:../src/spi/spi.c **** #if SAM4L
+ 433:../src/spi/spi.c **** 	if (ul_enable) {
+ 434:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE | SPI_WPCR_SPIWPEN;
+ 435:../src/spi/spi.c **** 	} else {
+ 436:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE;
+ 437:../src/spi/spi.c **** 	}
+ 438:../src/spi/spi.c **** #else
+ 439:../src/spi/spi.c **** 	if (ul_enable) {
+ 622              		.loc 1 439 0
+ 623 0000 19B1     		cbz	r1, .L50
+ 440:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD | SPI_WPMR_WPEN;
+ 624              		.loc 1 440 0
+ 625 0002 044B     		ldr	r3, .L52
+ 626 0004 C0F8E430 		str	r3, [r0, #228]
+ 627 0008 7047     		bx	lr
+ 628              	.L50:
+ 441:../src/spi/spi.c **** 	} else {
+ 442:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD;
+ 629              		.loc 1 442 0
+ 630 000a 034B     		ldr	r3, .L52+4
+ 631 000c C0F8E430 		str	r3, [r0, #228]
+ 632 0010 7047     		bx	lr
+ 633              	.L53:
+ 634 0012 00BF     		.align	2
+ 635              	.L52:
+ 636 0014 01495053 		.word	1397770497
+ 637 0018 00495053 		.word	1397770496
+ 638              		.cfi_endproc
+ 639              	.LFE139:
+ 641              		.section	.text.spi_get_writeprotect_status,"ax",%progbits
+ 642              		.align	2
+ 643              		.global	spi_get_writeprotect_status
+ 644              		.thumb
+ 645              		.thumb_func
+ 647              	spi_get_writeprotect_status:
+ 648              	.LFB140:
+ 443:../src/spi/spi.c **** 	}
+ 444:../src/spi/spi.c **** #endif
+ 445:../src/spi/spi.c **** }
+ 446:../src/spi/spi.c **** 
+ 447:../src/spi/spi.c **** /**
+ 448:../src/spi/spi.c ****  * \brief Indicate write protect status.
+ 449:../src/spi/spi.c ****  *
+ 450:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 451:../src/spi/spi.c ****  *
+ 452:../src/spi/spi.c ****  * \return SPI_WPSR value.
+ 453:../src/spi/spi.c ****  */
+ 454:../src/spi/spi.c **** uint32_t spi_get_writeprotect_status(Spi *p_spi)
+ 455:../src/spi/spi.c **** {
+ 649              		.loc 1 455 0
+ 650              		.cfi_startproc
+ 651              		@ args = 0, pretend = 0, frame = 0
+ 652              		@ frame_needed = 0, uses_anonymous_args = 0
+ 653              		@ link register save eliminated.
+ 654              	.LVL73:
+ 456:../src/spi/spi.c **** 	return p_spi->SPI_WPSR;
+ 655              		.loc 1 456 0
+ 656 0000 D0F8E800 		ldr	r0, [r0, #232]
+ 657              	.LVL74:
+ 457:../src/spi/spi.c **** }
+ 658              		.loc 1 457 0
+ 659 0004 7047     		bx	lr
+ 660              		.cfi_endproc
+ 661              	.LFE140:
+ 663 0006 00BF     		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 664              		.align	2
+ 667              	cpu_irq_critical_section_counter:
+ 668 0000 00000000 		.space	4
+ 669              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 672              	cpu_irq_prev_interrupt_state:
+ 673 0000 00       		.space	1
+ 674              		.text
+ 675              	.Letext0:
+ 676              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 677              		.file 5 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 678              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 679              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_spi.h"
+ 680              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 681              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 682              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi.c
+     /tmp/ccqUdolG.s:20     .text.spi_enable_clock:00000000 $t
+     /tmp/ccqUdolG.s:25     .text.spi_enable_clock:00000000 spi_enable_clock
+     /tmp/ccqUdolG.s:53     .text.spi_disable_clock:00000000 $t
+     /tmp/ccqUdolG.s:58     .text.spi_disable_clock:00000000 spi_disable_clock
+     /tmp/ccqUdolG.s:84     .text.spi_set_peripheral_chip_select_value:00000000 $t
+     /tmp/ccqUdolG.s:89     .text.spi_set_peripheral_chip_select_value:00000000 spi_set_peripheral_chip_select_value
+     /tmp/ccqUdolG.s:113    .text.spi_set_delay_between_chip_select:00000000 $t
+     /tmp/ccqUdolG.s:118    .text.spi_set_delay_between_chip_select:00000000 spi_set_delay_between_chip_select
+     /tmp/ccqUdolG.s:140    .text.spi_read:00000000 $t
+     /tmp/ccqUdolG.s:145    .text.spi_read:00000000 spi_read
+     /tmp/ccqUdolG.s:217    .text.spi_read:00000034 $d
+     /tmp/ccqUdolG.s:222    .text.spi_write:00000000 $t
+     /tmp/ccqUdolG.s:227    .text.spi_write:00000000 spi_write
+     /tmp/ccqUdolG.s:306    .text.spi_write:0000003c $d
+     /tmp/ccqUdolG.s:311    .text.spi_set_clock_polarity:00000000 $t
+     /tmp/ccqUdolG.s:316    .text.spi_set_clock_polarity:00000000 spi_set_clock_polarity
+     /tmp/ccqUdolG.s:346    .text.spi_set_clock_phase:00000000 $t
+     /tmp/ccqUdolG.s:351    .text.spi_set_clock_phase:00000000 spi_set_clock_phase
+     /tmp/ccqUdolG.s:381    .text.spi_configure_cs_behavior:00000000 $t
+     /tmp/ccqUdolG.s:386    .text.spi_configure_cs_behavior:00000000 spi_configure_cs_behavior
+     /tmp/ccqUdolG.s:441    .text.spi_set_bits_per_transfer:00000000 $t
+     /tmp/ccqUdolG.s:446    .text.spi_set_bits_per_transfer:00000000 spi_set_bits_per_transfer
+     /tmp/ccqUdolG.s:470    .text.spi_calc_baudrate_div:00000000 $t
+     /tmp/ccqUdolG.s:475    .text.spi_calc_baudrate_div:00000000 spi_calc_baudrate_div
+     /tmp/ccqUdolG.s:510    .text.spi_set_baudrate_div:00000000 $t
+     /tmp/ccqUdolG.s:515    .text.spi_set_baudrate_div:00000000 spi_set_baudrate_div
+     /tmp/ccqUdolG.s:568    .text.spi_set_transfer_delay:00000000 $t
+     /tmp/ccqUdolG.s:573    .text.spi_set_transfer_delay:00000000 spi_set_transfer_delay
+     /tmp/ccqUdolG.s:609    .text.spi_set_writeprotect:00000000 $t
+     /tmp/ccqUdolG.s:614    .text.spi_set_writeprotect:00000000 spi_set_writeprotect
+     /tmp/ccqUdolG.s:636    .text.spi_set_writeprotect:00000014 $d
+     /tmp/ccqUdolG.s:642    .text.spi_get_writeprotect_status:00000000 $t
+     /tmp/ccqUdolG.s:647    .text.spi_get_writeprotect_status:00000000 spi_get_writeprotect_status
+     /tmp/ccqUdolG.s:664    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccqUdolG.s:667    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccqUdolG.s:672    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccqUdolG.s:673    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.parts.h.48.e0e2ea619afac603c89fe3ed31aee15f
+                           .group:00000000 wm4.tpaste.h.48.b41cf557065b1d02756f7dcff09d49b9
+                           .group:00000000 wm4.stringz.h.48.ed3117824abe39c5e1281f5c5c443171
+                           .group:00000000 wm4.mrepeat.h.62.d4f39ef966b631e185fbb702f9b80ecc
+                           .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4
+                           .group:00000000 wm4._default_types.h.15.933e8edd27a65e0b69af4a865eb623d2
+                           .group:00000000 wm4._intsup.h.10.b82bf99f69d6a5c085fc866de0d3eb9b
+                           .group:00000000 wm4._stdint.h.10.f76354baea1c7088202064e6f3d4f5e3
+                           .group:00000000 wm4.stdint.h.23.373a9d32a9e4c2e88fd347156532d281
+                           .group:00000000 wm4.sam3s4b.h.226.24ac70e3db261e60e9d210f1232ad825
+                           .group:00000000 wm4.core_cm3.h.43.614605f47657df9251f3b3f57590a49a
+                           .group:00000000 wm4.core_cmInstr.h.39.53f0cdf363d7ba01993152fdcb6be5d3
+                           .group:00000000 wm4.core_cm3.h.160.e022dd848961f928eab0fbd8650d106b
+                           .group:00000000 wm4.component_acc.h.46.865c75bb2e3a9d4f38652271e089b5c8
+                           .group:00000000 wm4.component_adc.h.46.52ba0aeb0af22cb1f1d91b64dde93956
+                           .group:00000000 wm4.component_chipid.h.46.43a273f46f4c32081dfee459ad8862da
+                           .group:00000000 wm4.component_crccu.h.46.3d5d84ebcceb8af0782dcb99da35d7d0
+                           .group:00000000 wm4.component_dacc.h.46.9b850907590bd31997b006351cf81000
+                           .group:00000000 wm4.component_efc.h.46.5a9ec99498daf6c49989fb6d077d312d
+                           .group:00000000 wm4.component_gpbr.h.46.1788b80e501f9df943793fa21cfbbe21
+                           .group:00000000 wm4.component_hsmci.h.46.2dc64c4ca9a764fbaa2fd4fd1541de68
+                           .group:00000000 wm4.component_matrix.h.46.2f4d70bb97c9923e855a3d0c5f56d95e
+                           .group:00000000 wm4.component_pdc.h.46.dfd3350dd71c534e17334339feb77f7c
+                           .group:00000000 wm4.component_pio.h.46.dc6628e5aa2d62d441a2f9edf013a75a
+                           .group:00000000 wm4.component_pmc.h.46.3a13206d3ecf2f1946cf88c02281a26b
+                           .group:00000000 wm4.component_pwm.h.46.89366ac40583cd8cd91a5fed13cff02c
+                           .group:00000000 wm4.component_rstc.h.46.ef0fbefe4bc03f652c9f4a03bfd1ef46
+                           .group:00000000 wm4.component_rtc.h.46.cb1a84d0ff4d043a12d4d2139109e615
+                           .group:00000000 wm4.component_rtt.h.46.e35d95fd2652721ab93a68f868a14334
+                           .group:00000000 wm4.component_spi.h.46.fbe616cc22048ae3dbe0157a75a200d2
+                           .group:00000000 wm4.component_ssc.h.46.bf814ca321f25fab9ac26489e1dec9f0
+                           .group:00000000 wm4.component_supc.h.46.013b2a48420cc402d8153de678272576
+                           .group:00000000 wm4.component_tc.h.46.8ee6425921e5bd880a2aabd4ecd71522
+                           .group:00000000 wm4.component_twi.h.46.1b26436f50ce08e4cbf79a4fdffbcc40
+                           .group:00000000 wm4.component_uart.h.46.2ec10b01d23d880667901e3e18729356
+                           .group:00000000 wm4.component_udp.h.46.817a2ee6a2f80ac39e7bfbe0ff852001
+                           .group:00000000 wm4.component_usart.h.46.e73badf8b79b1144a5e58ae3c7f99afd
+                           .group:00000000 wm4.component_wdt.h.46.9058aedbbe8c7f88e4bce28490af6b23
+                           .group:00000000 wm4.instance_hsmci.h.46.0921b488c345ac98ef3ba7ad69508825
+                           .group:00000000 wm4.instance_ssc.h.46.eebd23f2ef145a585a82c5cef060c7ea
+                           .group:00000000 wm4.instance_spi.h.46.26621c46b178e9ca6762bb17a24ec410
+                           .group:00000000 wm4.instance_tc0.h.46.ead4b45558da2f42ca95730d1beaaa00
+                           .group:00000000 wm4.instance_twi0.h.46.cb546cfb1d37706d80f563947a14da44
+                           .group:00000000 wm4.instance_twi1.h.46.5f1af4ccf4d6b33c96c4e388359796ac
+                           .group:00000000 wm4.instance_pwm.h.46.76f280edd0f8b1bfcce61f4d903d0259
+                           .group:00000000 wm4.instance_usart0.h.46.3c469d2b920fd3e12092b7294ca82da9
+                           .group:00000000 wm4.instance_usart1.h.46.398f0294bdd8277ea274c7a419e95901
+                           .group:00000000 wm4.instance_udp.h.46.40973cfe8c89095098371468c1887576
+                           .group:00000000 wm4.instance_adc.h.46.63258f34d0c27b11736611a7b2b2f27b
+                           .group:00000000 wm4.instance_dacc.h.46.5ae4a5035dc78df5a5c17d9d1e76e633
+                           .group:00000000 wm4.instance_acc.h.46.2e4a9cb4cb3a92c914800b95f627dc57
+                           .group:00000000 wm4.instance_crccu.h.46.184237fe1c77c165bb334c02320f869e
+                           .group:00000000 wm4.instance_matrix.h.46.d111ad2ca1e7198ed94a2e1213aa58a3
+                           .group:00000000 wm4.instance_pmc.h.46.d5d037bdb46a612e424292373f68d9f8
+                           .group:00000000 wm4.instance_uart0.h.46.dc252f382de697c23724fa503782af1d
+                           .group:00000000 wm4.instance_chipid.h.46.8f77c51e2ab9edf7d26da8400aab7875
+                           .group:00000000 wm4.instance_uart1.h.46.283c4a1cf98fcb8466ac9bceadb0b677
+                           .group:00000000 wm4.instance_efc.h.46.9f291aa734b1cb8d75fd144e72f97e2b
+                           .group:00000000 wm4.instance_pioa.h.46.cf0f81cda67dc3776fe52603ff60a82f
+                           .group:00000000 wm4.instance_piob.h.46.fd1caa7213e73c46d15f69de6af123fb
+                           .group:00000000 wm4.instance_rstc.h.46.cb75da875c2442dd75e5a8799bd32e87
+                           .group:00000000 wm4.instance_supc.h.46.90f370dafc0bdfb8646ce68458e514e6
+                           .group:00000000 wm4.instance_rtt.h.46.5758ae3574a477219b8abb8fe940acb4
+                           .group:00000000 wm4.instance_wdt.h.46.b7fdc89b044099cb92c28a2f305b0c66
+                           .group:00000000 wm4.instance_rtc.h.46.9d6ddf34c4ffdc6eec5effd1b6d4f045
+                           .group:00000000 wm4.instance_gpbr.h.46.672198928bf79182f671b278dd185af8
+                           .group:00000000 wm4.sam3s4b.h.317.e7cdc49d5fdc97b75252ee6763540354
+                           .group:00000000 wm4.pio_sam3s4b.h.46.b91cb9b5c8fcc478a4299e5df5dba6ff
+                           .group:00000000 wm4.sam3s4b.h.452.d371283092f6029dc967aa8f16a63977
+                           .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
+                           .group:00000000 wm4.config.h.220.a09b0b0de3c25be3f39d71990e617bff
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.cdefs.h.47.f5f8300e4d8e4fd74800d02abaf0cc79
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4.reent.h.17.850ac0a908956e5fb788be1b80de2f32
+                           .group:00000000 wm4.types.h.24.b2be5f53932a9c9d07787288b29b6d75
+                           .group:00000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:00000000 wm4._timeval.h.30.81d73a3eee9df6c17d94febfd4f5f751
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.31.43869e1a2488877c4cd47d2792524430
+                           .group:00000000 wm4.types.h.91.482c289990230376cfd504a2907d47e7
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.68.a99a2db1e55915cfd1b035cc1e9fcff1
+                           .group:00000000 wm4.stdbool.h.29.07dce69c3b78884144b7f7bd19483461
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.54.8f3036bd0ed314ae051372ccc1fe8f02
+                           .group:00000000 wm4.compiler.h.91.eeb6296462f96c51e8e0205ed94a5b09
+                           .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
+                           .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
+                           .group:00000000 wm4.spi.h.61.9fcb30b022d911aab30a99e577186ceb
+                           .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
+                           .group:00000000 wm4.board.h.51.4ac0d93faa32d5a56598d2df92d1abff
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
+                           .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
+                           .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308
+                           .group:00000000 wm4.sysclk.h.240.cfab6246305f0088614c69f722fe0ee0
+
+UNDEFINED SYMBOLS
+pmc_enable_periph_clk
+pmc_disable_periph_clk
