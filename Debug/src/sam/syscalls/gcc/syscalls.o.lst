@@ -393,29 +393,29 @@
  271              		.file 6 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/stdio.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 syscalls.c
-     /tmp/ccJzq2ps.s:20     .text._sbrk:00000000 $t
-     /tmp/ccJzq2ps.s:25     .text._sbrk:00000000 _sbrk
-     /tmp/ccJzq2ps.s:70     .text._sbrk:00000028 $d
-     /tmp/ccJzq2ps.s:77     .text.link:00000000 $t
-     /tmp/ccJzq2ps.s:82     .text.link:00000000 link
-     /tmp/ccJzq2ps.s:98     .text._close:00000000 $t
-     /tmp/ccJzq2ps.s:103    .text._close:00000000 _close
-     /tmp/ccJzq2ps.s:119    .text._fstat:00000000 $t
-     /tmp/ccJzq2ps.s:124    .text._fstat:00000000 _fstat
-     /tmp/ccJzq2ps.s:143    .text._isatty:00000000 $t
-     /tmp/ccJzq2ps.s:148    .text._isatty:00000000 _isatty
-     /tmp/ccJzq2ps.s:164    .text._lseek:00000000 $t
-     /tmp/ccJzq2ps.s:169    .text._lseek:00000000 _lseek
-     /tmp/ccJzq2ps.s:185    .text._exit:00000000 $t
-     /tmp/ccJzq2ps.s:190    .text._exit:00000000 _exit
-     /tmp/ccJzq2ps.s:213    .text._exit:0000000c $d
-     /tmp/ccJzq2ps.s:218    .text._kill:00000000 $t
-     /tmp/ccJzq2ps.s:223    .text._kill:00000000 _kill
-     /tmp/ccJzq2ps.s:236    .text._getpid:00000000 $t
-     /tmp/ccJzq2ps.s:241    .text._getpid:00000000 _getpid
-     /tmp/ccJzq2ps.s:255    .bss.heap.5322:00000000 $d
-     /tmp/ccJzq2ps.s:259    .bss.heap.5322:00000000 heap.5322
-     /tmp/ccJzq2ps.s:262    .rodata.str1.4:00000000 $d
+     /tmp/ccv60sV6.s:20     .text._sbrk:00000000 $t
+     /tmp/ccv60sV6.s:25     .text._sbrk:00000000 _sbrk
+     /tmp/ccv60sV6.s:70     .text._sbrk:00000028 $d
+     /tmp/ccv60sV6.s:77     .text.link:00000000 $t
+     /tmp/ccv60sV6.s:82     .text.link:00000000 link
+     /tmp/ccv60sV6.s:98     .text._close:00000000 $t
+     /tmp/ccv60sV6.s:103    .text._close:00000000 _close
+     /tmp/ccv60sV6.s:119    .text._fstat:00000000 $t
+     /tmp/ccv60sV6.s:124    .text._fstat:00000000 _fstat
+     /tmp/ccv60sV6.s:143    .text._isatty:00000000 $t
+     /tmp/ccv60sV6.s:148    .text._isatty:00000000 _isatty
+     /tmp/ccv60sV6.s:164    .text._lseek:00000000 $t
+     /tmp/ccv60sV6.s:169    .text._lseek:00000000 _lseek
+     /tmp/ccv60sV6.s:185    .text._exit:00000000 $t
+     /tmp/ccv60sV6.s:190    .text._exit:00000000 _exit
+     /tmp/ccv60sV6.s:213    .text._exit:0000000c $d
+     /tmp/ccv60sV6.s:218    .text._kill:00000000 $t
+     /tmp/ccv60sV6.s:223    .text._kill:00000000 _kill
+     /tmp/ccv60sV6.s:236    .text._getpid:00000000 $t
+     /tmp/ccv60sV6.s:241    .text._getpid:00000000 _getpid
+     /tmp/ccv60sV6.s:255    .bss.heap.5322:00000000 $d
+     /tmp/ccv60sV6.s:259    .bss.heap.5322:00000000 heap.5322
+     /tmp/ccv60sV6.s:262    .rodata.str1.4:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68

@@ -1956,25 +1956,25 @@
  731              		.file 12 "../src/pmc/pmc.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 sleep.c
-     /tmp/ccoqJkeg.s:20     .text.pmc_sleep:00000000 $t
-     /tmp/ccoqJkeg.s:25     .text.pmc_sleep:00000000 pmc_sleep
-     /tmp/ccoqJkeg.s:39     .text.pmc_sleep:0000000c $d
-     /tmp/ccoqJkeg.s:44     .text.pmc_sleep:00000016 $t
-     /tmp/ccoqJkeg.s:590    .text.pmc_sleep:00000260 $d
-     /tmp/ccoqJkeg.s:603    .text.pmc_is_wakeup_clocks_restored:00000000 $t
-     /tmp/ccoqJkeg.s:608    .text.pmc_is_wakeup_clocks_restored:00000000 pmc_is_wakeup_clocks_restored
-     /tmp/ccoqJkeg.s:624    .text.pmc_is_wakeup_clocks_restored:0000000c $d
-     /tmp/ccoqJkeg.s:629    .text.pmc_wait_wakeup_clocks_restore:00000000 $t
-     /tmp/ccoqJkeg.s:634    .text.pmc_wait_wakeup_clocks_restore:00000000 pmc_wait_wakeup_clocks_restore
-     /tmp/ccoqJkeg.s:691    .text.pmc_wait_wakeup_clocks_restore:00000024 $d
-     /tmp/ccoqJkeg.s:698    .bss.callback_clocks_restored:00000000 $d
-     /tmp/ccoqJkeg.s:702    .bss.callback_clocks_restored:00000000 callback_clocks_restored
-     /tmp/ccoqJkeg.s:705    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccoqJkeg.s:708    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccoqJkeg.s:714    .bss.b_is_sleep_clock_used:00000000 b_is_sleep_clock_used
-     /tmp/ccoqJkeg.s:715    .bss.b_is_sleep_clock_used:00000000 $d
-     /tmp/ccoqJkeg.s:719    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccoqJkeg.s:720    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccQ108fA.s:20     .text.pmc_sleep:00000000 $t
+     /tmp/ccQ108fA.s:25     .text.pmc_sleep:00000000 pmc_sleep
+     /tmp/ccQ108fA.s:39     .text.pmc_sleep:0000000c $d
+     /tmp/ccQ108fA.s:44     .text.pmc_sleep:00000016 $t
+     /tmp/ccQ108fA.s:590    .text.pmc_sleep:00000260 $d
+     /tmp/ccQ108fA.s:603    .text.pmc_is_wakeup_clocks_restored:00000000 $t
+     /tmp/ccQ108fA.s:608    .text.pmc_is_wakeup_clocks_restored:00000000 pmc_is_wakeup_clocks_restored
+     /tmp/ccQ108fA.s:624    .text.pmc_is_wakeup_clocks_restored:0000000c $d
+     /tmp/ccQ108fA.s:629    .text.pmc_wait_wakeup_clocks_restore:00000000 $t
+     /tmp/ccQ108fA.s:634    .text.pmc_wait_wakeup_clocks_restore:00000000 pmc_wait_wakeup_clocks_restore
+     /tmp/ccQ108fA.s:691    .text.pmc_wait_wakeup_clocks_restore:00000024 $d
+     /tmp/ccQ108fA.s:698    .bss.callback_clocks_restored:00000000 $d
+     /tmp/ccQ108fA.s:702    .bss.callback_clocks_restored:00000000 callback_clocks_restored
+     /tmp/ccQ108fA.s:705    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccQ108fA.s:708    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccQ108fA.s:714    .bss.b_is_sleep_clock_used:00000000 b_is_sleep_clock_used
+     /tmp/ccQ108fA.s:715    .bss.b_is_sleep_clock_used:00000000 $d
+     /tmp/ccQ108fA.s:719    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccQ108fA.s:720    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
@@ -2076,7 +2076,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.sleep.h.48.6fafd9e21cd1e8977ba5f4188cfeedb9
                            .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
                            .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
-                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.16745fc48ac4fbc54e06040102b9171b
 
 UNDEFINED SYMBOLS
 pmc_disable_pllack

@@ -385,15 +385,15 @@
  193              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 startup_sam3s.c
-     /tmp/cciGGUTt.s:20     .text.Reset_Handler:00000000 $t
-     /tmp/cciGGUTt.s:25     .text.Reset_Handler:00000000 Reset_Handler
-     /tmp/cciGGUTt.s:108    .text.Reset_Handler:0000005c $d
-     /tmp/cciGGUTt.s:129    .vectors:00000000 exception_table
-     /tmp/cciGGUTt.s:120    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/cciGGUTt.s:123    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/cciGGUTt.s:126    .vectors:00000000 $d
-     /tmp/cciGGUTt.s:185    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/cciGGUTt.s:186    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/cckRxrcZ.s:20     .text.Reset_Handler:00000000 $t
+     /tmp/cckRxrcZ.s:25     .text.Reset_Handler:00000000 Reset_Handler
+     /tmp/cckRxrcZ.s:108    .text.Reset_Handler:0000005c $d
+     /tmp/cckRxrcZ.s:129    .vectors:00000000 exception_table
+     /tmp/cckRxrcZ.s:120    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/cckRxrcZ.s:123    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/cckRxrcZ.s:126    .vectors:00000000 $d
+     /tmp/cckRxrcZ.s:185    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/cckRxrcZ.s:186    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.features.h.22.2e382148a0560adabf236cddd4e880f4

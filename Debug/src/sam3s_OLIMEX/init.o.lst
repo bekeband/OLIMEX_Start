@@ -91,7 +91,7 @@
   57:../src/sam3s_OLIMEX/init.c **** 	WDT->WDT_MR = WDT_MR_WDDIS;
   36              		.loc 1 57 0
   37 0002 4FF40042 		mov	r2, #32768
-  38 0006 204B     		ldr	r3, .L3
+  38 0006 274B     		ldr	r3, .L3
   39 0008 5A60     		str	r2, [r3, #4]
   40              	.LVL0:
   41              	.LBB15:
@@ -562,13 +562,13 @@
   70:../src/sam3s_OLIMEX/init.c **** 	/* Configure Push Button pins */
   71:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(GPIO_PUSH_BUTTON_1, GPIO_PUSH_BUTTON_1_FLAGS);
   71              		.loc 1 71 0
-  72 002a 1849     		ldr	r1, .L3+4
+  72 002a 1F49     		ldr	r1, .L3+4
   73 002c 1320     		movs	r0, #19
   74 002e FFF7FEFF 		bl	pio_configure_pin
   75              	.LVL5:
   72:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(GPIO_PUSH_BUTTON_2, GPIO_PUSH_BUTTON_2_FLAGS);
   76              		.loc 1 72 0
-  77 0032 1749     		ldr	r1, .L3+8
+  77 0032 1E49     		ldr	r1, .L3+8
   78 0034 1420     		movs	r0, #20
   79 0036 FFF7FEFF 		bl	pio_configure_pin
   80              	.LVL6:
@@ -579,7 +579,7 @@
   81              		.loc 1 76 0
   82 003a 4FF00062 		mov	r2, #134217728
   83 003e 4FF4C061 		mov	r1, #1536
-  84 0042 1448     		ldr	r0, .L3+12
+  84 0042 1B48     		ldr	r0, .L3+12
   85 0044 FFF7FEFF 		bl	pio_configure_pin_group
   86              	.LVL7:
   77:../src/sam3s_OLIMEX/init.c **** #endif
@@ -725,10 +725,10 @@
   99 0060 0E20     		movs	r0, #14
  100 0062 FFF7FEFF 		bl	pio_configure_pin
  101              	.LVL10:
- 205:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SPI_NPCS0_GPIO, SPI_NPCS0_FLAGS);
+ 205:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(LCD_SPI_NPCS_GPIO, LCD_SPI_NPCS_GPIO_FLAGS);
  102              		.loc 1 205 0
  103 0066 4FF00061 		mov	r1, #134217728
- 104 006a 0B20     		movs	r0, #11
+ 104 006a 1F20     		movs	r0, #31
  105 006c FFF7FEFF 		bl	pio_configure_pin
  106              	.LVL11:
  206:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(BOARD_ILI9341_DC_GPIO, BOARD_ILI9341_DC_FLAGS);
@@ -743,45 +743,78 @@
  114 007e 0020     		movs	r0, #0
  115 0080 FFF7FEFF 		bl	pio_configure_pin
  116              	.LVL13:
- 117 0084 08BD     		pop	{r3, pc}
- 118              	.L4:
- 119 0086 00BF     		.align	2
- 120              	.L3:
- 121 0088 50140E40 		.word	1074664528
- 122 008c 79000028 		.word	671088761
- 123 0090 59000028 		.word	671088729
- 124 0094 000E0E40 		.word	1074662912
- 125              		.cfi_endproc
- 126              	.LFE135:
- 128              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
- 129              		.align	2
- 132              	cpu_irq_critical_section_counter:
- 133 0000 00000000 		.space	4
- 134              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
- 137              	cpu_irq_prev_interrupt_state:
- 138 0000 00       		.space	1
- 139              		.text
- 140              	.Letext0:
- 141              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
- 142              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
- 143              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
- 144              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pio.h"
- 145              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_wdt.h"
- 146              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h"
- 147              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/ioport.h"
- 148              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
- 149              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
- 150              		.file 12 "/home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h"
- 151              		.file 13 "/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h"
+ 208:../src/sam3s_OLIMEX/init.c **** #endif
+ 209:../src/sam3s_OLIMEX/init.c **** 
+ 210:../src/sam3s_OLIMEX/init.c **** #if defined(CONF_BOARD_SD_MMC_SPI)
+ 211:../src/sam3s_OLIMEX/init.c **** 	/* Configure SD/MMC card (SPI0 channel) The NPCS line must be connect
+ 212:../src/sam3s_OLIMEX/init.c **** 	 * to the NPCS0 IO.
+ 213:../src/sam3s_OLIMEX/init.c **** 	 */
+ 214:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SD_MMC_SPI_NPCS_GPIO, SD_MMC_SPI_NPCS_GPIO_FLAGS);
+ 117              		.loc 1 214 0
+ 118 0084 4FF00061 		mov	r1, #134217728
+ 119 0088 0B20     		movs	r0, #11
+ 120 008a FFF7FEFF 		bl	pio_configure_pin
+ 121              	.LVL14:
+ 215:../src/sam3s_OLIMEX/init.c **** 	/* Configure SD/MMC card detect pin */
+ 216:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(SD_MMC_0_CD_GPIO, SD_MMC_0_CD_FLAGS);
+ 122              		.loc 1 216 0
+ 123 008e 0949     		ldr	r1, .L3+16
+ 124 0090 0F20     		movs	r0, #15
+ 125 0092 FFF7FEFF 		bl	pio_configure_pin
+ 126              	.LVL15:
+ 217:../src/sam3s_OLIMEX/init.c **** 
+ 218:../src/sam3s_OLIMEX/init.c **** #endif
+ 219:../src/sam3s_OLIMEX/init.c **** 
+ 220:../src/sam3s_OLIMEX/init.c **** #if defined(CONF_BOARD_TOUCH_SPI)
+ 221:../src/sam3s_OLIMEX/init.c **** 	/* Configure SD/MMC card (SPI0 channel) The NPCS line must be connect
+ 222:../src/sam3s_OLIMEX/init.c **** 	 * to the NPCS0 IO.
+ 223:../src/sam3s_OLIMEX/init.c **** 	 */
+ 224:../src/sam3s_OLIMEX/init.c **** 	gpio_configure_pin(TOUCH_SPI_NPCS_GPIO, TOUCH_SPI_NPCS_FLAGS);
+ 127              		.loc 1 224 0
+ 128 0096 4FF08051 		mov	r1, #268435456
+ 129 009a 1E20     		movs	r0, #30
+ 130 009c FFF7FEFF 		bl	pio_configure_pin
+ 131              	.LVL16:
+ 132 00a0 08BD     		pop	{r3, pc}
+ 133              	.L4:
+ 134 00a2 00BF     		.align	2
+ 135              	.L3:
+ 136 00a4 50140E40 		.word	1074664528
+ 137 00a8 79000028 		.word	671088761
+ 138 00ac 59000028 		.word	671088729
+ 139 00b0 000E0E40 		.word	1074662912
+ 140 00b4 01000028 		.word	671088641
+ 141              		.cfi_endproc
+ 142              	.LFE135:
+ 144              		.section	.bss.cpu_irq_critical_section_counter,"aw",%nobits
+ 145              		.align	2
+ 148              	cpu_irq_critical_section_counter:
+ 149 0000 00000000 		.space	4
+ 150              		.section	.bss.cpu_irq_prev_interrupt_state,"aw",%nobits
+ 153              	cpu_irq_prev_interrupt_state:
+ 154 0000 00       		.space	1
+ 155              		.text
+ 156              	.Letext0:
+ 157              		.file 3 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/machine/_default_types.h"
+ 158              		.file 4 "/usr/local/gcc-arm-none-eabi-5_2-2015q4/arm-none-eabi/include/sys/_stdint.h"
+ 159              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s4b.h"
+ 160              		.file 6 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_pio.h"
+ 161              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_wdt.h"
+ 162              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h"
+ 163              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/ioport.h"
+ 164              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
+ 165              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
+ 166              		.file 12 "/home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h"
+ 167              		.file 13 "/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 init.c
-     /tmp/ccQRr8A4.s:20     .text.board_init:00000000 $t
-     /tmp/ccQRr8A4.s:25     .text.board_init:00000000 board_init
-     /tmp/ccQRr8A4.s:121    .text.board_init:00000088 $d
-     /tmp/ccQRr8A4.s:129    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccQRr8A4.s:132    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccQRr8A4.s:137    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccQRr8A4.s:138    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccwERM6J.s:20     .text.board_init:00000000 $t
+     /tmp/ccwERM6J.s:25     .text.board_init:00000000 board_init
+     /tmp/ccwERM6J.s:136    .text.board_init:000000a4 $d
+     /tmp/ccwERM6J.s:145    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccwERM6J.s:148    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccwERM6J.s:153    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccwERM6J.s:154    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
@@ -881,8 +914,8 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.interrupt_sam_nvic.h.48.062d9b5b508e1df54b17551a6cd30aa3
                            .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
                            .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
-                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
-                           .group:00000000 wm4.conf_board.h.48.a9a1c3375452fc4734a134d7ff745e00
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.16745fc48ac4fbc54e06040102b9171b
+                           .group:00000000 wm4.conf_board.h.48.33e220b86142ea87282aec7248534e16
                            .group:00000000 wm4.pio.h.48.6839f7027cbf1ef96bb233af1f2246d9
                            .group:00000000 wm4.sam_gpio.h.53.afc3161f12a06e30e82678b4b38e082b
                            .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6

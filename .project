@@ -23,4 +23,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>linker_script/flash.ld</name>
+			<type>1</type>
+			<location>/home/bekeband/workspace/OLIMEX_Start/src/sam/utils/linker_scripts/sam3s/sam3s4/gcc/flash.ld</location>
+		</link>
+	</linkedResources>
 </projectDescription>

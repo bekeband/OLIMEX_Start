@@ -1193,17 +1193,17 @@
  192              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 interrupt_sam_nvic.c
-     /tmp/ccscvMwN.s:20     .text.cpu_irq_enter_critical:00000000 $t
-     /tmp/ccscvMwN.s:25     .text.cpu_irq_enter_critical:00000000 cpu_irq_enter_critical
-     /tmp/ccscvMwN.s:98     .text.cpu_irq_enter_critical:00000030 $d
-     /tmp/ccscvMwN.s:105    .text.cpu_irq_leave_critical:00000000 $t
-     /tmp/ccscvMwN.s:110    .text.cpu_irq_leave_critical:00000000 cpu_irq_leave_critical
-     /tmp/ccscvMwN.s:159    .text.cpu_irq_leave_critical:00000024 $d
-     /tmp/ccscvMwN.s:172    .data.g_interrupt_enabled:00000000 g_interrupt_enabled
-     /tmp/ccscvMwN.s:175    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccscvMwN.s:179    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccscvMwN.s:185    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccscvMwN.s:186    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccaevxul.s:20     .text.cpu_irq_enter_critical:00000000 $t
+     /tmp/ccaevxul.s:25     .text.cpu_irq_enter_critical:00000000 cpu_irq_enter_critical
+     /tmp/ccaevxul.s:98     .text.cpu_irq_enter_critical:00000030 $d
+     /tmp/ccaevxul.s:105    .text.cpu_irq_leave_critical:00000000 $t
+     /tmp/ccaevxul.s:110    .text.cpu_irq_leave_critical:00000000 cpu_irq_leave_critical
+     /tmp/ccaevxul.s:159    .text.cpu_irq_leave_critical:00000024 $d
+     /tmp/ccaevxul.s:172    .data.g_interrupt_enabled:00000000 g_interrupt_enabled
+     /tmp/ccaevxul.s:175    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccaevxul.s:179    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccaevxul.s:185    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccaevxul.s:186    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f

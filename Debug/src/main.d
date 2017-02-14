@@ -103,10 +103,13 @@ src/main.o: ../src/main.c ../src/asf.h \
  /home/bekeband/workspace/OLIMEX_Start/src/pio_handler.h \
  /home/bekeband/workspace/OLIMEX_Start/src/spi.h \
  /home/bekeband/workspace/OLIMEX_Start/src/flash_efc.h \
- /home/bekeband/workspace/OLIMEX_Start/src/efc.h ../src/stdio_serial.h \
- ../src/conf_board.h ../src/conf_clock.h ../src/conf_spi.h \
- ../src/mdelay.h ../src/ili93xx.h ../src/compiler.h ../src/board.h \
- ../src/conf_ili93xx.h
+ /home/bekeband/workspace/OLIMEX_Start/src/efc.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/rstc.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h \
+ ../src/stdio_serial.h ../src/conf_board.h ../src/conf_clock.h \
+ ../src/conf_spi.h ../src/mdelay.h ../src/ili93xx.h ../src/compiler.h \
+ ../src/board.h ../src/conf_ili93xx.h
 
 ../src/asf.h:
 
@@ -319,6 +322,12 @@ src/main.o: ../src/main.c ../src/asf.h \
 /home/bekeband/workspace/OLIMEX_Start/src/flash_efc.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/efc.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/rstc.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h:
 
 ../src/stdio_serial.h:
 

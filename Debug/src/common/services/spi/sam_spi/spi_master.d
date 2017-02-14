@@ -1,6 +1,6 @@
 src/common/services/spi/sam_spi/spi_master.o: \
  ../src/common/services/spi/sam_spi/spi_master.c \
- ../src/common/services/spi/sam_spi/spi_master.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h \
  /home/bekeband/workspace/OLIMEX_Start/src/compiler.h \
  /home/bekeband/workspace/OLIMEX_Start/src/parts.h \
  /home/bekeband/workspace/OLIMEX_Start/src/preprocessor.h \
@@ -86,7 +86,7 @@ src/common/services/spi/sam_spi/spi_master.o: \
  /home/bekeband/workspace/OLIMEX_Start/src/spi.h \
  /home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h
 
-../src/common/services/spi/sam_spi/spi_master.h:
+/home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/compiler.h:
 

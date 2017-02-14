@@ -70,7 +70,7 @@
   44:../src/common/services/spi/sam_spi/spi_master.c ****  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
   45:../src/common/services/spi/sam_spi/spi_master.c ****  */
   46:../src/common/services/spi/sam_spi/spi_master.c **** 
-  47:../src/common/services/spi/sam_spi/spi_master.c **** #include "spi_master.h"
+  47:../src/common/services/spi/sam_spi/spi_master.c **** #include "sam_spi/spi_master.h"
   48:../src/common/services/spi/sam_spi/spi_master.c **** #if SAMG55
   49:../src/common/services/spi/sam_spi/spi_master.c **** #include "flexcom.h"
   50:../src/common/services/spi/sam_spi/spi_master.c **** #include "conf_board.h"
@@ -96,14 +96,19 @@
   70:../src/common/services/spi/sam_spi/spi_master.c ****  */
   71:../src/common/services/spi/sam_spi/spi_master.c **** #define DEFAULT_CHIP_ID 0
   72:../src/common/services/spi/sam_spi/spi_master.c **** 
-  73:../src/common/services/spi/sam_spi/spi_master.c **** /** \brief Initialize the SPI in master mode.
-  74:../src/common/services/spi/sam_spi/spi_master.c ****  *
-  75:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi  Base address of the SPI instance.
-  76:../src/common/services/spi/sam_spi/spi_master.c ****  *
-  77:../src/common/services/spi/sam_spi/spi_master.c ****  */
-  78:../src/common/services/spi/sam_spi/spi_master.c **** void spi_master_init(Spi *p_spi)
-  79:../src/common/services/spi/sam_spi/spi_master.c **** {
-  28              		.loc 1 79 0
+  73:../src/common/services/spi/sam_spi/spi_master.c **** /**
+  74:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Behavior of master with fixed selected slave, or select with TD high byte.
+  75:../src/common/services/spi/sam_spi/spi_master.c ****  */
+  76:../src/common/services/spi/sam_spi/spi_master.c **** //#define SET_VARIABLE_PERIPHERAL_SELECT
+  77:../src/common/services/spi/sam_spi/spi_master.c **** 
+  78:../src/common/services/spi/sam_spi/spi_master.c **** /** \brief Initialize the SPI in master mode.
+  79:../src/common/services/spi/sam_spi/spi_master.c ****  *
+  80:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi  Base address of the SPI instance.
+  81:../src/common/services/spi/sam_spi/spi_master.c ****  *
+  82:../src/common/services/spi/sam_spi/spi_master.c ****  */
+  83:../src/common/services/spi/sam_spi/spi_master.c **** void spi_master_init(Spi *p_spi)
+  84:../src/common/services/spi/sam_spi/spi_master.c **** {
+  28              		.loc 1 84 0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
   31              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -113,12 +118,12 @@
   35              		.cfi_offset 4, -8
   36              		.cfi_offset 14, -4
   37 0002 0446     		mov	r4, r0
-  80:../src/common/services/spi/sam_spi/spi_master.c **** #if SAMG55
-  81:../src/common/services/spi/sam_spi/spi_master.c **** 	flexcom_enable(BOARD_FLEXCOM_SPI);
-  82:../src/common/services/spi/sam_spi/spi_master.c **** 	flexcom_set_opmode(BOARD_FLEXCOM_SPI, FLEXCOM_SPI);
-  83:../src/common/services/spi/sam_spi/spi_master.c **** #else
-  84:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_enable_clock(p_spi);
-  38              		.loc 1 84 0
+  85:../src/common/services/spi/sam_spi/spi_master.c **** #if SAMG55
+  86:../src/common/services/spi/sam_spi/spi_master.c **** 	flexcom_enable(BOARD_FLEXCOM_SPI);
+  87:../src/common/services/spi/sam_spi/spi_master.c **** 	flexcom_set_opmode(BOARD_FLEXCOM_SPI, FLEXCOM_SPI);
+  88:../src/common/services/spi/sam_spi/spi_master.c **** #else
+  89:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_enable_clock(p_spi);
+  38              		.loc 1 89 0
   39 0004 FFF7FEFF 		bl	spi_enable_clock
   40              	.LVL1:
   41              	.LBB58:
@@ -493,13 +498,13 @@
   74              	.LVL5:
   75              	.LBE65:
   76              	.LBE64:
-  85:../src/common/services/spi/sam_spi/spi_master.c **** #endif
-  86:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_reset(p_spi);
-  87:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_master_mode(p_spi);
-  88:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_mode_fault_detect(p_spi);
-  89:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_loopback(p_spi);
-  90:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_peripheral_chip_select_value(p_spi, DEFAULT_CHIP_ID);
-  77              		.loc 1 90 0
+  90:../src/common/services/spi/sam_spi/spi_master.c **** #endif
+  91:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_reset(p_spi);
+  92:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_master_mode(p_spi);
+  93:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_mode_fault_detect(p_spi);
+  94:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_loopback(p_spi);
+  95:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_peripheral_chip_select_value(p_spi, DEFAULT_CHIP_ID);
+  77              		.loc 1 95 0
   78 0024 0021     		movs	r1, #0
   79 0026 2046     		mov	r0, r4
   80 0028 FFF7FEFF 		bl	spi_set_peripheral_chip_select_value
@@ -524,10 +529,14 @@
   97              	.LVL8:
   98              	.LBE69:
   99              	.LBE68:
-  91:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_fixed_peripheral_select(p_spi);
-  92:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_peripheral_select_decode(p_spi);
-  93:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_delay_between_chip_select(p_spi, CONFIG_SPI_MASTER_DELAY_BCS);
- 100              		.loc 1 93 0
+  96:../src/common/services/spi/sam_spi/spi_master.c **** #if defined(SET_VARIABLE_PERIPHERAL_SELECT)
+  97:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_variable_peripheral_select(p_spi);
+  98:../src/common/services/spi/sam_spi/spi_master.c **** #else
+  99:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_fixed_peripheral_select(p_spi);
+ 100:../src/common/services/spi/sam_spi/spi_master.c **** #endif
+ 101:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_disable_peripheral_select_decode(p_spi);
+ 102:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_delay_between_chip_select(p_spi, CONFIG_SPI_MASTER_DELAY_BCS);
+ 100              		.loc 1 102 0
  101 003c 0021     		movs	r1, #0
  102 003e 2046     		mov	r0, r4
  103 0040 FFF7FEFF 		bl	spi_set_delay_between_chip_select
@@ -542,26 +551,26 @@
  113              		.thumb_func
  115              	spi_master_setup_device:
  116              	.LFB129:
-  94:../src/common/services/spi/sam_spi/spi_master.c **** }
-  95:../src/common/services/spi/sam_spi/spi_master.c **** 
-  96:../src/common/services/spi/sam_spi/spi_master.c **** /**
-  97:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Set up an SPI device.
-  98:../src/common/services/spi/sam_spi/spi_master.c ****  *
-  99:../src/common/services/spi/sam_spi/spi_master.c ****  * The returned device descriptor structure must be passed to the driver
- 100:../src/common/services/spi/sam_spi/spi_master.c ****  * whenever that device should be used as current slave device.
- 101:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 102:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
- 103:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device    Pointer to SPI device struct that should be initialized.
- 104:../src/common/services/spi/sam_spi/spi_master.c ****  * \param flags     SPI configuration flags. Common flags for all
- 105:../src/common/services/spi/sam_spi/spi_master.c ****  *                  implementations are the SPI modes SPI_MODE_0 ...
- 106:../src/common/services/spi/sam_spi/spi_master.c ****  *                  SPI_MODE_3.
- 107:../src/common/services/spi/sam_spi/spi_master.c ****  * \param baud_rate Baud rate for communication with slave device in Hz.
- 108:../src/common/services/spi/sam_spi/spi_master.c ****  * \param sel_id    Board specific select id.
- 109:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 110:../src/common/services/spi/sam_spi/spi_master.c **** void spi_master_setup_device(Spi *p_spi, struct spi_device *device,
- 111:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_flags_t flags, uint32_t baud_rate, board_spi_select_id_t sel_id)
- 112:../src/common/services/spi/sam_spi/spi_master.c **** {
- 117              		.loc 1 112 0
+ 103:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 104:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 105:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 106:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Set up an SPI device.
+ 107:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 108:../src/common/services/spi/sam_spi/spi_master.c ****  * The returned device descriptor structure must be passed to the driver
+ 109:../src/common/services/spi/sam_spi/spi_master.c ****  * whenever that device should be used as current slave device.
+ 110:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 111:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
+ 112:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device    Pointer to SPI device struct that should be initialized.
+ 113:../src/common/services/spi/sam_spi/spi_master.c ****  * \param flags     SPI configuration flags. Common flags for all
+ 114:../src/common/services/spi/sam_spi/spi_master.c ****  *                  implementations are the SPI modes SPI_MODE_0 ...
+ 115:../src/common/services/spi/sam_spi/spi_master.c ****  *                  SPI_MODE_3.
+ 116:../src/common/services/spi/sam_spi/spi_master.c ****  * \param baud_rate Baud rate for communication with slave device in Hz.
+ 117:../src/common/services/spi/sam_spi/spi_master.c ****  * \param sel_id    Board specific select id.
+ 118:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 119:../src/common/services/spi/sam_spi/spi_master.c **** void spi_master_setup_device(Spi *p_spi, struct spi_device *device,
+ 120:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_flags_t flags, uint32_t baud_rate, board_spi_select_id_t sel_id)
+ 121:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 117              		.loc 1 121 0
  118              		.cfi_startproc
  119              		@ args = 4, pretend = 0, frame = 0
  120              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -577,11 +586,11 @@
  130 0002 0446     		mov	r4, r0
  131 0004 0D46     		mov	r5, r1
  132 0006 1646     		mov	r6, r2
- 113:../src/common/services/spi/sam_spi/spi_master.c **** #if (SAM4L)
- 114:../src/common/services/spi/sam_spi/spi_master.c ****     int16_t baud_div = spi_calc_baudrate_div(baud_rate, sysclk_get_pba_hz());
- 115:../src/common/services/spi/sam_spi/spi_master.c **** #else
- 116:../src/common/services/spi/sam_spi/spi_master.c **** 	int16_t baud_div = spi_calc_baudrate_div(baud_rate, sysclk_get_peripheral_hz());
- 133              		.loc 1 116 0
+ 122:../src/common/services/spi/sam_spi/spi_master.c **** #if (SAM4L)
+ 123:../src/common/services/spi/sam_spi/spi_master.c ****     int16_t baud_div = spi_calc_baudrate_div(baud_rate, sysclk_get_pba_hz());
+ 124:../src/common/services/spi/sam_spi/spi_master.c **** #else
+ 125:../src/common/services/spi/sam_spi/spi_master.c **** 	int16_t baud_div = spi_calc_baudrate_div(baud_rate, sysclk_get_peripheral_hz());
+ 133              		.loc 1 125 0
  134 0008 1349     		ldr	r1, .L5
  135              	.LVL11:
  136 000a 1846     		mov	r0, r3
@@ -590,52 +599,52 @@
  139              	.LVL13:
  140 0010 0746     		mov	r7, r0
  141              	.LVL14:
- 117:../src/common/services/spi/sam_spi/spi_master.c **** #endif
- 118:../src/common/services/spi/sam_spi/spi_master.c **** 	/* avoid Cppcheck Warning */
- 119:../src/common/services/spi/sam_spi/spi_master.c **** 	UNUSED(sel_id);
- 120:../src/common/services/spi/sam_spi/spi_master.c **** 	if (-1 == baud_div) {
- 121:../src/common/services/spi/sam_spi/spi_master.c **** 		Assert(0 == "Failed to find baudrate divider");
- 122:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 123:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_transfer_delay(p_spi, device->id, CONFIG_SPI_MASTER_DELAY_BS,
- 142              		.loc 1 123 0
+ 126:../src/common/services/spi/sam_spi/spi_master.c **** #endif
+ 127:../src/common/services/spi/sam_spi/spi_master.c **** 	/* avoid Cppcheck Warning */
+ 128:../src/common/services/spi/sam_spi/spi_master.c **** 	UNUSED(sel_id);
+ 129:../src/common/services/spi/sam_spi/spi_master.c **** 	if (-1 == baud_div) {
+ 130:../src/common/services/spi/sam_spi/spi_master.c **** 		Assert(0 == "Failed to find baudrate divider");
+ 131:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 132:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_transfer_delay(p_spi, device->id, CONFIG_SPI_MASTER_DELAY_BS,
+ 142              		.loc 1 132 0
  143 0012 0023     		movs	r3, #0
  144 0014 1A46     		mov	r2, r3
  145 0016 2968     		ldr	r1, [r5]
  146 0018 2046     		mov	r0, r4
  147 001a FFF7FEFF 		bl	spi_set_transfer_delay
  148              	.LVL15:
- 124:../src/common/services/spi/sam_spi/spi_master.c **** 			CONFIG_SPI_MASTER_DELAY_BCT);
- 125:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_bits_per_transfer(p_spi, device->id,
- 149              		.loc 1 125 0
+ 133:../src/common/services/spi/sam_spi/spi_master.c **** 			CONFIG_SPI_MASTER_DELAY_BCT);
+ 134:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_bits_per_transfer(p_spi, device->id,
+ 149              		.loc 1 134 0
  150 001e 0822     		movs	r2, #8
  151 0020 2968     		ldr	r1, [r5]
  152 0022 2046     		mov	r0, r4
  153 0024 FFF7FEFF 		bl	spi_set_bits_per_transfer
  154              	.LVL16:
- 126:../src/common/services/spi/sam_spi/spi_master.c **** 			CONFIG_SPI_MASTER_BITS_PER_TRANSFER);
- 127:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_baudrate_div(p_spi, device->id, baud_div);
- 155              		.loc 1 127 0
+ 135:../src/common/services/spi/sam_spi/spi_master.c **** 			CONFIG_SPI_MASTER_BITS_PER_TRANSFER);
+ 136:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_baudrate_div(p_spi, device->id, baud_div);
+ 155              		.loc 1 136 0
  156 0028 FAB2     		uxtb	r2, r7
  157 002a 2968     		ldr	r1, [r5]
  158 002c 2046     		mov	r0, r4
  159 002e FFF7FEFF 		bl	spi_set_baudrate_div
  160              	.LVL17:
- 128:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_configure_cs_behavior(p_spi, device->id, SPI_CS_KEEP_LOW);
- 161              		.loc 1 128 0
+ 137:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_configure_cs_behavior(p_spi, device->id, SPI_CS_KEEP_LOW);
+ 161              		.loc 1 137 0
  162 0032 0822     		movs	r2, #8
  163 0034 2968     		ldr	r1, [r5]
  164 0036 2046     		mov	r0, r4
  165 0038 FFF7FEFF 		bl	spi_configure_cs_behavior
  166              	.LVL18:
- 129:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_clock_polarity(p_spi, device->id, flags >> 1);
- 167              		.loc 1 129 0
+ 138:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_clock_polarity(p_spi, device->id, flags >> 1);
+ 167              		.loc 1 138 0
  168 003c 7208     		lsrs	r2, r6, #1
  169 003e 2968     		ldr	r1, [r5]
  170 0040 2046     		mov	r0, r4
  171 0042 FFF7FEFF 		bl	spi_set_clock_polarity
  172              	.LVL19:
- 130:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_clock_phase(p_spi, device->id, ((flags & 0x1) ^ 0x1));
- 173              		.loc 1 130 0
+ 139:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_clock_phase(p_spi, device->id, ((flags & 0x1) ^ 0x1));
+ 173              		.loc 1 139 0
  174 0046 86F00102 		eor	r2, r6, #1
  175 004a 02F00102 		and	r2, r2, #1
  176 004e 2968     		ldr	r1, [r5]
@@ -657,20 +666,20 @@
  193              		.thumb_func
  195              	spi_select_device:
  196              	.LFB130:
- 131:../src/common/services/spi/sam_spi/spi_master.c **** }
- 132:../src/common/services/spi/sam_spi/spi_master.c **** 
- 133:../src/common/services/spi/sam_spi/spi_master.c **** /**
- 134:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Select the given device on the SPI bus.
- 135:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 136:../src/common/services/spi/sam_spi/spi_master.c ****  * Set device specific setting and call board chip select.
- 137:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 138:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi   Base address of the SPI instance.
- 139:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device  SPI device.
- 140:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 141:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 142:../src/common/services/spi/sam_spi/spi_master.c **** void spi_select_device(Spi *p_spi, struct spi_device *device)
- 143:../src/common/services/spi/sam_spi/spi_master.c **** {
- 197              		.loc 1 143 0
+ 140:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 141:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 142:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 143:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Select the given device on the SPI bus.
+ 144:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 145:../src/common/services/spi/sam_spi/spi_master.c ****  * Set device specific setting and call board chip select.
+ 146:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 147:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi   Base address of the SPI instance.
+ 148:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device  SPI device.
+ 149:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 150:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 151:../src/common/services/spi/sam_spi/spi_master.c **** void spi_select_device(Spi *p_spi, struct spi_device *device)
+ 152:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 197              		.loc 1 152 0
  198              		.cfi_startproc
  199              		@ args = 0, pretend = 0, frame = 0
  200              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -694,31 +703,31 @@
  216              	.LVL24:
  217              	.LBE71:
  218              	.LBE70:
- 144:../src/common/services/spi/sam_spi/spi_master.c **** 	if (spi_get_peripheral_select_decode_setting(p_spi)) {
- 219              		.loc 1 144 0
+ 153:../src/common/services/spi/sam_spi/spi_master.c **** 	if (spi_get_peripheral_select_decode_setting(p_spi)) {
+ 219              		.loc 1 153 0
  220 000c 2BB1     		cbz	r3, .L9
- 145:../src/common/services/spi/sam_spi/spi_master.c **** 		if (device->id < MAX_NUM_WITH_DECODER) {
- 221              		.loc 1 145 0
+ 154:../src/common/services/spi/sam_spi/spi_master.c **** 		if (device->id < MAX_NUM_WITH_DECODER) {
+ 221              		.loc 1 154 0
  222 000e 0968     		ldr	r1, [r1]
  223              	.LVL25:
  224 0010 0F29     		cmp	r1, #15
  225 0012 0AD8     		bhi	.L7
- 146:../src/common/services/spi/sam_spi/spi_master.c **** 			spi_set_peripheral_chip_select_value(p_spi, device->id);
- 226              		.loc 1 146 0
+ 155:../src/common/services/spi/sam_spi/spi_master.c **** 			spi_set_peripheral_chip_select_value(p_spi, device->id);
+ 226              		.loc 1 155 0
  227 0014 FFF7FEFF 		bl	spi_set_peripheral_chip_select_value
  228              	.LVL26:
  229 0018 08BD     		pop	{r3, pc}
  230              	.LVL27:
  231              	.L9:
- 147:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 148:../src/common/services/spi/sam_spi/spi_master.c **** 	} else {
- 149:../src/common/services/spi/sam_spi/spi_master.c **** 		if (device->id < MAX_NUM_WITHOUT_DECODER) {
- 232              		.loc 1 149 0
+ 156:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 157:../src/common/services/spi/sam_spi/spi_master.c **** 	} else {
+ 158:../src/common/services/spi/sam_spi/spi_master.c **** 		if (device->id < MAX_NUM_WITHOUT_DECODER) {
+ 232              		.loc 1 158 0
  233 001a 0B68     		ldr	r3, [r1]
  234 001c 032B     		cmp	r3, #3
  235 001e 04D8     		bhi	.L7
- 150:../src/common/services/spi/sam_spi/spi_master.c **** 			spi_set_peripheral_chip_select_value(p_spi, (~(1 << device->id)));
- 236              		.loc 1 150 0
+ 159:../src/common/services/spi/sam_spi/spi_master.c **** 			spi_set_peripheral_chip_select_value(p_spi, (~(1 << device->id)));
+ 236              		.loc 1 159 0
  237 0020 0121     		movs	r1, #1
  238              	.LVL28:
  239 0022 9940     		lsls	r1, r1, r3
@@ -736,23 +745,23 @@
  252              		.thumb_func
  254              	spi_deselect_device:
  255              	.LFB131:
- 151:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 152:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 153:../src/common/services/spi/sam_spi/spi_master.c **** }
- 154:../src/common/services/spi/sam_spi/spi_master.c **** 
- 155:../src/common/services/spi/sam_spi/spi_master.c **** /**
- 156:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Deselect the given device on the SPI bus.
- 157:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 158:../src/common/services/spi/sam_spi/spi_master.c ****  * Call board chip deselect.
- 159:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 160:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi   Base address of the SPI instance.
- 161:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device  SPI device.
- 162:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 163:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
- 164:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 165:../src/common/services/spi/sam_spi/spi_master.c **** void spi_deselect_device(Spi *p_spi, struct spi_device *device)
- 166:../src/common/services/spi/sam_spi/spi_master.c **** {
- 256              		.loc 1 166 0
+ 160:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 161:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 162:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 163:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 164:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 165:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Deselect the given device on the SPI bus.
+ 166:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 167:../src/common/services/spi/sam_spi/spi_master.c ****  * Call board chip deselect.
+ 168:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 169:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi   Base address of the SPI instance.
+ 170:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device  SPI device.
+ 171:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 172:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
+ 173:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 174:../src/common/services/spi/sam_spi/spi_master.c **** void spi_deselect_device(Spi *p_spi, struct spi_device *device)
+ 175:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 256              		.loc 1 175 0
  257              		.cfi_startproc
  258              		@ args = 0, pretend = 0, frame = 0
  259              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -849,17 +858,17 @@
  277              	.LVL32:
  278              	.LBE73:
  279              	.LBE72:
- 167:../src/common/services/spi/sam_spi/spi_master.c **** 	/* avoid Cppcheck Warning */
- 168:../src/common/services/spi/sam_spi/spi_master.c **** 	UNUSED(device);
- 169:../src/common/services/spi/sam_spi/spi_master.c **** 	while (!spi_is_tx_empty(p_spi)) {
- 280              		.loc 1 169 0
+ 176:../src/common/services/spi/sam_spi/spi_master.c **** 	/* avoid Cppcheck Warning */
+ 177:../src/common/services/spi/sam_spi/spi_master.c **** 	UNUSED(device);
+ 178:../src/common/services/spi/sam_spi/spi_master.c **** 	while (!spi_is_tx_empty(p_spi)) {
+ 280              		.loc 1 178 0
  281 000e 002B     		cmp	r3, #0
  282 0010 F8D0     		beq	.L14
- 170:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 171:../src/common/services/spi/sam_spi/spi_master.c **** 
- 172:../src/common/services/spi/sam_spi/spi_master.c **** 	// Assert all lines; no peripheral is selected.
- 173:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_peripheral_chip_select_value(p_spi, NONE_CHIP_SELECT_ID);
- 283              		.loc 1 173 0
+ 179:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 180:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 181:../src/common/services/spi/sam_spi/spi_master.c **** 	// Assert all lines; no peripheral is selected.
+ 182:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_peripheral_chip_select_value(p_spi, NONE_CHIP_SELECT_ID);
+ 283              		.loc 1 182 0
  284 0012 0F21     		movs	r1, #15
  285              	.LVL33:
  286 0014 2046     		mov	r0, r4
@@ -885,27 +894,28 @@
  306              		.thumb_func
  308              	spi_write_packet:
  309              	.LFB132:
- 174:../src/common/services/spi/sam_spi/spi_master.c **** 
- 175:../src/common/services/spi/sam_spi/spi_master.c **** 	// Last transfer, so de-assert the current NPCS if CSAAT is set.
- 176:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_lastxfer(p_spi);
- 177:../src/common/services/spi/sam_spi/spi_master.c **** 
- 178:../src/common/services/spi/sam_spi/spi_master.c **** }
- 179:../src/common/services/spi/sam_spi/spi_master.c **** 
- 180:../src/common/services/spi/sam_spi/spi_master.c **** /**
- 181:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Send a sequence of bytes to an SPI device.
- 182:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 183:../src/common/services/spi/sam_spi/spi_master.c ****  * Received bytes on the SPI bus are discarded.
- 184:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 185:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
- 186:../src/common/services/spi/sam_spi/spi_master.c ****  * \param data      Data buffer to write.
- 187:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be written.
- 188:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 189:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
- 190:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 191:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_write_packet(Spi *p_spi, const uint8_t *data,
- 192:../src/common/services/spi/sam_spi/spi_master.c **** 		size_t len)
- 193:../src/common/services/spi/sam_spi/spi_master.c **** {
- 310              		.loc 1 193 0
+ 183:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 184:../src/common/services/spi/sam_spi/spi_master.c **** 	// Last transfer, so de-assert the current NPCS if CSAAT is set.
+ 185:../src/common/services/spi/sam_spi/spi_master.c **** 	spi_set_lastxfer(p_spi);
+ 186:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 187:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 188:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 189:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 190:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Send a sequence of bytes to an SPI device.
+ 191:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 192:../src/common/services/spi/sam_spi/spi_master.c ****  * Received bytes on the SPI bus are discarded.
+ 193:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 194:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
+ 195:../src/common/services/spi/sam_spi/spi_master.c ****  * \param data      Data buffer to write.
+ 196:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be written.
+ 197:../src/common/services/spi/sam_spi/spi_master.c ****  * \param device    SPI device for peripheral select information.
+ 198:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first, except if defined SET_VARIABLE_
+ 199:../src/common/services/spi/sam_spi/spi_master.c ****  * selected device to write from device.id field.
+ 200:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 201:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_write_packet(Spi *p_spi, const uint8_t *data, struct spi_device *device,
+ 202:../src/common/services/spi/sam_spi/spi_master.c **** 		size_t len)
+ 203:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 310              		.loc 1 203 0
  311              		.cfi_startproc
  312              		@ args = 0, pretend = 0, frame = 0
  313              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -916,25 +926,25 @@
  318              		.cfi_offset 4, -8
  319              		.cfi_offset 5, -4
  320              	.LVL38:
- 194:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
- 195:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
- 321              		.loc 1 195 0
+ 204:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 205:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
+ 321              		.loc 1 205 0
  322 0002 0025     		movs	r5, #0
- 196:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
- 197:../src/common/services/spi/sam_spi/spi_master.c **** 
- 198:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
- 323              		.loc 1 198 0
+ 206:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
+ 207:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 208:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
+ 323              		.loc 1 208 0
  324 0004 0FE0     		b	.L17
  325              	.LVL39:
  326              	.L20:
- 199:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 200:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
- 201:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 327              		.loc 1 201 0
- 328 0006 631E     		subs	r3, r4, #1
+ 209:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 210:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
+ 211:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 327              		.loc 1 211 0
+ 328 0006 621E     		subs	r2, r4, #1
  329              	.LVL40:
  330 0008 8CB1     		cbz	r4, .L22
- 331 000a 1C46     		mov	r4, r3
+ 331 000a 1446     		mov	r4, r2
  332 000c 00E0     		b	.L21
  333              	.LVL41:
  334              	.L23:
@@ -960,67 +970,71 @@
  424:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** {
  425:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 	if (p_spi->SPI_SR & SPI_SR_TDRE) {
  340              		.loc 2 425 0
- 341 0010 0369     		ldr	r3, [r0, #16]
- 342 0012 13F00203 		ands	r3, r3, #2
+ 341 0010 0269     		ldr	r2, [r0, #16]
+ 342 0012 12F00202 		ands	r2, r2, #2
  343 0016 00D0     		beq	.L19
  426:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 1;
  344              		.loc 2 426 0
- 345 0018 0123     		movs	r3, #1
+ 345 0018 0122     		movs	r2, #1
  346              	.L19:
  347              	.LVL43:
  348              	.LBE77:
  349              	.LBE76:
- 200:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 350              		.loc 1 200 0
- 351 001a 002B     		cmp	r3, #0
+ 210:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 350              		.loc 1 210 0
+ 351 001a 002A     		cmp	r2, #0
  352 001c F3D0     		beq	.L20
- 202:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
- 203:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 204:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 205:../src/common/services/spi/sam_spi/spi_master.c **** 		val = data[i];
- 353              		.loc 1 205 0
- 354 001e 4B5D     		ldrb	r3, [r1, r5]	@ zero_extendqisi2
+ 212:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
+ 213:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 214:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 215:../src/common/services/spi/sam_spi/spi_master.c **** 		val = data[i];
+ 353              		.loc 1 215 0
+ 354 001e 4A5D     		ldrb	r2, [r1, r5]	@ zero_extendqisi2
  355              	.LVL44:
  356              	.LBB78:
  357              	.LBB79:
  358              	.LBB80:
  384:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
  359              		.loc 2 384 0
- 360 0020 C360     		str	r3, [r0, #12]
+ 360 0020 C260     		str	r2, [r0, #12]
  361              	.LVL45:
  362              	.LBE80:
  363              	.LBE79:
  364              	.LBE78:
- 206:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, val);
- 207:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
- 365              		.loc 1 207 0
+ 216:../src/common/services/spi/sam_spi/spi_master.c **** #if defined (SET_VARIABLE_PERIPHERAL_SELECT)
+ 217:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write(BOARD_ILI9341_SPI, val, device->id, 0);
+ 218:../src/common/services/spi/sam_spi/spi_master.c **** #else
+ 219:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, val);
+ 220:../src/common/services/spi/sam_spi/spi_master.c **** #endif
+ 221:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
+ 365              		.loc 1 221 0
  366 0022 0135     		adds	r5, r5, #1
  367              	.LVL46:
- 208:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
- 368              		.loc 1 208 0
- 369 0024 013A     		subs	r2, r2, #1
+ 222:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
+ 368              		.loc 1 222 0
+ 369 0024 013B     		subs	r3, r3, #1
  370              	.LVL47:
  371              	.L17:
- 198:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 372              		.loc 1 198 0
- 373 0026 002A     		cmp	r2, #0
+ 208:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 372              		.loc 1 208 0
+ 373 0026 002B     		cmp	r3, #0
  374 0028 F1D1     		bne	.L23
- 209:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 210:../src/common/services/spi/sam_spi/spi_master.c **** 
- 211:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
- 375              		.loc 1 211 0
+ 223:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 224:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 225:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
+ 375              		.loc 1 225 0
  376 002a 0020     		movs	r0, #0
  377              	.LVL48:
  378 002c 00E0     		b	.L18
  379              	.LVL49:
  380              	.L22:
- 202:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 381              		.loc 1 202 0
+ 212:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 381              		.loc 1 212 0
  382 002e FD20     		movs	r0, #253
  383              	.LVL50:
  384              	.L18:
- 212:../src/common/services/spi/sam_spi/spi_master.c **** }
- 385              		.loc 1 212 0
+ 226:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 385              		.loc 1 226 0
  386 0030 40B2     		sxtb	r0, r0
  387 0032 30BC     		pop	{r4, r5}
  388              		.cfi_restore 5
@@ -1041,21 +1055,21 @@
  404              		.thumb_func
  406              	spi_read_packet:
  407              	.LFB133:
- 213:../src/common/services/spi/sam_spi/spi_master.c **** 
- 214:../src/common/services/spi/sam_spi/spi_master.c **** /**
- 215:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Receive a sequence of bytes from an SPI device.
- 216:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 217:../src/common/services/spi/sam_spi/spi_master.c ****  * All bytes sent out on SPI bus are sent as value 0.
- 218:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 219:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
- 220:../src/common/services/spi/sam_spi/spi_master.c ****  * \param data      Data buffer to read.
- 221:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be read.
- 222:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 223:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
- 224:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 225:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_read_packet(Spi *p_spi, uint8_t *data, size_t len)
- 226:../src/common/services/spi/sam_spi/spi_master.c **** {
- 408              		.loc 1 226 0
+ 227:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 228:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 229:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Receive a sequence of bytes from an SPI device.
+ 230:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 231:../src/common/services/spi/sam_spi/spi_master.c ****  * All bytes sent out on SPI bus are sent as value 0.
+ 232:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 233:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
+ 234:../src/common/services/spi/sam_spi/spi_master.c ****  * \param data      Data buffer to read.
+ 235:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be read.
+ 236:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 237:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
+ 238:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 239:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_read_packet(Spi *p_spi, uint8_t *data, struct spi_device *device, size_t len)
+ 240:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 408              		.loc 1 240 0
  409              		.cfi_startproc
  410              		@ args = 0, pretend = 0, frame = 0
  411              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -1067,25 +1081,25 @@
  417              		.cfi_offset 5, -8
  418              		.cfi_offset 6, -4
  419              	.LVL53:
- 227:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
- 228:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
- 229:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
- 420              		.loc 1 229 0
+ 241:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 242:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
+ 243:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
+ 420              		.loc 1 243 0
  421 0002 0026     		movs	r6, #0
- 230:../src/common/services/spi/sam_spi/spi_master.c **** 
- 231:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
- 422              		.loc 1 231 0
+ 244:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 245:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
+ 422              		.loc 1 245 0
  423 0004 20E0     		b	.L28
  424              	.LVL54:
  425              	.L31:
- 232:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 233:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
- 234:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 426              		.loc 1 234 0
- 427 0006 631E     		subs	r3, r4, #1
+ 246:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 247:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
+ 248:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 426              		.loc 1 248 0
+ 427 0006 621E     		subs	r2, r4, #1
  428              	.LVL55:
  429 0008 14B3     		cbz	r4, .L36
- 430 000a 1C46     		mov	r4, r3
+ 430 000a 1446     		mov	r4, r2
  431 000c 00E0     		b	.L35
  432              	.LVL56:
  433              	.L39:
@@ -1096,18 +1110,18 @@
  438              	.LBB82:
  425:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** 		return 1;
  439              		.loc 2 425 0
- 440 0010 0369     		ldr	r3, [r0, #16]
- 441 0012 13F00203 		ands	r3, r3, #2
+ 440 0010 0269     		ldr	r2, [r0, #16]
+ 441 0012 12F00202 		ands	r2, r2, #2
  442 0016 00D0     		beq	.L30
  443              		.loc 2 426 0
- 444 0018 0123     		movs	r3, #1
+ 444 0018 0122     		movs	r2, #1
  445              	.L30:
  446              	.LVL58:
  447              	.LBE82:
  448              	.LBE81:
- 233:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 449              		.loc 1 233 0
- 450 001a 002B     		cmp	r3, #0
+ 247:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 449              		.loc 1 247 0
+ 450 001a 002A     		cmp	r2, #0
  451 001c F3D0     		beq	.L31
  452              	.LVL59:
  453              	.LBB83:
@@ -1115,31 +1129,35 @@
  455              	.LBB85:
  384:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
  456              		.loc 2 384 0
- 457 001e FF23     		movs	r3, #255
- 458 0020 C360     		str	r3, [r0, #12]
+ 457 001e FF22     		movs	r2, #255
+ 458 0020 C260     		str	r2, [r0, #12]
  459              	.LVL60:
  460              	.LBE85:
  461              	.LBE84:
  462              	.LBE83:
- 235:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
- 236:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 237:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 238:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, CONFIG_SPI_MASTER_DUMMY);
- 239:../src/common/services/spi/sam_spi/spi_master.c **** 
- 240:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 463              		.loc 1 240 0
- 464 0022 0E4B     		ldr	r3, .L41
- 241:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_rx_ready(p_spi)) {
- 465              		.loc 1 241 0
+ 249:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
+ 250:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 251:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 252:../src/common/services/spi/sam_spi/spi_master.c **** #if defined (SET_VARIABLE_PERIPHERAL_SELECT)
+ 253:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write(BOARD_ILI9341_SPI, CONFIG_SPI_MASTER_DUMMY, device->id, 0);
+ 254:../src/common/services/spi/sam_spi/spi_master.c **** #else
+ 255:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, CONFIG_SPI_MASTER_DUMMY);
+ 256:../src/common/services/spi/sam_spi/spi_master.c **** #endif
+ 257:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 258:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 463              		.loc 1 258 0
+ 464 0022 0E4A     		ldr	r2, .L41
+ 259:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_rx_ready(p_spi)) {
+ 465              		.loc 1 259 0
  466 0024 02E0     		b	.L32
  467              	.LVL61:
  468              	.L34:
- 242:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 469              		.loc 1 242 0
- 470 0026 5C1E     		subs	r4, r3, #1
+ 260:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 469              		.loc 1 260 0
+ 470 0026 541E     		subs	r4, r2, #1
  471              	.LVL62:
- 472 0028 A3B1     		cbz	r3, .L37
- 473 002a 2346     		mov	r3, r4
+ 472 0028 A2B1     		cbz	r2, .L37
+ 473 002a 2246     		mov	r2, r4
  474              	.LVL63:
  475              	.L32:
  476              	.LBB86:
@@ -1194,8 +1212,8 @@
  490              	.LVL64:
  491              	.LBE87:
  492              	.LBE86:
- 241:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 493              		.loc 1 241 0
+ 259:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 493              		.loc 1 259 0
  494 003c 002C     		cmp	r4, #0
  495 003e F2D0     		beq	.L34
  496              	.LVL65:
@@ -1205,56 +1223,56 @@
  500              	.LBB91:
  395:/home/bekeband/workspace/OLIMEX_Start/src/spi.h **** }
  501              		.loc 2 395 0
- 502 0040 8368     		ldr	r3, [r0, #8]
+ 502 0040 8268     		ldr	r2, [r0, #8]
  503              	.LVL66:
  504              	.LBE91:
  505              	.LBE90:
  506              	.LBE89:
  507              	.LBE88:
- 243:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
- 244:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 245:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 246:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_read_single(p_spi, &val);
- 247:../src/common/services/spi/sam_spi/spi_master.c **** 
- 248:../src/common/services/spi/sam_spi/spi_master.c **** 		data[i] = val;
- 508              		.loc 1 248 0
- 509 0042 8B55     		strb	r3, [r1, r6]
- 249:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
- 510              		.loc 1 249 0
+ 261:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
+ 262:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 263:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 264:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_read_single(p_spi, &val);
+ 265:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 266:../src/common/services/spi/sam_spi/spi_master.c **** 		data[i] = val;
+ 508              		.loc 1 266 0
+ 509 0042 8A55     		strb	r2, [r1, r6]
+ 267:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
+ 510              		.loc 1 267 0
  511 0044 0136     		adds	r6, r6, #1
  512              	.LVL67:
- 250:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
- 513              		.loc 1 250 0
- 514 0046 013A     		subs	r2, r2, #1
+ 268:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
+ 513              		.loc 1 268 0
+ 514 0046 013B     		subs	r3, r3, #1
  515              	.LVL68:
  516              	.L28:
- 231:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 517              		.loc 1 231 0
- 518 0048 002A     		cmp	r2, #0
+ 245:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 517              		.loc 1 245 0
+ 518 0048 002B     		cmp	r3, #0
  519 004a E0D1     		bne	.L39
- 251:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 252:../src/common/services/spi/sam_spi/spi_master.c **** 
- 253:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
- 520              		.loc 1 253 0
+ 269:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 270:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 271:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
+ 520              		.loc 1 271 0
  521 004c 0020     		movs	r0, #0
  522              	.LVL69:
  523 004e 02E0     		b	.L29
  524              	.LVL70:
  525              	.L36:
- 235:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 526              		.loc 1 235 0
+ 249:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 526              		.loc 1 249 0
  527 0050 FD20     		movs	r0, #253
  528              	.LVL71:
  529 0052 00E0     		b	.L29
  530              	.LVL72:
  531              	.L37:
- 243:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 532              		.loc 1 243 0
+ 261:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 532              		.loc 1 261 0
  533 0054 FD20     		movs	r0, #253
  534              	.LVL73:
  535              	.L29:
- 254:../src/common/services/spi/sam_spi/spi_master.c **** }
- 536              		.loc 1 254 0
+ 272:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 536              		.loc 1 272 0
  537 0056 40B2     		sxtb	r0, r0
  538 0058 70BC     		pop	{r4, r5, r6}
  539              		.cfi_restore 6
@@ -1276,20 +1294,20 @@
  556              		.thumb_func
  558              	spi_transceive_packet:
  559              	.LFB134:
- 255:../src/common/services/spi/sam_spi/spi_master.c **** 
- 256:../src/common/services/spi/sam_spi/spi_master.c **** /**
- 257:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Send and receive a sequence of bytes from an SPI device.
- 258:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 259:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
- 260:../src/common/services/spi/sam_spi/spi_master.c ****  * \param tx_data   Data buffer to send.
- 261:../src/common/services/spi/sam_spi/spi_master.c ****  * \param rx_data   Data buffer to read.
- 262:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be read.
- 263:../src/common/services/spi/sam_spi/spi_master.c ****  *
- 264:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
- 265:../src/common/services/spi/sam_spi/spi_master.c ****  */
- 266:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_transceive_packet(Spi *p_spi, uint8_t *tx_data, uint8_t *rx_data, size_t len)
- 267:../src/common/services/spi/sam_spi/spi_master.c **** {
- 560              		.loc 1 267 0
+ 273:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 274:../src/common/services/spi/sam_spi/spi_master.c **** /**
+ 275:../src/common/services/spi/sam_spi/spi_master.c ****  * \brief Send and receive a sequence of bytes from an SPI device.
+ 276:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 277:../src/common/services/spi/sam_spi/spi_master.c ****  * \param p_spi     Base address of the SPI instance.
+ 278:../src/common/services/spi/sam_spi/spi_master.c ****  * \param tx_data   Data buffer to send.
+ 279:../src/common/services/spi/sam_spi/spi_master.c ****  * \param rx_data   Data buffer to read.
+ 280:../src/common/services/spi/sam_spi/spi_master.c ****  * \param len       Length of data to be read.
+ 281:../src/common/services/spi/sam_spi/spi_master.c ****  *
+ 282:../src/common/services/spi/sam_spi/spi_master.c ****  * \pre SPI device must be selected with spi_select_device() first.
+ 283:../src/common/services/spi/sam_spi/spi_master.c ****  */
+ 284:../src/common/services/spi/sam_spi/spi_master.c **** status_code_t spi_transceive_packet(Spi *p_spi, uint8_t *tx_data, uint8_t *rx_data, size_t len)
+ 285:../src/common/services/spi/sam_spi/spi_master.c **** {
+ 560              		.loc 1 285 0
  561              		.cfi_startproc
  562              		@ args = 0, pretend = 0, frame = 0
  563              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -1302,21 +1320,21 @@
  570              		.cfi_offset 6, -8
  571              		.cfi_offset 7, -4
  572              	.LVL76:
- 268:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
- 269:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
- 270:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
- 573              		.loc 1 270 0
+ 286:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 287:../src/common/services/spi/sam_spi/spi_master.c **** 	uint8_t val;
+ 288:../src/common/services/spi/sam_spi/spi_master.c **** 	uint32_t i = 0;
+ 573              		.loc 1 288 0
  574 0002 0027     		movs	r7, #0
- 271:../src/common/services/spi/sam_spi/spi_master.c **** 
- 272:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
- 575              		.loc 1 272 0
+ 289:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 290:../src/common/services/spi/sam_spi/spi_master.c **** 	while (len) {
+ 575              		.loc 1 290 0
  576 0004 20E0     		b	.L44
  577              	.LVL77:
  578              	.L47:
- 273:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 274:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
- 275:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 579              		.loc 1 275 0
+ 291:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 292:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_tx_ready(p_spi)) {
+ 293:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 579              		.loc 1 293 0
  580 0006 6C1E     		subs	r4, r5, #1
  581              	.LVL78:
  582 0008 15B3     		cbz	r5, .L52
@@ -1341,15 +1359,15 @@
  599              	.LVL81:
  600              	.LBE93:
  601              	.LBE92:
- 274:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 602              		.loc 1 274 0
+ 292:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 602              		.loc 1 292 0
  603 001a 002C     		cmp	r4, #0
  604 001c F3D0     		beq	.L47
- 276:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
- 277:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 278:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 279:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, tx_data[i]);
- 605              		.loc 1 279 0
+ 294:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
+ 295:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 296:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 297:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_write_single(p_spi, tx_data[i]);
+ 605              		.loc 1 297 0
  606 001e CC5D     		ldrb	r4, [r1, r7]	@ zero_extendqisi2
  607              	.LVL82:
  608              	.LBB94:
@@ -1362,17 +1380,17 @@
  614              	.LBE96:
  615              	.LBE95:
  616              	.LBE94:
- 280:../src/common/services/spi/sam_spi/spi_master.c **** 
- 281:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 617              		.loc 1 281 0
+ 298:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 299:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 617              		.loc 1 299 0
  618 0022 0E4C     		ldr	r4, .L57
- 282:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_rx_ready(p_spi)) {
- 619              		.loc 1 282 0
+ 300:../src/common/services/spi/sam_spi/spi_master.c **** 		while (!spi_is_rx_ready(p_spi)) {
+ 619              		.loc 1 300 0
  620 0024 02E0     		b	.L48
  621              	.LVL84:
  622              	.L50:
- 283:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 623              		.loc 1 283 0
+ 301:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 623              		.loc 1 301 0
  624 0026 651E     		subs	r5, r4, #1
  625              	.LVL85:
  626 0028 A4B1     		cbz	r4, .L53
@@ -1398,8 +1416,8 @@
  644              	.LVL87:
  645              	.LBE98:
  646              	.LBE97:
- 282:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
- 647              		.loc 1 282 0
+ 300:../src/common/services/spi/sam_spi/spi_master.c **** 			if (!timeout--) {
+ 647              		.loc 1 300 0
  648 003c 002D     		cmp	r5, #0
  649 003e F2D0     		beq	.L50
  650              	.LVL88:
@@ -1415,50 +1433,50 @@
  659              	.LBE101:
  660              	.LBE100:
  661              	.LBE99:
- 284:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
- 285:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 286:../src/common/services/spi/sam_spi/spi_master.c **** 		}
- 287:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_read_single(p_spi, &val);
- 288:../src/common/services/spi/sam_spi/spi_master.c **** 
- 289:../src/common/services/spi/sam_spi/spi_master.c **** 		rx_data[i] = val;
- 662              		.loc 1 289 0
+ 302:../src/common/services/spi/sam_spi/spi_master.c **** 				return ERR_TIMEOUT;
+ 303:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 304:../src/common/services/spi/sam_spi/spi_master.c **** 		}
+ 305:../src/common/services/spi/sam_spi/spi_master.c **** 		spi_read_single(p_spi, &val);
+ 306:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 307:../src/common/services/spi/sam_spi/spi_master.c **** 		rx_data[i] = val;
+ 662              		.loc 1 307 0
  663 0042 D455     		strb	r4, [r2, r7]
- 290:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
- 664              		.loc 1 290 0
+ 308:../src/common/services/spi/sam_spi/spi_master.c **** 		i++;
+ 664              		.loc 1 308 0
  665 0044 0137     		adds	r7, r7, #1
  666              	.LVL90:
- 291:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
- 667              		.loc 1 291 0
+ 309:../src/common/services/spi/sam_spi/spi_master.c **** 		len--;
+ 667              		.loc 1 309 0
  668 0046 013B     		subs	r3, r3, #1
  669              	.LVL91:
  670              	.L44:
- 272:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
- 671              		.loc 1 272 0
+ 290:../src/common/services/spi/sam_spi/spi_master.c **** 		timeout = SPI_TIMEOUT;
+ 671              		.loc 1 290 0
  672 0048 002B     		cmp	r3, #0
  673 004a E0D1     		bne	.L55
- 292:../src/common/services/spi/sam_spi/spi_master.c **** 	}
- 293:../src/common/services/spi/sam_spi/spi_master.c **** 
- 294:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
- 674              		.loc 1 294 0
+ 310:../src/common/services/spi/sam_spi/spi_master.c **** 	}
+ 311:../src/common/services/spi/sam_spi/spi_master.c **** 
+ 312:../src/common/services/spi/sam_spi/spi_master.c **** 	return STATUS_OK;
+ 674              		.loc 1 312 0
  675 004c 0020     		movs	r0, #0
  676              	.LVL92:
  677 004e 02E0     		b	.L45
  678              	.LVL93:
  679              	.L52:
- 276:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 680              		.loc 1 276 0
+ 294:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 680              		.loc 1 294 0
  681 0050 FD20     		movs	r0, #253
  682              	.LVL94:
  683 0052 00E0     		b	.L45
  684              	.LVL95:
  685              	.L53:
- 284:../src/common/services/spi/sam_spi/spi_master.c **** 			}
- 686              		.loc 1 284 0
+ 302:../src/common/services/spi/sam_spi/spi_master.c **** 			}
+ 686              		.loc 1 302 0
  687 0054 FD20     		movs	r0, #253
  688              	.LVL96:
  689              	.L45:
- 295:../src/common/services/spi/sam_spi/spi_master.c **** }
- 690              		.loc 1 295 0
+ 313:../src/common/services/spi/sam_spi/spi_master.c **** }
+ 690              		.loc 1 313 0
  691 0056 40B2     		sxtb	r0, r0
  692 0058 F0BC     		pop	{r4, r5, r6, r7}
  693              		.cfi_restore 7
@@ -1490,34 +1508,34 @@
  724              		.file 7 "/home/bekeband/workspace/OLIMEX_Start/src/component/component_spi.h"
  725              		.file 8 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/pll.h"
  726              		.file 9 "/home/bekeband/workspace/OLIMEX_Start/src/status_codes.h"
- 727              		.file 10 "../src/common/services/spi/sam_spi/spi_master.h"
+ 727              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h"
  728              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h"
  729              		.file 12 "/home/bekeband/workspace/OLIMEX_Start/src/interrupt/interrupt_sam_nvic.h"
  730              		.file 13 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 spi_master.c
-     /tmp/cc8pl1gH.s:20     .text.spi_master_init:00000000 $t
-     /tmp/cc8pl1gH.s:25     .text.spi_master_init:00000000 spi_master_init
-     /tmp/cc8pl1gH.s:110    .text.spi_master_setup_device:00000000 $t
-     /tmp/cc8pl1gH.s:115    .text.spi_master_setup_device:00000000 spi_master_setup_device
-     /tmp/cc8pl1gH.s:185    .text.spi_master_setup_device:00000058 $d
-     /tmp/cc8pl1gH.s:190    .text.spi_select_device:00000000 $t
-     /tmp/cc8pl1gH.s:195    .text.spi_select_device:00000000 spi_select_device
-     /tmp/cc8pl1gH.s:249    .text.spi_deselect_device:00000000 $t
-     /tmp/cc8pl1gH.s:254    .text.spi_deselect_device:00000000 spi_deselect_device
-     /tmp/cc8pl1gH.s:303    .text.spi_write_packet:00000000 $t
-     /tmp/cc8pl1gH.s:308    .text.spi_write_packet:00000000 spi_write_packet
-     /tmp/cc8pl1gH.s:396    .text.spi_write_packet:00000038 $d
-     /tmp/cc8pl1gH.s:401    .text.spi_read_packet:00000000 $t
-     /tmp/cc8pl1gH.s:406    .text.spi_read_packet:00000000 spi_read_packet
-     /tmp/cc8pl1gH.s:548    .text.spi_read_packet:0000005c $d
-     /tmp/cc8pl1gH.s:553    .text.spi_transceive_packet:00000000 $t
-     /tmp/cc8pl1gH.s:558    .text.spi_transceive_packet:00000000 spi_transceive_packet
-     /tmp/cc8pl1gH.s:703    .text.spi_transceive_packet:0000005c $d
-     /tmp/cc8pl1gH.s:708    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/cc8pl1gH.s:711    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/cc8pl1gH.s:716    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/cc8pl1gH.s:717    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccUPfpV9.s:20     .text.spi_master_init:00000000 $t
+     /tmp/ccUPfpV9.s:25     .text.spi_master_init:00000000 spi_master_init
+     /tmp/ccUPfpV9.s:110    .text.spi_master_setup_device:00000000 $t
+     /tmp/ccUPfpV9.s:115    .text.spi_master_setup_device:00000000 spi_master_setup_device
+     /tmp/ccUPfpV9.s:185    .text.spi_master_setup_device:00000058 $d
+     /tmp/ccUPfpV9.s:190    .text.spi_select_device:00000000 $t
+     /tmp/ccUPfpV9.s:195    .text.spi_select_device:00000000 spi_select_device
+     /tmp/ccUPfpV9.s:249    .text.spi_deselect_device:00000000 $t
+     /tmp/ccUPfpV9.s:254    .text.spi_deselect_device:00000000 spi_deselect_device
+     /tmp/ccUPfpV9.s:303    .text.spi_write_packet:00000000 $t
+     /tmp/ccUPfpV9.s:308    .text.spi_write_packet:00000000 spi_write_packet
+     /tmp/ccUPfpV9.s:396    .text.spi_write_packet:00000038 $d
+     /tmp/ccUPfpV9.s:401    .text.spi_read_packet:00000000 $t
+     /tmp/ccUPfpV9.s:406    .text.spi_read_packet:00000000 spi_read_packet
+     /tmp/ccUPfpV9.s:548    .text.spi_read_packet:0000005c $d
+     /tmp/ccUPfpV9.s:553    .text.spi_transceive_packet:00000000 $t
+     /tmp/ccUPfpV9.s:558    .text.spi_transceive_packet:00000000 spi_transceive_packet
+     /tmp/ccUPfpV9.s:703    .text.spi_transceive_packet:0000005c $d
+     /tmp/ccUPfpV9.s:708    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccUPfpV9.s:711    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccUPfpV9.s:716    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccUPfpV9.s:717    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
@@ -1618,7 +1636,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.compiler.h.430.149e09620daad34df46237982e03ccfa
                            .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
                            .group:00000000 wm4.board.h.72.c499cf31e0990679c9baf3f86f5ccf9a
-                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.16745fc48ac4fbc54e06040102b9171b
                            .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
                            .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
                            .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308

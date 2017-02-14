@@ -256,15 +256,15 @@
  127              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 write.c
-     /tmp/ccvQv7Gm.s:20     .text._write:00000000 $t
-     /tmp/ccvQv7Gm.s:25     .text._write:00000000 _write
-     /tmp/ccvQv7Gm.s:104    .text._write:0000003c $d
+     /tmp/ccXCbAg8.s:20     .text._write:00000000 $t
+     /tmp/ccXCbAg8.s:25     .text._write:00000000 _write
+     /tmp/ccXCbAg8.s:104    .text._write:0000003c $d
                             *COM*:00000004 stdio_base
                             *COM*:00000004 ptr_put
-     /tmp/ccvQv7Gm.s:112    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccvQv7Gm.s:115    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccvQv7Gm.s:120    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccvQv7Gm.s:121    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccXCbAg8.s:112    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccXCbAg8.s:115    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccXCbAg8.s:120    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccXCbAg8.s:121    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f

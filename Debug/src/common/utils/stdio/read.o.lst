@@ -254,14 +254,14 @@
  108              		.file 5 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 read.c
-     /tmp/ccMKEuB7.s:20     .text._read:00000000 $t
-     /tmp/ccMKEuB7.s:25     .text._read:00000000 _read
-     /tmp/ccMKEuB7.s:86     .text._read:0000002c $d
+     /tmp/cc9ARmhI.s:20     .text._read:00000000 $t
+     /tmp/cc9ARmhI.s:25     .text._read:00000000 _read
+     /tmp/cc9ARmhI.s:86     .text._read:0000002c $d
                             *COM*:00000004 ptr_get
-     /tmp/ccMKEuB7.s:93     .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccMKEuB7.s:96     .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccMKEuB7.s:101    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccMKEuB7.s:102    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/cc9ARmhI.s:93     .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/cc9ARmhI.s:96     .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/cc9ARmhI.s:101    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/cc9ARmhI.s:102    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f

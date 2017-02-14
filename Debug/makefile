@@ -17,6 +17,7 @@ RM := rm -rf
 -include src/sam/utils/cmsis/sam3s/source/templates/subdir.mk
 -include src/sam/syscalls/gcc/subdir.mk
 -include src/sam/services/flash_efc/subdir.mk
+-include src/sam/drivers/rstc/subdir.mk
 -include src/sam/drivers/efc/subdir.mk
 -include src/sam/components/display/ili93xx/subdir.mk
 -include src/pmc/subdir.mk

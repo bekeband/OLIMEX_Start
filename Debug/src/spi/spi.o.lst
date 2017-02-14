@@ -1121,10 +1121,9 @@
  264:../src/spi/spi.c ****  * \retval SPI_OK on Success.
  265:../src/spi/spi.c ****  * \retval SPI_ERROR_TIMEOUT on Time-out.
  266:../src/spi/spi.c ****  */
- 267:../src/spi/spi.c **** spi_status_t spi_write(Spi *p_spi, uint16_t us_data,
- 268:../src/spi/spi.c **** 		uint8_t uc_pcs, uint8_t uc_last)
- 269:../src/spi/spi.c **** {
- 229              		.loc 1 269 0
+ 267:../src/spi/spi.c **** spi_status_t spi_write(Spi *p_spi, uint16_t us_data, uint8_t uc_pcs, uint8_t uc_last)
+ 268:../src/spi/spi.c **** {
+ 229              		.loc 1 268 0
  230              		.cfi_startproc
  231              		@ args = 0, pretend = 0, frame = 0
  232              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -1135,26 +1134,26 @@
  237              		.cfi_offset 4, -8
  238              		.cfi_offset 5, -4
  239              	.LVL24:
- 270:../src/spi/spi.c **** 	uint32_t timeout = SPI_TIMEOUT;
- 240              		.loc 1 270 0
+ 269:../src/spi/spi.c **** 	uint32_t timeout = SPI_TIMEOUT;
+ 240              		.loc 1 269 0
  241 0002 0E4C     		ldr	r4, .L26
- 271:../src/spi/spi.c **** 	uint32_t value;
- 272:../src/spi/spi.c **** 
- 273:../src/spi/spi.c **** 	while (!(p_spi->SPI_SR & SPI_SR_TDRE)) {
- 242              		.loc 1 273 0
+ 270:../src/spi/spi.c **** 	uint32_t value;
+ 271:../src/spi/spi.c **** 
+ 272:../src/spi/spi.c **** 	while (!(p_spi->SPI_SR & SPI_SR_TDRE)) {
+ 242              		.loc 1 272 0
  243 0004 02E0     		b	.L18
  244              	.LVL25:
  245              	.L20:
- 274:../src/spi/spi.c **** 		if (!timeout--) {
- 246              		.loc 1 274 0
+ 273:../src/spi/spi.c **** 		if (!timeout--) {
+ 246              		.loc 1 273 0
  247 0006 651E     		subs	r5, r4, #1
  248              	.LVL26:
  249 0008 A4B1     		cbz	r4, .L24
  250 000a 2C46     		mov	r4, r5
  251              	.LVL27:
  252              	.L18:
- 273:../src/spi/spi.c **** 		if (!timeout--) {
- 253              		.loc 1 273 0
+ 272:../src/spi/spi.c **** 		if (!timeout--) {
+ 253              		.loc 1 272 0
  254 000c 0569     		ldr	r5, [r0, #16]
  255 000e 15F0020F 		tst	r5, #2
  256 0012 F8D0     		beq	.L20
@@ -1173,51 +1172,51 @@
  268              	.LVL30:
  269              	.LBE17:
  270              	.LBE16:
- 275:../src/spi/spi.c **** 			return SPI_ERROR_TIMEOUT;
- 276:../src/spi/spi.c **** 		}
- 277:../src/spi/spi.c **** 	}
- 278:../src/spi/spi.c **** 
- 279:../src/spi/spi.c **** 	if (spi_get_peripheral_select_mode(p_spi)) {
- 271              		.loc 1 279 0
+ 274:../src/spi/spi.c **** 			return SPI_ERROR_TIMEOUT;
+ 275:../src/spi/spi.c **** 		}
+ 276:../src/spi/spi.c **** 	}
+ 277:../src/spi/spi.c **** 
+ 278:../src/spi/spi.c **** 	if (spi_get_peripheral_select_mode(p_spi)) {
+ 271              		.loc 1 278 0
  272 001e 34B1     		cbz	r4, .L23
- 280:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data) | SPI_TDR_PCS(uc_pcs);
- 273              		.loc 1 280 0
+ 279:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data) | SPI_TDR_PCS(uc_pcs);
+ 273              		.loc 1 279 0
  274 0020 1204     		lsls	r2, r2, #16
  275              	.LVL31:
  276 0022 02F47022 		and	r2, r2, #983040
  277 0026 1143     		orrs	r1, r1, r2
  278              	.LVL32:
- 281:../src/spi/spi.c **** 		if (uc_last) {
- 279              		.loc 1 281 0
+ 280:../src/spi/spi.c **** 		if (uc_last) {
+ 279              		.loc 1 280 0
  280 0028 0BB1     		cbz	r3, .L23
- 282:../src/spi/spi.c **** 			value |= SPI_TDR_LASTXFER;
- 281              		.loc 1 282 0
+ 281:../src/spi/spi.c **** 			value |= SPI_TDR_LASTXFER;
+ 281              		.loc 1 281 0
  282 002a 41F08071 		orr	r1, r1, #16777216
  283              	.LVL33:
  284              	.L23:
- 283:../src/spi/spi.c **** 		}
- 284:../src/spi/spi.c **** 	} else {
- 285:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data);
- 286:../src/spi/spi.c **** 	}
- 287:../src/spi/spi.c **** 
- 288:../src/spi/spi.c **** 	p_spi->SPI_TDR = value;
- 285              		.loc 1 288 0
+ 282:../src/spi/spi.c **** 		}
+ 283:../src/spi/spi.c **** 	} else {
+ 284:../src/spi/spi.c **** 		value = SPI_TDR_TD(us_data);
+ 285:../src/spi/spi.c **** 	}
+ 286:../src/spi/spi.c **** 
+ 287:../src/spi/spi.c **** 	p_spi->SPI_TDR = value;
+ 285              		.loc 1 287 0
  286 002e C160     		str	r1, [r0, #12]
- 289:../src/spi/spi.c **** 
- 290:../src/spi/spi.c **** 	return SPI_OK;
- 287              		.loc 1 290 0
+ 288:../src/spi/spi.c **** 
+ 289:../src/spi/spi.c **** 	return SPI_OK;
+ 287              		.loc 1 289 0
  288 0030 0020     		movs	r0, #0
  289              	.LVL34:
  290 0032 00E0     		b	.L19
  291              	.LVL35:
  292              	.L24:
- 275:../src/spi/spi.c **** 		}
- 293              		.loc 1 275 0
+ 274:../src/spi/spi.c **** 		}
+ 293              		.loc 1 274 0
  294 0034 0120     		movs	r0, #1
  295              	.LVL36:
  296              	.L19:
- 291:../src/spi/spi.c **** }
- 297              		.loc 1 291 0
+ 290:../src/spi/spi.c **** }
+ 297              		.loc 1 290 0
  298 0036 30BC     		pop	{r4, r5}
  299              		.cfi_restore 5
  300              		.cfi_restore 4
@@ -1236,28 +1235,28 @@
  314              		.thumb_func
  316              	spi_set_clock_polarity:
  317              	.LFB132:
- 292:../src/spi/spi.c **** 
- 293:../src/spi/spi.c **** /**
- 294:../src/spi/spi.c ****  * \brief Set clock default state.
- 295:../src/spi/spi.c ****  *
- 296:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 297:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 298:../src/spi/spi.c ****  * \param ul_polarity Default clock state is logical one(high)/zero(low).
- 299:../src/spi/spi.c ****  */
- 300:../src/spi/spi.c **** void spi_set_clock_polarity(Spi *p_spi, uint32_t ul_pcs_ch,
- 301:../src/spi/spi.c **** 		uint32_t ul_polarity)
- 302:../src/spi/spi.c **** {
- 318              		.loc 1 302 0
+ 291:../src/spi/spi.c **** 
+ 292:../src/spi/spi.c **** /**
+ 293:../src/spi/spi.c ****  * \brief Set clock default state.
+ 294:../src/spi/spi.c ****  *
+ 295:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 296:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 297:../src/spi/spi.c ****  * \param ul_polarity Default clock state is logical one(high)/zero(low).
+ 298:../src/spi/spi.c ****  */
+ 299:../src/spi/spi.c **** void spi_set_clock_polarity(Spi *p_spi, uint32_t ul_pcs_ch,
+ 300:../src/spi/spi.c **** 		uint32_t ul_polarity)
+ 301:../src/spi/spi.c **** {
+ 318              		.loc 1 301 0
  319              		.cfi_startproc
  320              		@ args = 0, pretend = 0, frame = 0
  321              		@ frame_needed = 0, uses_anonymous_args = 0
  322              		@ link register save eliminated.
  323              	.LVL37:
- 303:../src/spi/spi.c **** 	if (ul_polarity) {
- 324              		.loc 1 303 0
+ 302:../src/spi/spi.c **** 	if (ul_polarity) {
+ 324              		.loc 1 302 0
  325 0000 3AB1     		cbz	r2, .L29
- 304:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CPOL;
- 326              		.loc 1 304 0
+ 303:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CPOL;
+ 326              		.loc 1 303 0
  327 0002 0C31     		adds	r1, r1, #12
  328              	.LVL38:
  329 0004 50F82130 		ldr	r3, [r0, r1, lsl #2]
@@ -1266,9 +1265,9 @@
  332 0010 7047     		bx	lr
  333              	.LVL39:
  334              	.L29:
- 305:../src/spi/spi.c **** 	} else {
- 306:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CPOL);
- 335              		.loc 1 306 0
+ 304:../src/spi/spi.c **** 	} else {
+ 305:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CPOL);
+ 335              		.loc 1 305 0
  336 0012 0C31     		adds	r1, r1, #12
  337              	.LVL40:
  338 0014 50F82130 		ldr	r3, [r0, r1, lsl #2]
@@ -1284,29 +1283,29 @@
  349              		.thumb_func
  351              	spi_set_clock_phase:
  352              	.LFB133:
- 307:../src/spi/spi.c **** 	}
- 308:../src/spi/spi.c **** }
- 309:../src/spi/spi.c **** 
- 310:../src/spi/spi.c **** /**
- 311:../src/spi/spi.c ****  * \brief Set Data Capture Phase.
- 312:../src/spi/spi.c ****  *
- 313:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 314:../src/spi/spi.c ****  *  \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 315:../src/spi/spi.c ****  *  \param ul_phase Data capture on the rising/falling edge of clock.
- 316:../src/spi/spi.c ****  */
- 317:../src/spi/spi.c **** void spi_set_clock_phase(Spi *p_spi, uint32_t ul_pcs_ch, uint32_t ul_phase)
- 318:../src/spi/spi.c **** {
- 353              		.loc 1 318 0
+ 306:../src/spi/spi.c **** 	}
+ 307:../src/spi/spi.c **** }
+ 308:../src/spi/spi.c **** 
+ 309:../src/spi/spi.c **** /**
+ 310:../src/spi/spi.c ****  * \brief Set Data Capture Phase.
+ 311:../src/spi/spi.c ****  *
+ 312:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 313:../src/spi/spi.c ****  *  \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 314:../src/spi/spi.c ****  *  \param ul_phase Data capture on the rising/falling edge of clock.
+ 315:../src/spi/spi.c ****  */
+ 316:../src/spi/spi.c **** void spi_set_clock_phase(Spi *p_spi, uint32_t ul_pcs_ch, uint32_t ul_phase)
+ 317:../src/spi/spi.c **** {
+ 353              		.loc 1 317 0
  354              		.cfi_startproc
  355              		@ args = 0, pretend = 0, frame = 0
  356              		@ frame_needed = 0, uses_anonymous_args = 0
  357              		@ link register save eliminated.
  358              	.LVL41:
- 319:../src/spi/spi.c **** 	if (ul_phase) {
- 359              		.loc 1 319 0
+ 318:../src/spi/spi.c **** 	if (ul_phase) {
+ 359              		.loc 1 318 0
  360 0000 3AB1     		cbz	r2, .L32
- 320:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_NCPHA;
- 361              		.loc 1 320 0
+ 319:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_NCPHA;
+ 361              		.loc 1 319 0
  362 0002 0C31     		adds	r1, r1, #12
  363              	.LVL42:
  364 0004 50F82130 		ldr	r3, [r0, r1, lsl #2]
@@ -1315,9 +1314,9 @@
  367 0010 7047     		bx	lr
  368              	.LVL43:
  369              	.L32:
- 321:../src/spi/spi.c **** 	} else {
- 322:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_NCPHA);
- 370              		.loc 1 322 0
+ 320:../src/spi/spi.c **** 	} else {
+ 321:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_NCPHA);
+ 370              		.loc 1 321 0
  371 0012 0C31     		adds	r1, r1, #12
  372              	.LVL44:
  373 0014 50F82130 		ldr	r3, [r0, r1, lsl #2]
@@ -1333,68 +1332,68 @@
  384              		.thumb_func
  386              	spi_configure_cs_behavior:
  387              	.LFB134:
- 323:../src/spi/spi.c **** 	}
- 324:../src/spi/spi.c **** }
- 325:../src/spi/spi.c **** 
- 326:../src/spi/spi.c **** /**
- 327:../src/spi/spi.c ****  * \brief Configure CS behavior for SPI transfer (\ref spi_cs_behavior_t).
- 328:../src/spi/spi.c ****  *
- 329:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 330:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 331:../src/spi/spi.c ****  * \param ul_cs_behavior Behavior of the Chip Select after transfer.
- 332:../src/spi/spi.c ****  */
- 333:../src/spi/spi.c **** void spi_configure_cs_behavior(Spi *p_spi, uint32_t ul_pcs_ch,
- 334:../src/spi/spi.c **** 		uint32_t ul_cs_behavior)
- 335:../src/spi/spi.c **** {
- 388              		.loc 1 335 0
+ 322:../src/spi/spi.c **** 	}
+ 323:../src/spi/spi.c **** }
+ 324:../src/spi/spi.c **** 
+ 325:../src/spi/spi.c **** /**
+ 326:../src/spi/spi.c ****  * \brief Configure CS behavior for SPI transfer (\ref spi_cs_behavior_t).
+ 327:../src/spi/spi.c ****  *
+ 328:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 329:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 330:../src/spi/spi.c ****  * \param ul_cs_behavior Behavior of the Chip Select after transfer.
+ 331:../src/spi/spi.c ****  */
+ 332:../src/spi/spi.c **** void spi_configure_cs_behavior(Spi *p_spi, uint32_t ul_pcs_ch,
+ 333:../src/spi/spi.c **** 		uint32_t ul_cs_behavior)
+ 334:../src/spi/spi.c **** {
+ 388              		.loc 1 334 0
  389              		.cfi_startproc
  390              		@ args = 0, pretend = 0, frame = 0
  391              		@ frame_needed = 0, uses_anonymous_args = 0
  392              		@ link register save eliminated.
  393              	.LVL45:
- 336:../src/spi/spi.c **** 	if (ul_cs_behavior == SPI_CS_RISE_FORCED) {
- 394              		.loc 1 336 0
+ 335:../src/spi/spi.c **** 	if (ul_cs_behavior == SPI_CS_RISE_FORCED) {
+ 394              		.loc 1 335 0
  395 0000 042A     		cmp	r2, #4
  396 0002 0DD1     		bne	.L35
- 337:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
- 397              		.loc 1 337 0
+ 336:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
+ 397              		.loc 1 336 0
  398 0004 0C31     		adds	r1, r1, #12
  399              	.LVL46:
  400 0006 50F82130 		ldr	r3, [r0, r1, lsl #2]
  401 000a 23F00803 		bic	r3, r3, #8
  402 000e 40F82130 		str	r3, [r0, r1, lsl #2]
- 338:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSNAAT;
- 403              		.loc 1 338 0
+ 337:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSNAAT;
+ 403              		.loc 1 337 0
  404 0012 50F82130 		ldr	r3, [r0, r1, lsl #2]
  405 0016 43F00403 		orr	r3, r3, #4
  406 001a 40F82130 		str	r3, [r0, r1, lsl #2]
  407 001e 7047     		bx	lr
  408              	.LVL47:
  409              	.L35:
- 339:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_RISE_NO_TX) {
- 410              		.loc 1 339 0
+ 338:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_RISE_NO_TX) {
+ 410              		.loc 1 338 0
  411 0020 6AB9     		cbnz	r2, .L37
- 340:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
- 412              		.loc 1 340 0
+ 339:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSAAT);
+ 412              		.loc 1 339 0
  413 0022 0C31     		adds	r1, r1, #12
  414              	.LVL48:
  415 0024 50F82130 		ldr	r3, [r0, r1, lsl #2]
  416 0028 23F00803 		bic	r3, r3, #8
  417 002c 40F82130 		str	r3, [r0, r1, lsl #2]
- 341:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSNAAT);
- 418              		.loc 1 341 0
+ 340:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_CSNAAT);
+ 418              		.loc 1 340 0
  419 0030 50F82130 		ldr	r3, [r0, r1, lsl #2]
  420 0034 23F00403 		bic	r3, r3, #4
  421 0038 40F82130 		str	r3, [r0, r1, lsl #2]
  422 003c 7047     		bx	lr
  423              	.LVL49:
  424              	.L37:
- 342:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_KEEP_LOW) {
- 425              		.loc 1 342 0
+ 341:../src/spi/spi.c **** 	} else if (ul_cs_behavior == SPI_CS_KEEP_LOW) {
+ 425              		.loc 1 341 0
  426 003e 082A     		cmp	r2, #8
  427 0040 06D1     		bne	.L34
- 343:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSAAT;
- 428              		.loc 1 343 0
+ 342:../src/spi/spi.c **** 		p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_CSAAT;
+ 428              		.loc 1 342 0
  429 0042 0C31     		adds	r1, r1, #12
  430              	.LVL50:
  431 0044 50F82130 		ldr	r3, [r0, r1, lsl #2]
@@ -1412,35 +1411,35 @@
  444              		.thumb_func
  446              	spi_set_bits_per_transfer:
  447              	.LFB135:
- 344:../src/spi/spi.c **** 	}
- 345:../src/spi/spi.c **** }
- 346:../src/spi/spi.c **** 
- 347:../src/spi/spi.c **** /**
- 348:../src/spi/spi.c ****  * \brief Set number of bits per transfer.
- 349:../src/spi/spi.c ****  *
- 350:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 351:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 352:../src/spi/spi.c ****  * \param ul_bits Number of bits (8~16), use the pattern defined
- 353:../src/spi/spi.c ****  *        in the device header file.
- 354:../src/spi/spi.c ****  */
- 355:../src/spi/spi.c **** void spi_set_bits_per_transfer(Spi *p_spi, uint32_t ul_pcs_ch,
- 356:../src/spi/spi.c **** 		uint32_t ul_bits)
- 357:../src/spi/spi.c **** {
- 448              		.loc 1 357 0
+ 343:../src/spi/spi.c **** 	}
+ 344:../src/spi/spi.c **** }
+ 345:../src/spi/spi.c **** 
+ 346:../src/spi/spi.c **** /**
+ 347:../src/spi/spi.c ****  * \brief Set number of bits per transfer.
+ 348:../src/spi/spi.c ****  *
+ 349:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 350:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 351:../src/spi/spi.c ****  * \param ul_bits Number of bits (8~16), use the pattern defined
+ 352:../src/spi/spi.c ****  *        in the device header file.
+ 353:../src/spi/spi.c ****  */
+ 354:../src/spi/spi.c **** void spi_set_bits_per_transfer(Spi *p_spi, uint32_t ul_pcs_ch,
+ 355:../src/spi/spi.c **** 		uint32_t ul_bits)
+ 356:../src/spi/spi.c **** {
+ 448              		.loc 1 356 0
  449              		.cfi_startproc
  450              		@ args = 0, pretend = 0, frame = 0
  451              		@ frame_needed = 0, uses_anonymous_args = 0
  452              		@ link register save eliminated.
  453              	.LVL52:
- 358:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_BITS_Msk);
- 454              		.loc 1 358 0
+ 357:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_BITS_Msk);
+ 454              		.loc 1 357 0
  455 0000 0C31     		adds	r1, r1, #12
  456              	.LVL53:
  457 0002 50F82130 		ldr	r3, [r0, r1, lsl #2]
  458 0006 23F0F003 		bic	r3, r3, #240
  459 000a 40F82130 		str	r3, [r0, r1, lsl #2]
- 359:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= ul_bits;
- 460              		.loc 1 359 0
+ 358:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= ul_bits;
+ 460              		.loc 1 358 0
  461 000e 50F82130 		ldr	r3, [r0, r1, lsl #2]
  462 0012 1A43     		orrs	r2, r2, r3
  463              	.LVL54:
@@ -1455,57 +1454,57 @@
  473              		.thumb_func
  475              	spi_calc_baudrate_div:
  476              	.LFB136:
- 360:../src/spi/spi.c **** }
- 361:../src/spi/spi.c **** 
- 362:../src/spi/spi.c **** /**
- 363:../src/spi/spi.c ****  * \brief Calculate the baudrate divider.
- 364:../src/spi/spi.c ****  *
- 365:../src/spi/spi.c ****  * \param baudrate Baudrate value.
- 366:../src/spi/spi.c ****  * \param mck      SPI module input clock frequency (MCK clock, Hz).
- 367:../src/spi/spi.c ****  *
- 368:../src/spi/spi.c ****  * \return Divider or error code.
- 369:../src/spi/spi.c ****  *   \retval > 0  Success.
- 370:../src/spi/spi.c ****  *   \retval < 0  Error.
- 371:../src/spi/spi.c ****  */
- 372:../src/spi/spi.c **** int16_t spi_calc_baudrate_div(const uint32_t baudrate, uint32_t mck)
- 373:../src/spi/spi.c **** {
- 477              		.loc 1 373 0
+ 359:../src/spi/spi.c **** }
+ 360:../src/spi/spi.c **** 
+ 361:../src/spi/spi.c **** /**
+ 362:../src/spi/spi.c ****  * \brief Calculate the baudrate divider.
+ 363:../src/spi/spi.c ****  *
+ 364:../src/spi/spi.c ****  * \param baudrate Baudrate value.
+ 365:../src/spi/spi.c ****  * \param mck      SPI module input clock frequency (MCK clock, Hz).
+ 366:../src/spi/spi.c ****  *
+ 367:../src/spi/spi.c ****  * \return Divider or error code.
+ 368:../src/spi/spi.c ****  *   \retval > 0  Success.
+ 369:../src/spi/spi.c ****  *   \retval < 0  Error.
+ 370:../src/spi/spi.c ****  */
+ 371:../src/spi/spi.c **** int16_t spi_calc_baudrate_div(const uint32_t baudrate, uint32_t mck)
+ 372:../src/spi/spi.c **** {
+ 477              		.loc 1 372 0
  478              		.cfi_startproc
  479              		@ args = 0, pretend = 0, frame = 0
  480              		@ frame_needed = 0, uses_anonymous_args = 0
  481              		@ link register save eliminated.
  482              	.LVL55:
- 374:../src/spi/spi.c **** 	int baud_div = div_ceil(mck, baudrate);
- 483              		.loc 1 374 0
+ 373:../src/spi/spi.c **** 	int baud_div = div_ceil(mck, baudrate);
+ 483              		.loc 1 373 0
  484 0000 0144     		add	r1, r1, r0
  485              	.LVL56:
  486 0002 0139     		subs	r1, r1, #1
  487 0004 B1FBF0F0 		udiv	r0, r1, r0
  488              	.LVL57:
- 375:../src/spi/spi.c **** 
- 376:../src/spi/spi.c **** 	/* The value of baud_div is from 1 to 255 in the SCBR field. */
- 377:../src/spi/spi.c **** 	if (baud_div <= 0 || baud_div > 255) {
- 489              		.loc 1 377 0
+ 374:../src/spi/spi.c **** 
+ 375:../src/spi/spi.c **** 	/* The value of baud_div is from 1 to 255 in the SCBR field. */
+ 376:../src/spi/spi.c **** 	if (baud_div <= 0 || baud_div > 255) {
+ 489              		.loc 1 376 0
  490 0008 431E     		subs	r3, r0, #1
  491 000a FE2B     		cmp	r3, #254
  492 000c 01D8     		bhi	.L41
- 378:../src/spi/spi.c **** 		return -1;
- 379:../src/spi/spi.c **** 	}
- 380:../src/spi/spi.c **** 
- 381:../src/spi/spi.c **** 	return baud_div;
- 493              		.loc 1 381 0
+ 377:../src/spi/spi.c **** 		return -1;
+ 378:../src/spi/spi.c **** 	}
+ 379:../src/spi/spi.c **** 
+ 380:../src/spi/spi.c **** 	return baud_div;
+ 493              		.loc 1 380 0
  494 000e 80B2     		uxth	r0, r0
  495              	.LVL58:
  496 0010 01E0     		b	.L40
  497              	.LVL59:
  498              	.L41:
- 378:../src/spi/spi.c **** 		return -1;
- 499              		.loc 1 378 0
+ 377:../src/spi/spi.c **** 		return -1;
+ 499              		.loc 1 377 0
  500 0012 4FF6FF70 		movw	r0, #65535
  501              	.LVL60:
  502              	.L40:
- 382:../src/spi/spi.c **** }
- 503              		.loc 1 382 0
+ 381:../src/spi/spi.c **** }
+ 503              		.loc 1 381 0
  504 0016 00B2     		sxth	r0, r0
  505 0018 7047     		bx	lr
  506              		.cfi_endproc
@@ -1517,54 +1516,54 @@
  513              		.thumb_func
  515              	spi_set_baudrate_div:
  516              	.LFB137:
- 383:../src/spi/spi.c **** 
- 384:../src/spi/spi.c **** /**
- 385:../src/spi/spi.c ****  * \brief Set Serial Clock Baud Rate divider value (SCBR).
- 386:../src/spi/spi.c ****  *
- 387:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 388:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 389:../src/spi/spi.c ****  * \param uc_baudrate_divider Baudrate divider from MCK.
- 390:../src/spi/spi.c ****  *
- 391:../src/spi/spi.c ****  * \return
- 392:../src/spi/spi.c ****  * \retval is 0 Success.
- 393:../src/spi/spi.c ****  * \retval is -1 Error.
- 394:../src/spi/spi.c ****  */
- 395:../src/spi/spi.c **** int16_t spi_set_baudrate_div(Spi *p_spi, uint32_t ul_pcs_ch,
- 396:../src/spi/spi.c **** 		uint8_t uc_baudrate_divider)
- 397:../src/spi/spi.c **** {
- 517              		.loc 1 397 0
+ 382:../src/spi/spi.c **** 
+ 383:../src/spi/spi.c **** /**
+ 384:../src/spi/spi.c ****  * \brief Set Serial Clock Baud Rate divider value (SCBR).
+ 385:../src/spi/spi.c ****  *
+ 386:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 387:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 388:../src/spi/spi.c ****  * \param uc_baudrate_divider Baudrate divider from MCK.
+ 389:../src/spi/spi.c ****  *
+ 390:../src/spi/spi.c ****  * \return
+ 391:../src/spi/spi.c ****  * \retval is 0 Success.
+ 392:../src/spi/spi.c ****  * \retval is -1 Error.
+ 393:../src/spi/spi.c ****  */
+ 394:../src/spi/spi.c **** int16_t spi_set_baudrate_div(Spi *p_spi, uint32_t ul_pcs_ch,
+ 395:../src/spi/spi.c **** 		uint8_t uc_baudrate_divider)
+ 396:../src/spi/spi.c **** {
+ 517              		.loc 1 396 0
  518              		.cfi_startproc
  519              		@ args = 0, pretend = 0, frame = 0
  520              		@ frame_needed = 0, uses_anonymous_args = 0
  521              		@ link register save eliminated.
  522              	.LVL61:
- 398:../src/spi/spi.c ****     /* Programming the SCBR field to 0 is forbidden */
- 399:../src/spi/spi.c ****     if (!uc_baudrate_divider)
- 523              		.loc 1 399 0
- 524 0000 82B1     		cbz	r2, .L44
  397:../src/spi/spi.c ****     /* Programming the SCBR field to 0 is forbidden */
- 525              		.loc 1 397 0
+ 398:../src/spi/spi.c ****     if (!uc_baudrate_divider)
+ 523              		.loc 1 398 0
+ 524 0000 82B1     		cbz	r2, .L44
+ 396:../src/spi/spi.c ****     /* Programming the SCBR field to 0 is forbidden */
+ 525              		.loc 1 396 0
  526 0002 10B4     		push	{r4}
  527              		.cfi_def_cfa_offset 4
  528              		.cfi_offset 4, -4
  529 0004 1446     		mov	r4, r2
- 400:../src/spi/spi.c ****         return -1;
- 401:../src/spi/spi.c **** 
- 402:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_SCBR_Msk);
- 530              		.loc 1 402 0
+ 399:../src/spi/spi.c ****         return -1;
+ 400:../src/spi/spi.c **** 
+ 401:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= (~SPI_CSR_SCBR_Msk);
+ 530              		.loc 1 401 0
  531 0006 0C31     		adds	r1, r1, #12
  532              	.LVL62:
  533 0008 50F82130 		ldr	r3, [r0, r1, lsl #2]
  534 000c 23F47F43 		bic	r3, r3, #65280
  535 0010 40F82130 		str	r3, [r0, r1, lsl #2]
- 403:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_SCBR(uc_baudrate_divider);
- 536              		.loc 1 403 0
+ 402:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_SCBR(uc_baudrate_divider);
+ 536              		.loc 1 402 0
  537 0014 50F82120 		ldr	r2, [r0, r1, lsl #2]
  538              	.LVL63:
  539 0018 42EA0422 		orr	r2, r2, r4, lsl #8
  540 001c 40F82120 		str	r2, [r0, r1, lsl #2]
- 404:../src/spi/spi.c ****     return 0;
- 541              		.loc 1 404 0
+ 403:../src/spi/spi.c ****     return 0;
+ 541              		.loc 1 403 0
  542 0020 0020     		movs	r0, #0
  543              	.LVL64:
  544 0022 03E0     		b	.L43
@@ -1572,12 +1571,12 @@
  546              	.L44:
  547              		.cfi_def_cfa_offset 0
  548              		.cfi_restore 4
- 400:../src/spi/spi.c ****         return -1;
- 549              		.loc 1 400 0
+ 399:../src/spi/spi.c ****         return -1;
+ 549              		.loc 1 399 0
  550 0024 4FF6FF70 		movw	r0, #65535
  551              	.LVL66:
- 405:../src/spi/spi.c **** }
- 552              		.loc 1 405 0
+ 404:../src/spi/spi.c **** }
+ 552              		.loc 1 404 0
  553 0028 00B2     		sxth	r0, r0
  554 002a 7047     		bx	lr
  555              	.LVL67:
@@ -1598,19 +1597,19 @@
  571              		.thumb_func
  573              	spi_set_transfer_delay:
  574              	.LFB138:
- 406:../src/spi/spi.c **** 
- 407:../src/spi/spi.c **** /**
- 408:../src/spi/spi.c ****  * \brief Configure timing for SPI transfer.
- 409:../src/spi/spi.c ****  *
- 410:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 411:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
- 412:../src/spi/spi.c ****  * \param uc_dlybs Delay before SPCK (in number of MCK clocks).
- 413:../src/spi/spi.c ****  * \param uc_dlybct Delay between consecutive transfers (in number of MCK clocks).
- 414:../src/spi/spi.c ****  */
- 415:../src/spi/spi.c **** void spi_set_transfer_delay(Spi *p_spi, uint32_t ul_pcs_ch,
- 416:../src/spi/spi.c **** 		uint8_t uc_dlybs, uint8_t uc_dlybct)
- 417:../src/spi/spi.c **** {
- 575              		.loc 1 417 0
+ 405:../src/spi/spi.c **** 
+ 406:../src/spi/spi.c **** /**
+ 407:../src/spi/spi.c ****  * \brief Configure timing for SPI transfer.
+ 408:../src/spi/spi.c ****  *
+ 409:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 410:../src/spi/spi.c ****  * \param ul_pcs_ch Peripheral Chip Select channel (0~3).
+ 411:../src/spi/spi.c ****  * \param uc_dlybs Delay before SPCK (in number of MCK clocks).
+ 412:../src/spi/spi.c ****  * \param uc_dlybct Delay between consecutive transfers (in number of MCK clocks).
+ 413:../src/spi/spi.c ****  */
+ 414:../src/spi/spi.c **** void spi_set_transfer_delay(Spi *p_spi, uint32_t ul_pcs_ch,
+ 415:../src/spi/spi.c **** 		uint8_t uc_dlybs, uint8_t uc_dlybct)
+ 416:../src/spi/spi.c **** {
+ 575              		.loc 1 416 0
  576              		.cfi_startproc
  577              		@ args = 0, pretend = 0, frame = 0
  578              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -1619,28 +1618,28 @@
  581 0000 10B4     		push	{r4}
  582              		.cfi_def_cfa_offset 4
  583              		.cfi_offset 4, -4
- 418:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= ~(SPI_CSR_DLYBS_Msk | SPI_CSR_DLYBCT_Msk);
- 584              		.loc 1 418 0
+ 417:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] &= ~(SPI_CSR_DLYBS_Msk | SPI_CSR_DLYBCT_Msk);
+ 584              		.loc 1 417 0
  585 0002 0C31     		adds	r1, r1, #12
  586              	.LVL69:
  587 0004 50F82140 		ldr	r4, [r0, r1, lsl #2]
  588 0008 A4B2     		uxth	r4, r4
  589 000a 40F82140 		str	r4, [r0, r1, lsl #2]
- 419:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
- 590              		.loc 1 419 0
+ 418:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
+ 590              		.loc 1 418 0
  591 000e 50F82140 		ldr	r4, [r0, r1, lsl #2]
- 420:../src/spi/spi.c **** 			| SPI_CSR_DLYBCT(uc_dlybct);
- 592              		.loc 1 420 0
+ 419:../src/spi/spi.c **** 			| SPI_CSR_DLYBCT(uc_dlybct);
+ 592              		.loc 1 419 0
  593 0012 1B06     		lsls	r3, r3, #24
  594              	.LVL70:
  595 0014 43EA0242 		orr	r2, r3, r2, lsl #16
  596              	.LVL71:
- 419:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
- 597              		.loc 1 419 0
+ 418:../src/spi/spi.c **** 	p_spi->SPI_CSR[ul_pcs_ch] |= SPI_CSR_DLYBS(uc_dlybs)
+ 597              		.loc 1 418 0
  598 0018 44EA0203 		orr	r3, r4, r2
  599 001c 40F82130 		str	r3, [r0, r1, lsl #2]
- 421:../src/spi/spi.c **** }
- 600              		.loc 1 421 0
+ 420:../src/spi/spi.c **** }
+ 600              		.loc 1 420 0
  601 0020 10BC     		pop	{r4}
  602              		.cfi_restore 4
  603              		.cfi_def_cfa_offset 0
@@ -1654,41 +1653,41 @@
  612              		.thumb_func
  614              	spi_set_writeprotect:
  615              	.LFB139:
+ 421:../src/spi/spi.c **** 
  422:../src/spi/spi.c **** 
- 423:../src/spi/spi.c **** 
- 424:../src/spi/spi.c **** /**
- 425:../src/spi/spi.c ****  * \brief Enable or disable write protection of SPI registers.
- 426:../src/spi/spi.c ****  *
- 427:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 428:../src/spi/spi.c ****  * \param ul_enable 1 to enable, 0 to disable.
- 429:../src/spi/spi.c ****  */
- 430:../src/spi/spi.c **** void spi_set_writeprotect(Spi *p_spi, uint32_t ul_enable)
- 431:../src/spi/spi.c **** {
- 616              		.loc 1 431 0
+ 423:../src/spi/spi.c **** /**
+ 424:../src/spi/spi.c ****  * \brief Enable or disable write protection of SPI registers.
+ 425:../src/spi/spi.c ****  *
+ 426:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 427:../src/spi/spi.c ****  * \param ul_enable 1 to enable, 0 to disable.
+ 428:../src/spi/spi.c ****  */
+ 429:../src/spi/spi.c **** void spi_set_writeprotect(Spi *p_spi, uint32_t ul_enable)
+ 430:../src/spi/spi.c **** {
+ 616              		.loc 1 430 0
  617              		.cfi_startproc
  618              		@ args = 0, pretend = 0, frame = 0
  619              		@ frame_needed = 0, uses_anonymous_args = 0
  620              		@ link register save eliminated.
  621              	.LVL72:
- 432:../src/spi/spi.c **** #if SAM4L
- 433:../src/spi/spi.c **** 	if (ul_enable) {
- 434:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE | SPI_WPCR_SPIWPEN;
- 435:../src/spi/spi.c **** 	} else {
- 436:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE;
- 437:../src/spi/spi.c **** 	}
- 438:../src/spi/spi.c **** #else
- 439:../src/spi/spi.c **** 	if (ul_enable) {
- 622              		.loc 1 439 0
+ 431:../src/spi/spi.c **** #if SAM4L
+ 432:../src/spi/spi.c **** 	if (ul_enable) {
+ 433:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE | SPI_WPCR_SPIWPEN;
+ 434:../src/spi/spi.c **** 	} else {
+ 435:../src/spi/spi.c **** 		p_spi->SPI_WPCR = SPI_WPCR_SPIWPKEY_VALUE;
+ 436:../src/spi/spi.c **** 	}
+ 437:../src/spi/spi.c **** #else
+ 438:../src/spi/spi.c **** 	if (ul_enable) {
+ 622              		.loc 1 438 0
  623 0000 19B1     		cbz	r1, .L50
- 440:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD | SPI_WPMR_WPEN;
- 624              		.loc 1 440 0
+ 439:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD | SPI_WPMR_WPEN;
+ 624              		.loc 1 439 0
  625 0002 044B     		ldr	r3, .L52
  626 0004 C0F8E430 		str	r3, [r0, #228]
  627 0008 7047     		bx	lr
  628              	.L50:
- 441:../src/spi/spi.c **** 	} else {
- 442:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD;
- 629              		.loc 1 442 0
+ 440:../src/spi/spi.c **** 	} else {
+ 441:../src/spi/spi.c **** 		p_spi->SPI_WPMR = SPI_WPMR_WPKEY_PASSWD;
+ 629              		.loc 1 441 0
  630 000a 034B     		ldr	r3, .L52+4
  631 000c C0F8E430 		str	r3, [r0, #228]
  632 0010 7047     		bx	lr
@@ -1706,31 +1705,31 @@
  645              		.thumb_func
  647              	spi_get_writeprotect_status:
  648              	.LFB140:
- 443:../src/spi/spi.c **** 	}
- 444:../src/spi/spi.c **** #endif
- 445:../src/spi/spi.c **** }
- 446:../src/spi/spi.c **** 
- 447:../src/spi/spi.c **** /**
- 448:../src/spi/spi.c ****  * \brief Indicate write protect status.
- 449:../src/spi/spi.c ****  *
- 450:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
- 451:../src/spi/spi.c ****  *
- 452:../src/spi/spi.c ****  * \return SPI_WPSR value.
- 453:../src/spi/spi.c ****  */
- 454:../src/spi/spi.c **** uint32_t spi_get_writeprotect_status(Spi *p_spi)
- 455:../src/spi/spi.c **** {
- 649              		.loc 1 455 0
+ 442:../src/spi/spi.c **** 	}
+ 443:../src/spi/spi.c **** #endif
+ 444:../src/spi/spi.c **** }
+ 445:../src/spi/spi.c **** 
+ 446:../src/spi/spi.c **** /**
+ 447:../src/spi/spi.c ****  * \brief Indicate write protect status.
+ 448:../src/spi/spi.c ****  *
+ 449:../src/spi/spi.c ****  * \param p_spi Pointer to an SPI instance.
+ 450:../src/spi/spi.c ****  *
+ 451:../src/spi/spi.c ****  * \return SPI_WPSR value.
+ 452:../src/spi/spi.c ****  */
+ 453:../src/spi/spi.c **** uint32_t spi_get_writeprotect_status(Spi *p_spi)
+ 454:../src/spi/spi.c **** {
+ 649              		.loc 1 454 0
  650              		.cfi_startproc
  651              		@ args = 0, pretend = 0, frame = 0
  652              		@ frame_needed = 0, uses_anonymous_args = 0
  653              		@ link register save eliminated.
  654              	.LVL73:
- 456:../src/spi/spi.c **** 	return p_spi->SPI_WPSR;
- 655              		.loc 1 456 0
+ 455:../src/spi/spi.c **** 	return p_spi->SPI_WPSR;
+ 655              		.loc 1 455 0
  656 0000 D0F8E800 		ldr	r0, [r0, #232]
  657              	.LVL74:
- 457:../src/spi/spi.c **** }
- 658              		.loc 1 457 0
+ 456:../src/spi/spi.c **** }
+ 658              		.loc 1 456 0
  659 0004 7047     		bx	lr
  660              		.cfi_endproc
  661              	.LFE140:
@@ -1752,43 +1751,43 @@
  682              		.file 10 "/home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 spi.c
-     /tmp/ccqUdolG.s:20     .text.spi_enable_clock:00000000 $t
-     /tmp/ccqUdolG.s:25     .text.spi_enable_clock:00000000 spi_enable_clock
-     /tmp/ccqUdolG.s:53     .text.spi_disable_clock:00000000 $t
-     /tmp/ccqUdolG.s:58     .text.spi_disable_clock:00000000 spi_disable_clock
-     /tmp/ccqUdolG.s:84     .text.spi_set_peripheral_chip_select_value:00000000 $t
-     /tmp/ccqUdolG.s:89     .text.spi_set_peripheral_chip_select_value:00000000 spi_set_peripheral_chip_select_value
-     /tmp/ccqUdolG.s:113    .text.spi_set_delay_between_chip_select:00000000 $t
-     /tmp/ccqUdolG.s:118    .text.spi_set_delay_between_chip_select:00000000 spi_set_delay_between_chip_select
-     /tmp/ccqUdolG.s:140    .text.spi_read:00000000 $t
-     /tmp/ccqUdolG.s:145    .text.spi_read:00000000 spi_read
-     /tmp/ccqUdolG.s:217    .text.spi_read:00000034 $d
-     /tmp/ccqUdolG.s:222    .text.spi_write:00000000 $t
-     /tmp/ccqUdolG.s:227    .text.spi_write:00000000 spi_write
-     /tmp/ccqUdolG.s:306    .text.spi_write:0000003c $d
-     /tmp/ccqUdolG.s:311    .text.spi_set_clock_polarity:00000000 $t
-     /tmp/ccqUdolG.s:316    .text.spi_set_clock_polarity:00000000 spi_set_clock_polarity
-     /tmp/ccqUdolG.s:346    .text.spi_set_clock_phase:00000000 $t
-     /tmp/ccqUdolG.s:351    .text.spi_set_clock_phase:00000000 spi_set_clock_phase
-     /tmp/ccqUdolG.s:381    .text.spi_configure_cs_behavior:00000000 $t
-     /tmp/ccqUdolG.s:386    .text.spi_configure_cs_behavior:00000000 spi_configure_cs_behavior
-     /tmp/ccqUdolG.s:441    .text.spi_set_bits_per_transfer:00000000 $t
-     /tmp/ccqUdolG.s:446    .text.spi_set_bits_per_transfer:00000000 spi_set_bits_per_transfer
-     /tmp/ccqUdolG.s:470    .text.spi_calc_baudrate_div:00000000 $t
-     /tmp/ccqUdolG.s:475    .text.spi_calc_baudrate_div:00000000 spi_calc_baudrate_div
-     /tmp/ccqUdolG.s:510    .text.spi_set_baudrate_div:00000000 $t
-     /tmp/ccqUdolG.s:515    .text.spi_set_baudrate_div:00000000 spi_set_baudrate_div
-     /tmp/ccqUdolG.s:568    .text.spi_set_transfer_delay:00000000 $t
-     /tmp/ccqUdolG.s:573    .text.spi_set_transfer_delay:00000000 spi_set_transfer_delay
-     /tmp/ccqUdolG.s:609    .text.spi_set_writeprotect:00000000 $t
-     /tmp/ccqUdolG.s:614    .text.spi_set_writeprotect:00000000 spi_set_writeprotect
-     /tmp/ccqUdolG.s:636    .text.spi_set_writeprotect:00000014 $d
-     /tmp/ccqUdolG.s:642    .text.spi_get_writeprotect_status:00000000 $t
-     /tmp/ccqUdolG.s:647    .text.spi_get_writeprotect_status:00000000 spi_get_writeprotect_status
-     /tmp/ccqUdolG.s:664    .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccqUdolG.s:667    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccqUdolG.s:672    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccqUdolG.s:673    .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccu86hdR.s:20     .text.spi_enable_clock:00000000 $t
+     /tmp/ccu86hdR.s:25     .text.spi_enable_clock:00000000 spi_enable_clock
+     /tmp/ccu86hdR.s:53     .text.spi_disable_clock:00000000 $t
+     /tmp/ccu86hdR.s:58     .text.spi_disable_clock:00000000 spi_disable_clock
+     /tmp/ccu86hdR.s:84     .text.spi_set_peripheral_chip_select_value:00000000 $t
+     /tmp/ccu86hdR.s:89     .text.spi_set_peripheral_chip_select_value:00000000 spi_set_peripheral_chip_select_value
+     /tmp/ccu86hdR.s:113    .text.spi_set_delay_between_chip_select:00000000 $t
+     /tmp/ccu86hdR.s:118    .text.spi_set_delay_between_chip_select:00000000 spi_set_delay_between_chip_select
+     /tmp/ccu86hdR.s:140    .text.spi_read:00000000 $t
+     /tmp/ccu86hdR.s:145    .text.spi_read:00000000 spi_read
+     /tmp/ccu86hdR.s:217    .text.spi_read:00000034 $d
+     /tmp/ccu86hdR.s:222    .text.spi_write:00000000 $t
+     /tmp/ccu86hdR.s:227    .text.spi_write:00000000 spi_write
+     /tmp/ccu86hdR.s:306    .text.spi_write:0000003c $d
+     /tmp/ccu86hdR.s:311    .text.spi_set_clock_polarity:00000000 $t
+     /tmp/ccu86hdR.s:316    .text.spi_set_clock_polarity:00000000 spi_set_clock_polarity
+     /tmp/ccu86hdR.s:346    .text.spi_set_clock_phase:00000000 $t
+     /tmp/ccu86hdR.s:351    .text.spi_set_clock_phase:00000000 spi_set_clock_phase
+     /tmp/ccu86hdR.s:381    .text.spi_configure_cs_behavior:00000000 $t
+     /tmp/ccu86hdR.s:386    .text.spi_configure_cs_behavior:00000000 spi_configure_cs_behavior
+     /tmp/ccu86hdR.s:441    .text.spi_set_bits_per_transfer:00000000 $t
+     /tmp/ccu86hdR.s:446    .text.spi_set_bits_per_transfer:00000000 spi_set_bits_per_transfer
+     /tmp/ccu86hdR.s:470    .text.spi_calc_baudrate_div:00000000 $t
+     /tmp/ccu86hdR.s:475    .text.spi_calc_baudrate_div:00000000 spi_calc_baudrate_div
+     /tmp/ccu86hdR.s:510    .text.spi_set_baudrate_div:00000000 $t
+     /tmp/ccu86hdR.s:515    .text.spi_set_baudrate_div:00000000 spi_set_baudrate_div
+     /tmp/ccu86hdR.s:568    .text.spi_set_transfer_delay:00000000 $t
+     /tmp/ccu86hdR.s:573    .text.spi_set_transfer_delay:00000000 spi_set_transfer_delay
+     /tmp/ccu86hdR.s:609    .text.spi_set_writeprotect:00000000 $t
+     /tmp/ccu86hdR.s:614    .text.spi_set_writeprotect:00000000 spi_set_writeprotect
+     /tmp/ccu86hdR.s:636    .text.spi_set_writeprotect:00000014 $d
+     /tmp/ccu86hdR.s:642    .text.spi_get_writeprotect_status:00000000 $t
+     /tmp/ccu86hdR.s:647    .text.spi_get_writeprotect_status:00000000 spi_get_writeprotect_status
+     /tmp/ccu86hdR.s:664    .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccu86hdR.s:667    .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccu86hdR.s:672    .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccu86hdR.s:673    .bss.cpu_irq_prev_interrupt_state:00000000 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
@@ -1890,7 +1889,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.spi.h.61.9fcb30b022d911aab30a99e577186ceb
                            .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
                            .group:00000000 wm4.board.h.51.4ac0d93faa32d5a56598d2df92d1abff
-                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.16745fc48ac4fbc54e06040102b9171b
                            .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
                            .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
                            .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308

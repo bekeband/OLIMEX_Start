@@ -26,6 +26,7 @@ src/pio \
 src/pmc \
 src/sam/components/display/ili93xx \
 src/sam/drivers/efc \
+src/sam/drivers/rstc \
 src/sam/services/flash_efc \
 src/sam/syscalls/gcc \
 src/sam/utils/cmsis/sam3s/source/templates \

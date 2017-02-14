@@ -2365,63 +2365,63 @@
  1382              		.file 11 "/home/bekeband/workspace/OLIMEX_Start/src/core_cm3.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 flash_efc.c
-     /tmp/ccYugTZd.s:20     .text.translate_address:00000000 $t
-     /tmp/ccYugTZd.s:24     .text.translate_address:00000000 translate_address
-     /tmp/ccYugTZd.s:74     .text.translate_address:00000020 $d
-     /tmp/ccYugTZd.s:79     .text.compute_address:00000000 $t
-     /tmp/ccYugTZd.s:83     .text.compute_address:00000000 compute_address
-     /tmp/ccYugTZd.s:106    .text.compute_lock_range:00000000 $t
-     /tmp/ccYugTZd.s:110    .text.compute_lock_range:00000000 compute_lock_range
-     /tmp/ccYugTZd.s:149    .text.flash_init:00000000 $t
-     /tmp/ccYugTZd.s:154    .text.flash_init:00000000 flash_init
-     /tmp/ccYugTZd.s:179    .text.flash_init:00000010 $d
-     /tmp/ccYugTZd.s:184    .text.flash_set_wait_state:00000000 $t
-     /tmp/ccYugTZd.s:189    .text.flash_set_wait_state:00000000 flash_set_wait_state
-     /tmp/ccYugTZd.s:227    .text.flash_set_wait_state_adaptively:00000000 $t
-     /tmp/ccYugTZd.s:232    .text.flash_set_wait_state_adaptively:00000000 flash_set_wait_state_adaptively
-     /tmp/ccYugTZd.s:267    .text.flash_get_wait_state:00000000 $t
-     /tmp/ccYugTZd.s:272    .text.flash_get_wait_state:00000000 flash_get_wait_state
-     /tmp/ccYugTZd.s:305    .text.flash_get_descriptor:00000000 $t
-     /tmp/ccYugTZd.s:310    .text.flash_get_descriptor:00000000 flash_get_descriptor
-     /tmp/ccYugTZd.s:392    .text.flash_get_page_count:00000000 $t
-     /tmp/ccYugTZd.s:397    .text.flash_get_page_count:00000000 flash_get_page_count
-     /tmp/ccYugTZd.s:416    .text.flash_get_page_count_per_region:00000000 $t
-     /tmp/ccYugTZd.s:421    .text.flash_get_page_count_per_region:00000000 flash_get_page_count_per_region
-     /tmp/ccYugTZd.s:440    .text.flash_get_region_count:00000000 $t
-     /tmp/ccYugTZd.s:445    .text.flash_get_region_count:00000000 flash_get_region_count
-     /tmp/ccYugTZd.s:461    .text.flash_erase_all:00000000 $t
-     /tmp/ccYugTZd.s:466    .text.flash_erase_all:00000000 flash_erase_all
-     /tmp/ccYugTZd.s:507    .text.flash_write:00000000 $t
-     /tmp/ccYugTZd.s:512    .text.flash_write:00000000 flash_write
-     /tmp/ccYugTZd.s:687    .text.flash_write:000000e8 $d
-     /tmp/ccYugTZd.s:692    .text.flash_lock:00000000 $t
-     /tmp/ccYugTZd.s:697    .text.flash_lock:00000000 flash_lock
-     /tmp/ccYugTZd.s:783    .text.flash_unlock:00000000 $t
-     /tmp/ccYugTZd.s:788    .text.flash_unlock:00000000 flash_unlock
-     /tmp/ccYugTZd.s:874    .text.flash_is_locked:00000000 $t
-     /tmp/ccYugTZd.s:879    .text.flash_is_locked:00000000 flash_is_locked
-     /tmp/ccYugTZd.s:1017   .text.flash_is_gpnvm_set:00000000 $t
-     /tmp/ccYugTZd.s:1022   .text.flash_is_gpnvm_set:00000000 flash_is_gpnvm_set
-     /tmp/ccYugTZd.s:1084   .text.flash_is_gpnvm_set:00000030 $d
-     /tmp/ccYugTZd.s:1089   .text.flash_set_gpnvm:00000000 $t
-     /tmp/ccYugTZd.s:1094   .text.flash_set_gpnvm:00000000 flash_set_gpnvm
-     /tmp/ccYugTZd.s:1154   .text.flash_set_gpnvm:00000030 $d
-     /tmp/ccYugTZd.s:1159   .text.flash_clear_gpnvm:00000000 $t
-     /tmp/ccYugTZd.s:1164   .text.flash_clear_gpnvm:00000000 flash_clear_gpnvm
-     /tmp/ccYugTZd.s:1220   .text.flash_clear_gpnvm:0000002c $d
-     /tmp/ccYugTZd.s:1225   .text.flash_enable_security_bit:00000000 $t
-     /tmp/ccYugTZd.s:1230   .text.flash_enable_security_bit:00000000 flash_enable_security_bit
-     /tmp/ccYugTZd.s:1250   .text.flash_is_security_bit_enabled:00000000 $t
-     /tmp/ccYugTZd.s:1255   .text.flash_is_security_bit_enabled:00000000 flash_is_security_bit_enabled
-     /tmp/ccYugTZd.s:1275   .text.flash_read_unique_id:00000000 $t
-     /tmp/ccYugTZd.s:1280   .text.flash_read_unique_id:00000000 flash_read_unique_id
-     /tmp/ccYugTZd.s:1349   .text.flash_read_unique_id:00000044 $d
-     /tmp/ccYugTZd.s:1354   .bss.cpu_irq_critical_section_counter:00000000 $d
-     /tmp/ccYugTZd.s:1357   .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
-     /tmp/ccYugTZd.s:1362   .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
-     /tmp/ccYugTZd.s:1363   .bss.cpu_irq_prev_interrupt_state:00000000 $d
-     /tmp/ccYugTZd.s:1365   .bss.gs_ul_page_buffer:00000000 $d
-     /tmp/ccYugTZd.s:1369   .bss.gs_ul_page_buffer:00000000 gs_ul_page_buffer
+     /tmp/ccMemWAf.s:20     .text.translate_address:00000000 $t
+     /tmp/ccMemWAf.s:24     .text.translate_address:00000000 translate_address
+     /tmp/ccMemWAf.s:74     .text.translate_address:00000020 $d
+     /tmp/ccMemWAf.s:79     .text.compute_address:00000000 $t
+     /tmp/ccMemWAf.s:83     .text.compute_address:00000000 compute_address
+     /tmp/ccMemWAf.s:106    .text.compute_lock_range:00000000 $t
+     /tmp/ccMemWAf.s:110    .text.compute_lock_range:00000000 compute_lock_range
+     /tmp/ccMemWAf.s:149    .text.flash_init:00000000 $t
+     /tmp/ccMemWAf.s:154    .text.flash_init:00000000 flash_init
+     /tmp/ccMemWAf.s:179    .text.flash_init:00000010 $d
+     /tmp/ccMemWAf.s:184    .text.flash_set_wait_state:00000000 $t
+     /tmp/ccMemWAf.s:189    .text.flash_set_wait_state:00000000 flash_set_wait_state
+     /tmp/ccMemWAf.s:227    .text.flash_set_wait_state_adaptively:00000000 $t
+     /tmp/ccMemWAf.s:232    .text.flash_set_wait_state_adaptively:00000000 flash_set_wait_state_adaptively
+     /tmp/ccMemWAf.s:267    .text.flash_get_wait_state:00000000 $t
+     /tmp/ccMemWAf.s:272    .text.flash_get_wait_state:00000000 flash_get_wait_state
+     /tmp/ccMemWAf.s:305    .text.flash_get_descriptor:00000000 $t
+     /tmp/ccMemWAf.s:310    .text.flash_get_descriptor:00000000 flash_get_descriptor
+     /tmp/ccMemWAf.s:392    .text.flash_get_page_count:00000000 $t
+     /tmp/ccMemWAf.s:397    .text.flash_get_page_count:00000000 flash_get_page_count
+     /tmp/ccMemWAf.s:416    .text.flash_get_page_count_per_region:00000000 $t
+     /tmp/ccMemWAf.s:421    .text.flash_get_page_count_per_region:00000000 flash_get_page_count_per_region
+     /tmp/ccMemWAf.s:440    .text.flash_get_region_count:00000000 $t
+     /tmp/ccMemWAf.s:445    .text.flash_get_region_count:00000000 flash_get_region_count
+     /tmp/ccMemWAf.s:461    .text.flash_erase_all:00000000 $t
+     /tmp/ccMemWAf.s:466    .text.flash_erase_all:00000000 flash_erase_all
+     /tmp/ccMemWAf.s:507    .text.flash_write:00000000 $t
+     /tmp/ccMemWAf.s:512    .text.flash_write:00000000 flash_write
+     /tmp/ccMemWAf.s:687    .text.flash_write:000000e8 $d
+     /tmp/ccMemWAf.s:692    .text.flash_lock:00000000 $t
+     /tmp/ccMemWAf.s:697    .text.flash_lock:00000000 flash_lock
+     /tmp/ccMemWAf.s:783    .text.flash_unlock:00000000 $t
+     /tmp/ccMemWAf.s:788    .text.flash_unlock:00000000 flash_unlock
+     /tmp/ccMemWAf.s:874    .text.flash_is_locked:00000000 $t
+     /tmp/ccMemWAf.s:879    .text.flash_is_locked:00000000 flash_is_locked
+     /tmp/ccMemWAf.s:1017   .text.flash_is_gpnvm_set:00000000 $t
+     /tmp/ccMemWAf.s:1022   .text.flash_is_gpnvm_set:00000000 flash_is_gpnvm_set
+     /tmp/ccMemWAf.s:1084   .text.flash_is_gpnvm_set:00000030 $d
+     /tmp/ccMemWAf.s:1089   .text.flash_set_gpnvm:00000000 $t
+     /tmp/ccMemWAf.s:1094   .text.flash_set_gpnvm:00000000 flash_set_gpnvm
+     /tmp/ccMemWAf.s:1154   .text.flash_set_gpnvm:00000030 $d
+     /tmp/ccMemWAf.s:1159   .text.flash_clear_gpnvm:00000000 $t
+     /tmp/ccMemWAf.s:1164   .text.flash_clear_gpnvm:00000000 flash_clear_gpnvm
+     /tmp/ccMemWAf.s:1220   .text.flash_clear_gpnvm:0000002c $d
+     /tmp/ccMemWAf.s:1225   .text.flash_enable_security_bit:00000000 $t
+     /tmp/ccMemWAf.s:1230   .text.flash_enable_security_bit:00000000 flash_enable_security_bit
+     /tmp/ccMemWAf.s:1250   .text.flash_is_security_bit_enabled:00000000 $t
+     /tmp/ccMemWAf.s:1255   .text.flash_is_security_bit_enabled:00000000 flash_is_security_bit_enabled
+     /tmp/ccMemWAf.s:1275   .text.flash_read_unique_id:00000000 $t
+     /tmp/ccMemWAf.s:1280   .text.flash_read_unique_id:00000000 flash_read_unique_id
+     /tmp/ccMemWAf.s:1349   .text.flash_read_unique_id:00000044 $d
+     /tmp/ccMemWAf.s:1354   .bss.cpu_irq_critical_section_counter:00000000 $d
+     /tmp/ccMemWAf.s:1357   .bss.cpu_irq_critical_section_counter:00000000 cpu_irq_critical_section_counter
+     /tmp/ccMemWAf.s:1362   .bss.cpu_irq_prev_interrupt_state:00000000 cpu_irq_prev_interrupt_state
+     /tmp/ccMemWAf.s:1363   .bss.cpu_irq_prev_interrupt_state:00000000 $d
+     /tmp/ccMemWAf.s:1365   .bss.gs_ul_page_buffer:00000000 $d
+     /tmp/ccMemWAf.s:1369   .bss.gs_ul_page_buffer:00000000 gs_ul_page_buffer
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.0.22b0b12aa5a71f1d303bb4102a500f20
                            .group:00000000 wm4.newlib.h.8.2702bca278809460f0af6fba1d84eb68
@@ -2526,7 +2526,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.flash_efc.h.93.b6a2484f51c1de2b3aa071715efbf660
                            .group:00000000 wm4.conf_clock.h.48.bb7712c39c7b9c398f6f7b04cd2be3c6
                            .group:00000000 wm4.board.h.51.4ac0d93faa32d5a56598d2df92d1abff
-                           .group:00000000 wm4.sam3s_OLIMEX.h.48.b477f717ca39b6106e76ca911b1370e4
+                           .group:00000000 wm4.sam3s_OLIMEX.h.48.16745fc48ac4fbc54e06040102b9171b
                            .group:00000000 wm4.pmc.h.48.6600843dbec2c56a6fa122eeb6d431ab
                            .group:00000000 wm4.osc.h.97.07e856cbe46dbcafec9fcefe4d6f94b7
                            .group:00000000 wm4.pll.h.48.f70b3ad22b9bd221dcddc2d8f7f11308

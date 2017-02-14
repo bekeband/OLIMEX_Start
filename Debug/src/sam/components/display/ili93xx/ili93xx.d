@@ -76,28 +76,24 @@ src/sam/components/display/ili93xx/ili93xx.o: \
  /home/bekeband/workspace/OLIMEX_Start/src/conf_ili93xx.h \
  /home/bekeband/workspace/OLIMEX_Start/src/ili9341_regs.h \
  /home/bekeband/workspace/OLIMEX_Start/src/ili9325_regs.h \
- /home/bekeband/workspace/OLIMEX_Start/src/spi_master.h \
- /home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/asf.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/status_codes.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/gpio.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/board.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/ioport.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h \
  /home/bekeband/workspace/OLIMEX_Start/src/sysclk.h \
  /home/bekeband/workspace/OLIMEX_Start/src/parts.h \
  /home/bekeband/workspace/OLIMEX_Start/src/conf_clock.h \
  /home/bekeband/workspace/OLIMEX_Start/src/sam3s/sysclk.h \
  /home/bekeband/workspace/OLIMEX_Start/src/osc.h \
  /home/bekeband/workspace/OLIMEX_Start/src/sam3s/osc.h \
- /home/bekeband/workspace/OLIMEX_Start/src/board.h \
  /home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h \
  /home/bekeband/workspace/OLIMEX_Start/src/pll.h \
  /home/bekeband/workspace/OLIMEX_Start/src/sam3s/pll.h \
- /home/bekeband/workspace/OLIMEX_Start/src/status_codes.h \
- /home/bekeband/workspace/OLIMEX_Start/src/spi.h \
- /home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h \
- /home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h \
- /home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h \
- /home/bekeband/workspace/OLIMEX_Start/src/asf.h \
- /home/bekeband/workspace/OLIMEX_Start/src/gpio.h \
- /home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h \
- /home/bekeband/workspace/OLIMEX_Start/src/ioport.h \
- /home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h \
  /home/bekeband/workspace/OLIMEX_Start/src/interrupt.h \
  /home/bekeband/workspace/OLIMEX_Start/src/sleep.h \
  /home/bekeband/workspace/OLIMEX_Start/src/led.h \
@@ -113,8 +109,12 @@ src/sam/components/display/ili93xx/ili93xx.o: \
  /home/bekeband/workspace/OLIMEX_Start/src/tc/tc.h \
  /home/bekeband/workspace/OLIMEX_Start/src/serial.h \
  /home/bekeband/workspace/OLIMEX_Start/src/pio_handler.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/spi.h \
  /home/bekeband/workspace/OLIMEX_Start/src/flash_efc.h \
- /home/bekeband/workspace/OLIMEX_Start/src/efc.h
+ /home/bekeband/workspace/OLIMEX_Start/src/efc.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/rstc.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h \
+ /home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h
 
 /home/bekeband/workspace/OLIMEX_Start/src/ili93xx.h:
 
@@ -268,9 +268,23 @@ src/sam/components/display/ili93xx/ili93xx.o: \
 
 /home/bekeband/workspace/OLIMEX_Start/src/ili9325_regs.h:
 
-/home/bekeband/workspace/OLIMEX_Start/src/spi_master.h:
+/home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h:
 
-/home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h:
+/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/asf.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/status_codes.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/gpio.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/board.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/ioport.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/sysclk.h:
 
@@ -284,33 +298,11 @@ src/sam/components/display/ili93xx/ili93xx.o: \
 
 /home/bekeband/workspace/OLIMEX_Start/src/sam3s/osc.h:
 
-/home/bekeband/workspace/OLIMEX_Start/src/board.h:
-
 /home/bekeband/workspace/OLIMEX_Start/src/pmc/pmc.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/pll.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/sam3s/pll.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/status_codes.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/spi.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/pio/pio.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/asf.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/gpio.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/sam_gpio/sam_gpio.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/ioport.h:
-
-/home/bekeband/workspace/OLIMEX_Start/src/sam/ioport_pio.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/interrupt.h:
 
@@ -342,6 +334,14 @@ src/sam/components/display/ili93xx/ili93xx.o: \
 
 /home/bekeband/workspace/OLIMEX_Start/src/pio_handler.h:
 
+/home/bekeband/workspace/OLIMEX_Start/src/spi.h:
+
 /home/bekeband/workspace/OLIMEX_Start/src/flash_efc.h:
 
 /home/bekeband/workspace/OLIMEX_Start/src/efc.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/rstc.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/sam_spi/spi_master.h:
+
+/home/bekeband/workspace/OLIMEX_Start/src/conf_spi_master.h:
